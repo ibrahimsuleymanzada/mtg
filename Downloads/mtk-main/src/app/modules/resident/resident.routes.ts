@@ -7,6 +7,7 @@ import { ResidentAnnouncementsComponent } from './pages/announcements/announceme
 import { ResidentMyPropertiesComponent } from './pages/my-properties/my-properties.component';
 import { ResidentMyClaimsComponent } from './pages/my-claims/my-claims.component';
 import { ResidentGuestRequestsComponent } from './pages/guest-requests/guest-requests.component';
+import { ResidentFeedComponent } from './pages/feed/feed.component';
 
 export default [
     { path: 'dashboard',      component: ResidentDashboardComponent },
@@ -17,5 +18,6 @@ export default [
     { path: 'my-properties',  component: ResidentMyPropertiesComponent },
     { path: 'my-claims',      component: ResidentMyClaimsComponent },
     { path: 'guest-requests', component: ResidentGuestRequestsComponent },
+    { path: 'feed',           component: ResidentFeedComponent },
     { path: '',                redirectTo: 'dashboard', pathMatch: 'full' },
 ] as Routes;

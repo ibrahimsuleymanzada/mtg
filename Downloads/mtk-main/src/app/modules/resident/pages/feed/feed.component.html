@@ -1,0 +1,143 @@
+<div class="feed-page flex flex-col flex-auto bg-gray-50 dark:bg-transparent px-4 py-6 sm:px-6 md:py-8">
+    <div class="w-full max-w-3xl mx-auto">
+
+        <!-- Breadcrumb + title -->
+        <nav class="flex items-center gap-2 text-md text-indigo-600 dark:text-indigo-400">
+            <span>Modullar</span>
+            <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+            <span>Lenta</span>
+        </nav>
+        <h1 class="mt-2 mb-5 text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Sakinlər lentası
+        </h1>
+
+        <!-- Composer -->
+        <section class="feed-card p-4 sm:p-5 mb-5">
+            <div class="flex gap-3 sm:gap-4">
+                <div class="feed-avatar flex-none w-10 h-10 sm:w-12 sm:h-12 bg-indigo-500 text-white text-lg">
+                    {{ currentUser.initials }}
+                </div>
+                <textarea
+                    class="feed-textarea"
+                    rows="3"
+                    placeholder="Qonşularla nə paylaşmaq istəyirsiniz?"
+                    [(ngModel)]="draft"></textarea>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-gray-200 dark:border-white/10 flex flex-wrap items-center gap-x-1 gap-y-3">
+                <button
+                    *ngFor="let tool of tools"
+                    type="button"
+                    class="feed-tool"
+                    [attr.aria-label]="tool.label">
+                    <mat-icon class="icon-size-5" [ngClass]="tool.color" [svgIcon]="tool.icon"></mat-icon>
+                    <span *ngIf="tool.label" class="hidden sm:inline">{{ tool.label }}</span>
+                </button>
+
+                <div class="flex items-center gap-2 ml-auto">
+                    <div class="relative">
+                        <mat-icon class="icon-size-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none"
+                                  [svgIcon]="'heroicons_outline:globe-alt'"></mat-icon>
+                        <select class="feed-select" [(ngModel)]="audience">
+                            <option *ngFor="let a of audiences" [value]="a">{{ a }}</option>
+                        </select>
+                    </div>
+                    <button
+                        type="button"
+                        class="feed-publish"
+                        [disabled]="!draft.trim()"
+                        (click)="publish()">
+                        <mat-icon class="icon-size-4 -rotate-45" [svgIcon]="'heroicons_outline:paper-airplane'"></mat-icon>
+                        Paylaş
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <div class="feed-chips flex gap-2 mb-5 overflow-x-auto">
+            <button
+                *ngFor="let f of filters"
+                type="button"
+                class="feed-chip"
+                [class.feed-chip--active]="activeFilter === f.key"
+                (click)="activeFilter = f.key">
+                {{ f.label }}
+            </button>
+        </div>
+
+        <!-- Posts -->
+        <div class="flex flex-col gap-5">
+            <article *ngFor="let post of filteredPosts; trackBy: trackById" class="feed-card p-4 sm:p-5">
+
+                <div *ngIf="post.pinned"
+                     class="flex items-center gap-1.5 mb-3 text-xs font-semibold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">
+                    <mat-icon class="icon-size-3.5" [svgIcon]="'heroicons_outline:bookmark'"></mat-icon>
+                    Bərkidilmiş elan
+                </div>
+
+                <!-- Author -->
+                <header class="flex items-center gap-3">
+                    <div class="feed-avatar flex-none w-10 h-10 sm:w-12 sm:h-12 text-md"
+                         [ngClass]="post.official ? 'bg-indigo-500/20 text-indigo-600 dark:text-indigo-300' : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300'">
+                        {{ post.initials }}
+                    </div>
+                    <div class="min-w-0 flex-auto">
+                        <div class="flex items-center gap-1.5 font-semibold text-gray-900 dark:text-white">
+                            <span class="truncate">{{ post.author }}</span>
+                            <mat-icon *ngIf="post.official" class="icon-size-5 flex-none text-indigo-500"
+                                      [svgIcon]="'heroicons_solid:check-badge'"></mat-icon>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+                            <span>{{ post.time }}</span>
+                            <span>·</span>
+                            <mat-icon class="icon-size-3.5" [svgIcon]="'heroicons_outline:globe-alt'"></mat-icon>
+                            <span class="truncate">{{ post.audience }}</span>
+                        </div>
+                    </div>
+                    <button mat-icon-button [matMenuTriggerFor]="postMenu" aria-label="Əlavə əməliyyatlar">
+                        <mat-icon [svgIcon]="'heroicons_outline:ellipsis-horizontal'"></mat-icon>
+                    </button>
+                    <mat-menu #postMenu="matMenu">
+                        <button mat-menu-item>Paylaş</button>
+                        <button mat-menu-item>Şikayət et</button>
+                    </mat-menu>
+                </header>
+
+                <!-- Body -->
+                <p class="mt-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">{{ post.text }}</p>
+
+                <div *ngIf="post.imageCaption" class="feed-media mt-4">
+                    <div class="flex flex-col items-center gap-3 text-center px-4">
+                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20">
+                            <mat-icon class="icon-size-7 text-indigo-500 dark:text-indigo-400"
+                                      [svgIcon]="'heroicons_outline:building-office'"></mat-icon>
+                        </div>
+                        <span class="text-md text-gray-500 dark:text-gray-400">{{ post.imageCaption }}</span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <footer class="mt-4 pt-3 border-t border-gray-200 dark:border-white/10 flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                    <button type="button" class="feed-tool" [class.text-rose-500]="post.liked" (click)="toggleLike(post)">
+                        <mat-icon class="icon-size-5"
+                                  [svgIcon]="post.liked ? 'heroicons_solid:heart' : 'heroicons_outline:heart'"></mat-icon>
+                        {{ post.likes }}
+                    </button>
+                    <button type="button" class="feed-tool">
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:chat-bubble-left'"></mat-icon>
+                        {{ post.comments }}
+                    </button>
+                    <button type="button" class="feed-tool ml-auto">
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:share'"></mat-icon>
+                        <span class="hidden sm:inline">Paylaş</span>
+                    </button>
+                </footer>
+            </article>
+
+            <div *ngIf="!filteredPosts.length" class="feed-card py-12 text-center text-gray-500 dark:text-gray-400">
+                Hələ heç bir paylaşım yoxdur
+            </div>
+        </div>
+    </div>
+</div>

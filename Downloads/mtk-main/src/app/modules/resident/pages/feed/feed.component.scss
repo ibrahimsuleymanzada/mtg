@@ -1,0 +1,61 @@
+.feed-page {
+    // Cards
+    .feed-card {
+        @apply rounded-2xl border border-gray-200 bg-white shadow-sm;
+        @apply dark:bg-white/[0.03] dark:border-white/10 dark:shadow-none;
+    }
+
+    .feed-avatar {
+        @apply flex items-center justify-center rounded-full font-semibold;
+    }
+
+    // Composer
+    .feed-textarea {
+        @apply flex-auto min-w-0 resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-lg;
+        @apply text-gray-900 placeholder-gray-400 outline-none transition-colors;
+        @apply focus:border-indigo-500 dark:bg-white/5 dark:border-white/10 dark:text-white dark:placeholder-gray-500;
+        min-height: 5.5rem;
+    }
+
+    .feed-tool {
+        @apply inline-flex items-center gap-2 rounded-lg px-3 py-2 text-md font-medium transition-colors;
+        @apply text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5;
+    }
+
+    .feed-select {
+        @apply appearance-none h-10 rounded-lg border border-gray-200 bg-gray-50 pl-8 pr-6 text-sm outline-none cursor-pointer;
+        @apply text-gray-700 dark:bg-white/5 dark:border-white/10 dark:text-gray-200;
+
+        option { @apply text-gray-900; }
+    }
+
+    .feed-publish {
+        @apply inline-flex items-center gap-2 h-10 rounded-full bg-indigo-500 px-5 text-md font-medium text-white transition;
+        @apply hover:bg-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-indigo-500;
+    }
+
+    // Filter chips
+    .feed-chips {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        &::-webkit-scrollbar { display: none; }
+    }
+
+    .feed-chip {
+        @apply flex-none rounded-full border border-gray-200 bg-white px-5 py-2 text-md font-medium transition-colors;
+        @apply text-gray-600 hover:bg-gray-100 dark:bg-transparent dark:border-white/15 dark:text-gray-300 dark:hover:bg-white/5;
+
+        &--active {
+            @apply bg-gray-900 border-gray-900 text-white hover:bg-gray-900;
+            @apply dark:bg-gray-100 dark:border-gray-100 dark:text-gray-900 dark:hover:bg-gray-100;
+        }
+    }
+
+    // Media placeholder
+    .feed-media {
+        @apply flex items-center justify-center rounded-2xl border border-gray-200 dark:border-white/10;
+        @apply bg-gradient-to-br from-indigo-50 to-slate-100 dark:from-indigo-950/60 dark:to-slate-900/60;
+        aspect-ratio: 16 / 9;
+        min-height: 12rem;
+    }
+}
