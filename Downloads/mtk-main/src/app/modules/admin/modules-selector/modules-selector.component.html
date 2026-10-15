@@ -1,0 +1,52 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="flex flex-col flex-auto w-full min-w-0">
+
+    <div
+        class="relative flex flex-0 items-center w-full h-16 px-4 md:px-6 z-49 shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden">
+        <!-- Navigation toggle button -->
+        <div class="flex items-center">
+            <img src="assets/images/logo/logo.svg" alt="Logo" class="h-8 w-auto mr-3" />
+
+            <!-- İstəsən text də əlavə edə bilərsən -->
+            
+        <span class="text-lg font-semibold tracking-tight">
+            CityHub
+        </span>
+       
+        </div>
+        <!-- Components -->
+        <div class="flex items-center pl-2 ml-auto space-x-0.5 sm:space-x-2">
+            <languages></languages>
+            <fuse-fullscreen class="hidden md:block"></fuse-fullscreen>
+<tenant-selector></tenant-selector>
+            <user></user>
+        </div>
+    </div>
+
+    <div class="flex flex-col flex-auto">
+
+        <div class="flex-auto p-6 sm:p-10">
+            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                <fuse-card *ngFor="let module of modules"
+                    class="flex flex-col items-center max-w-80 w-full p-8 filter-info">
+
+                    <div class="flex items-center justify-center p-5 rounded-full bg-primary-100 dark:bg-gray-600">
+                        <mat-icon class="icon-size-10 text-primary-500 dark:text-primary-300" [svgIcon]="module.icon">
+                        </mat-icon>
+                    </div>
+
+                    <div class="text-2xl font-semibold leading-tight text-center mt-6">
+                         {{ module.value }}
+                    </div>
+
+
+                    <a class="px-6 mt-8" mat-flat-button color="primary" [routerLink]="'/' +module.url" (click)="selectModule(module)">
+                        {{'common.actions.enter' | transloco}}
+                    </a>
+                </fuse-card>
+            </div>
+
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,113 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between sm:py-4 sm:px-10 bg-default dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center font-medium">
+                <div>
+                    <a class="whitespace-nowrap text-primary-500">{{'common.breadcrumbs.modules' | transloco}}</a>
+                </div>
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                    <a class="ml-1 text-primary-500">{{'modules.accounting.discountPolicies.title' | transloco}}</a>
+                </div>
+            </div>
+        </div>
+        <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+            <button class="ml-3" mat-flat-button [color]="'primary'" (click)="onCreate()">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2">{{'common.actions.create' | transloco}}</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex flex-auto overflow-hidden">
+        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
+            <div class="grid">
+                <div class="flex flex-col flex-auto p-6 sm:p-10 bg-card shadow rounded-2xl overflow-hidden">
+
+                    @if (loading) {
+                    <div class="flex items-center justify-center py-16">
+                        <div class="flex flex-col items-center gap-3">
+                            <mat-spinner diameter="40"></mat-spinner>
+                            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+                        </div>
+                    </div>
+                    } @else {
+                    <div class="overflow-x-auto">
+                        <table class="w-full bg-transparent" mat-table [dataSource]="dataSource" [trackBy]="trackByFn" matSort>
+
+                            <ng-container *ngFor="let col of columnConfig">
+                                <ng-container *ngIf="col.key === 'actions'; else dataColumn" [matColumnDef]="col.key" stickyEnd>
+                                    <th mat-header-cell *matHeaderCellDef class="bg-gray-50 dark:bg-card font-semibold text-secondary">
+                                        {{ col.labelKey | transloco }}
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <div class="flex items-center gap-2">
+                                            <button mat-icon-button [matTooltip]="'common.actions.edit' | transloco" (click)="onEdit(element)">
+                                                <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:pencil'"></mat-icon>
+                                            </button>
+                                            <button mat-icon-button [matTooltip]="'common.actions.delete' | transloco" (click)="onDelete(element)">
+                                                <mat-icon class="icon-size-5 text-warn" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </ng-container>
+
+                                <ng-template #dataColumn>
+                                    <ng-container [matColumnDef]="col.key">
+                                        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 dark:bg-black dark:bg-opacity-5">
+                                            <ng-container *ngIf="col.filterable; else plainHeader">
+                                                <div class="inputbox">
+                                                    <input required="required" type="text" [id]="col.key"
+                                                        [formControl]="filterForm.get(col.key)"
+                                                        (keydown.enter)="applyFilters()">
+                                                    <span class="font-semibold text-secondary inputbox-label">{{ col.labelKey | transloco }}</span>
+                                                    <i></i>
+                                                    <span class="filter-icon bg-gray-50 dark:bg-transparent"><mat-icon>filter_list</mat-icon></span>
+                                                    <span class="clear-btn" (click)="clearInput(col.key)"><mat-icon>close</mat-icon></span>
+                                                </div>
+                                            </ng-container>
+                                            <ng-template #plainHeader>
+                                                <span class="font-semibold text-secondary">{{ col.labelKey | transloco }}</span>
+                                            </ng-template>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <ng-container *ngIf="col.type === 'boolean'; else defaultCell">
+                                                <span class="bool-badge" [class.bool-true]="element[col.key]" [class.bool-false]="!element[col.key]">
+                                                    <mat-icon>{{ element[col.key] ? 'check_circle' : 'cancel' }}</mat-icon>
+                                                    {{ element[col.key] ? ('common.boolean.yes' | transloco) : ('common.boolean.no' | transloco) }}
+                                                </span>
+                                            </ng-container>
+                                            <ng-template #defaultCell>{{ element[col.key] }}</ng-template>
+                                        </td>
+                                    </ng-container>
+                                </ng-template>
+                            </ng-container>
+
+                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                            <tr class="order-row h-16 hover:bg-gray-100 dark:hover:bg-hover" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                        </table>
+                    </div>
+                    }
+
+                    @if (!loading && dataSource.data.length === 0) {
+                    <div class="flex flex-col flex-auto items-center justify-center py-12">
+                        <mat-icon class="icon-size-24" [svgIcon]="'heroicons_outline:tag'"></mat-icon>
+                        <div class="mt-4 text-2xl font-semibold tracking-tight text-secondary">
+                            {{'modules.accounting.discountPolicies.noData' | transloco}}
+                        </div>
+                    </div>
+                    }
+
+                    <mat-paginator *ngIf="totalCount > 0"
+                        class="sm:absolute sm:inset-x-0 sm:bottom-0 bg-gray-50 dark:bg-transparent"
+                        [length]="totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
+                        [pageSizeOptions]="[5, 10, 25, 50, 100]" [showFirstLastButtons]="true"
+                        (page)="onPageChange($event)">
+                    </mat-paginator>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

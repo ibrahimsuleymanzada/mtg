@@ -1,0 +1,246 @@
+/* ----------------------------------------------------------------------------------------------------- */
+/*  @ Import/write your custom styles here.
+/*  @ Styles from this file will override 'vendors.scss' and CityHub's base styles.
+/* ----------------------------------------------------------------------------------------------------- */
+@import 'notifications';
+
+.mat-mdc-table {
+    table-layout: auto !important;
+    white-space: nowrap !important;
+    min-width: 100%;
+    width: max-content !important;
+}
+
+.mat-mdc-header-cell {
+    min-width: 130px;
+}
+
+.mat-column-actions {
+    min-width: unset !important;
+    width: 80px !important;
+}
+
+// TABLE FILTER INPUT
+.inputbox {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.inputbox input {
+    position: relative;
+    width: 100%;
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+    border: none;
+    color: #23242a;
+    font-size: 1em;
+    letter-spacing: 0.05em;
+    transition: 0.5s;
+    z-index: 10;
+    height: 30px;
+    padding-top: 14px; // label yuxarı çıxanda yer açılır
+    padding-right: 20px;
+    margin-left: 5px;
+
+    .dark & {
+        color: var(--mat-table-row-item-label-text-color, rgba(0, 0, 0, 0.87));
+    }
+}
+
+// ── Filter icon ──
+.inputbox .filter-icon {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 11;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    justify-content: center;
+    transition: opacity 0.2s;
+    pointer-events: none; // klik input-a keçsin
+
+    mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+    }
+}
+
+// Focus və ya dəyər olduqda filter icon itir
+.inputbox input:focus~.filter-icon,
+.inputbox input:valid~.filter-icon {
+    opacity: 0;
+}
+
+// X button
+.inputbox .clear-btn {
+    position: absolute;
+    right: 9px;
+    top: 42%;
+    transform: translateY(-50%);
+    z-index: 11;
+    width: 16px;
+    height: 16px;
+    display: none; // default gizli
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    mat-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+        line-height: 14px;
+    }
+}
+
+// Dəyər olduqda X göstər
+.inputbox input:valid~.clear-btn {
+    display: block;
+}
+
+.inputbox .inputbox-label {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 5px;
+    font-size: 1em;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    transition: 0.3s ease;
+    pointer-events: none;
+    transform-origin: left center;
+    // default rəng - proyektinizdəki secondary rəng
+    color: inherit;
+    opacity: 1;
+}
+
+// Label yuxarı sürüşür + kiçilir
+.inputbox input:valid~.inputbox-label,
+.inputbox input:focus~.inputbox-label {
+    top: -4px;
+    left: 10px;
+    font-size: 0.7em;
+    font-weight: 500;
+    opacity: 0.5;
+    letter-spacing: 0.08em;
+}
+
+.inputbox i {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    opacity: 0.7;
+    border-radius: 4px;
+    transition: 0.3s;
+    pointer-events: none;
+
+}
+
+.inputbox input:valid~i,
+.inputbox input:focus~i {
+    height: 100%;
+    opacity: 0.07;
+    background: currentColor;
+}
+
+.bool-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+
+    mat-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+        line-height: 14px;
+    }
+
+    &.bool-true {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+    }
+
+    &.bool-false {
+        background: rgba(239, 68, 68, 0.08);
+        color: #dc2626;
+    }
+}
+
+// Sticky actions kolonu üçün kölgə
+.mat-column-actions {
+    position: sticky !important;
+    z-index: 20 !important;
+    right: 0;
+    background: white !important; // scroll zamanı arxasındakı məzmun görünməsin
+    box-shadow: -4px 0 8px rgba(0, 0, 0, 0.06) !important;
+    letter-spacing: 0.05em !important;
+
+    // Dark mode
+    .dark & {
+        background-color: rgba(var(--fuse-bg-card-rgb), var(--tw-bg-opacity)) !important
+    }
+}
+
+.mdc-data-table__cell,
+.mdc-data-table__header-cell {
+    padding: 0 8px 0 8px !important;
+}
+
+.currency-style {
+    font-family: 'DM Mono', monospace; // və ya sistem mono font
+}
+
+// Oxları tam gizlət
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.date-filters {
+    .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+    }
+
+    .mat-mdc-form-field-infix {
+        min-height: 40px !important;
+    }
+
+    .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+    }
+
+    .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+        top: 20px;
+    }
+
+    .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above {
+    --mat-mdc-form-field-label-transform: translateY(-26.75px) scale(var(--mat-mdc-form-field-floating-label-scale, 0.75));
+    transform: var(--mat-mdc-form-field-label-transform);
+}
+}

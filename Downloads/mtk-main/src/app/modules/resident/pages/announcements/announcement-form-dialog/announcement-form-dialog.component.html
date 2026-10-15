@@ -1,0 +1,145 @@
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="dropdownsLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{ 'common.dataLoading' | transloco }}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!dropdownsLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+
+            <!-- Title (full width) -->
+            <mat-form-field class="w-full md:col-span-2">
+                <mat-label>{{ 'resident.announcements.form.title' | transloco }}</mat-label>
+                <input matInput formControlName="title">
+                <mat-icon matPrefix class="icon-size-5">title</mat-icon>
+                <mat-error *ngIf="form.get('title')?.hasError('required')">
+                    {{ 'resident.announcements.form.errors.titleRequired' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Complex -->
+            <mat-form-field class="w-full">
+                <mat-label>{{ 'resident.announcements.form.complex' | transloco }}</mat-label>
+                <mat-select formControlName="complexId">
+                    <mat-option *ngFor="let c of complexes" [value]="c.key">{{ c.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+                <mat-error *ngIf="form.get('complexId')?.hasError('required')">
+                    {{ 'resident.announcements.form.errors.complexRequired' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Building (optional autocomplete) -->
+            <mat-form-field class="w-full">
+                <mat-label>{{ 'resident.announcements.form.building' | transloco }}</mat-label>
+                <input type="text" matInput formControlName="buildingName"
+                    [matAutocomplete]="buildingAuto"
+                    (input)="onBuildingSearch($event)">
+                <mat-icon matPrefix class="icon-size-5">domain</mat-icon>
+                <mat-autocomplete #buildingAuto="matAutocomplete" (optionSelected)="onBuildingSelected($event)">
+                    <mat-option *ngIf="buildingSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{ 'common.searching' | transloco }}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let item of filteredBuildings" [value]="item.value">{{ item.value }}</mat-option>
+                    <mat-option *ngIf="!buildingSearchLoading && filteredBuildings.length === 0" disabled>
+                        {{ 'common.resultNotFound' | transloco }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <!-- Category -->
+            <mat-form-field class="w-full">
+                <mat-label>{{ 'resident.announcements.form.category' | transloco }}</mat-label>
+                <mat-select formControlName="category">
+                    <mat-option *ngFor="let cat of categories" [value]="cat.value">{{ cat.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">category</mat-icon>
+                <mat-error *ngIf="form.get('category')?.hasError('required')">
+                    {{ 'resident.announcements.form.errors.categoryRequired' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Type -->
+            <mat-form-field class="w-full">
+                <mat-label>{{ 'resident.announcements.form.type' | transloco }}</mat-label>
+                <mat-select formControlName="type">
+                    <mat-option *ngFor="let t of types" [value]="t.value">{{ t.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">label</mat-icon>
+            </mat-form-field>
+
+            <!-- Priority -->
+            <mat-form-field class="w-full">
+                <mat-label>{{ 'resident.announcements.form.priority' | transloco }}</mat-label>
+                <mat-select formControlName="priority">
+                    <mat-option *ngFor="let p of priorities" [value]="p.value">{{ p.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">flag</mat-icon>
+            </mat-form-field>
+
+            <!-- Expiry Date -->
+            <mat-form-field class="w-full">
+                <mat-label>{{ 'resident.announcements.form.expiryDate' | transloco }}</mat-label>
+                <input matInput [matDatepicker]="expiryPicker" formControlName="expiryDate">
+                <mat-datepicker-toggle matSuffix [for]="expiryPicker"></mat-datepicker-toggle>
+                <mat-datepicker #expiryPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event_busy</mat-icon>
+                <mat-error *ngIf="form.get('expiryDate')?.hasError('required')">
+                    {{ 'resident.announcements.form.errors.expiryDateRequired' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Content (full width) -->
+            <mat-form-field class="w-full md:col-span-2">
+                <mat-label>{{ 'resident.announcements.form.content' | transloco }}</mat-label>
+                <textarea matInput formControlName="content" rows="4"></textarea>
+                <mat-icon matPrefix class="icon-size-5">notes</mat-icon>
+                <mat-error *ngIf="form.get('content')?.hasError('required')">
+                    {{ 'resident.announcements.form.errors.contentRequired' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Fayllar -->
+            <div class="w-full md:col-span-2 flex items-center gap-3 pt-1">
+                <button mat-stroked-button type="button" (click)="fileInput.click()">
+                    <mat-icon class="icon-size-5">attach_file</mat-icon>
+                    <span class="ml-1">{{'common.attachFiles' | transloco}}</span>
+                </button>
+                <span *ngIf="selectedFiles.length > 0" class="text-sm text-secondary">
+                    {{ selectedFiles.length }} {{'common.filesSelected' | transloco}}
+                </span>
+                <input #fileInput type="file" multiple hidden (change)="onFilesSelected($event)">
+            </div>
+
+        </div>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="loading">
+            {{ 'common.actions.cancel' | transloco }}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="loading || form.invalid">
+            <mat-spinner *ngIf="loading" diameter="20" class="mr-2"></mat-spinner>
+            <span>{{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}</span>
+        </button>
+    </div>
+
+</div>

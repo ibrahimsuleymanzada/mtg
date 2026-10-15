@@ -1,0 +1,98 @@
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="dropdownsLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!dropdownsLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+
+            <!-- Invoice Autocomplete -->
+            <mat-form-field class="w-full md:col-span-2">
+                <mat-label>{{'forms.kassaMedaxil.labels.invoiceId' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="invoiceNumber"
+                    [matAutocomplete]="invoiceAuto"
+                    (input)="onInvoiceSearch($event)">
+                <mat-icon matPrefix class="icon-size-5">receipt</mat-icon>
+                <mat-autocomplete #invoiceAuto="matAutocomplete" (optionSelected)="onInvoiceSelected($event)">
+                    <mat-option *ngIf="invoiceSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let item of filteredInvoices" [value]="item.invoiceNumber">
+                        {{ item.invoiceNumber }} — {{ item.customerName }}
+                    </mat-option>
+                    <mat-option *ngIf="!invoiceSearchLoading && filteredInvoices.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-error *ngIf="form.get('invoiceNumber')?.hasError('required')">
+                    {{'forms.kassaMedaxil.errors.invoiceId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Amount -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.kassaMedaxil.labels.amount' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="amount" [max]="remainingAmount">
+                <mat-icon matPrefix class="icon-size-5">payments</mat-icon>
+                <mat-hint *ngIf="remainingAmount !== null">
+                    {{'forms.kassaMedaxil.hints.remainingAmount' | transloco}}: {{ remainingAmount | number:'1.2-2' }}
+                </mat-hint>
+                <mat-error *ngIf="form.get('amount')?.hasError('required')">
+                    {{'forms.kassaMedaxil.errors.amount.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('amount')?.hasError('max')">
+                    {{'forms.kassaMedaxil.errors.amount.max' | transloco: {max: remainingAmount} }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Payment Date -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.kassaMedaxil.labels.paymentDate' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="paymentPicker" formControlName="paymentDate">
+                <mat-datepicker-toggle matSuffix [for]="paymentPicker"></mat-datepicker-toggle>
+                <mat-datepicker #paymentPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event</mat-icon>
+                <mat-error *ngIf="form.get('paymentDate')?.hasError('required')">
+                    {{'forms.kassaMedaxil.errors.paymentDate.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Notes -->
+            <mat-form-field class="w-full md:col-span-2">
+                <mat-label>{{'forms.kassaMedaxil.labels.notes' | transloco}}</mat-label>
+                <textarea matInput formControlName="notes" rows="3"></textarea>
+                <mat-icon matPrefix class="icon-size-5">sticky_note_2</mat-icon>
+            </mat-form-field>
+
+        </div>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="dropdownsLoading">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="dropdownsLoading || form.invalid">
+            <span>{{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}</span>
+        </button>
+    </div>
+
+</div>

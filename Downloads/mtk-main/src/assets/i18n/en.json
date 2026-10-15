@@ -1,0 +1,2129 @@
+{
+  "common": {
+    "dataLoading": "Loading data...",
+    "searching": "Searching...",
+    "resultNotFound": "No results found....",
+    "notSelected": "Not selected",
+    "columns": {
+      "actions": "Actions",
+      "address": "Address",
+      "complexName": "Complex Name",
+      "buildingName": "Building Name",
+      "status": "Status",
+      "isActive": "Active"
+    },
+    "boolean": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "filters": {
+      "beginDate": "Start Date",
+      "endDate": "End Date",
+      "errors": {
+        "beginDate": {
+          "required": "Start date must be selected"
+        },
+        "endDate": {
+          "required": "End date must be selected"
+        },
+        "dateRange": {
+          "invalid": "Start date cannot be after end date"
+        }
+      }
+    },
+    "actions": {
+      "enter": "Enter",
+      "signOut": "Sign Out",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "create": "Create",
+      "new": "New",
+      "search": "Search",
+      "filter": "Filter",
+      "reset": "Reset",
+      "back": "Back",
+      "next": "Next",
+      "close": "Close",
+      "selectFile": "Select File",
+      "viewFile": "View File",
+      "clearDateRange": "Clear date range",
+      "changeTenant": "Change Tenant",
+      "attachFiles":  "Attach files",
+      "filesSelected": "file(s) selected"
+    },
+    "breadcrumbs": {
+      "modules": "Modules"
+    },
+    "changePassword": {
+      "title": "Change Password",
+      "oldPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "errors": {
+        "oldPasswordRequired": "Current password is required",
+        "newPasswordRequired": "New password is required",
+        "newPasswordPattern": "Password must be at least 6 characters, include uppercase, lowercase and a special character",
+        "confirmPasswordRequired": "Confirm password is required",
+        "passwordMismatch": "Passwords do not match"
+      }
+    }
+  },
+  "forms": {
+    "common": {
+      "labels": {
+        "id": "ID",
+        "address": "Address",
+        "latitude": "Latitude",
+        "longitude": "Longitude"
+      },
+      "errors": {
+        "required": "This field is required",
+        "min": "Minimum value must be {{min}}",
+        "max": "Maximum value must be {{max}}",
+        "minLength": "Minimum {{min}} characters required",
+        "maxLength": "Maximum {{max}} characters allowed",
+        "email": "Enter valid email",
+        "pattern": "Invalid format",
+        "invalidNumber": "Enter valid number"
+      },
+      "placeholders": {
+        "select": "Select",
+        "enter": "Enter",
+        "search": "Search"
+      }
+    },
+    "complexes": {
+      "labels": {
+        "companyId": "Company",
+        "complexName": "Complex Name",
+        "address": "Address",
+        "totalArea": "Total Area (m²)",
+        "landArea": "Land Area (m²)",
+        "totalBuildings": "Number of Buildings",
+        "latitude": "Latitude",
+        "longitude": "Longitude"
+      },
+      "placeholders": {
+        "companyId": "Select company",
+        "complexName": "Enter complex name",
+        "address": "Enter address",
+        "totalArea": "Enter total area",
+        "landArea": "Enter land area",
+        "totalBuildings": "Enter number of buildings",
+        "latitude": "Enter latitude coordinate",
+        "longitude": "Enter longitude coordinate"
+      },
+      "errors": {
+        "companyId": {
+          "required": "Company selection is required"
+        },
+        "complexName": {
+          "required": "Complex name is required"
+        },
+        "address": {
+          "required": "Address is required"
+        },
+        "totalArea": {
+          "required": "Total area is required",
+          "min": "Area must be greater than 1"
+        },
+        "landArea": {
+          "required": "Land area is required",
+          "min": "Area must be greater than 1"
+        },
+        "totalBuildings": {
+          "required": "Number of buildings is required",
+          "min": "Number must be greater than 1"
+        }
+      }
+    },
+    "buildings": {
+      "labels": {
+        "complexId": "Complex",
+        "buildingName": "Building Name",
+        "buildingNumber": "Building Number",
+        "totalFloors": "Number of Floors",
+        "totalApartments": "Number of Apartments",
+        "buildingType": "Building Type",
+        "hasElevator": "Has Elevator",
+        "elevatorCount": "Number of Elevators",
+        "hasParking": "Has Parking",
+        "constructionYear": "Construction Year",
+        "address": "Address"
+      },
+      "placeholders": {
+        "complexId": "Select complex",
+        "buildingName": "Enter building name",
+        "buildingNumber": "Enter building number",
+        "totalFloors": "Enter number of floors",
+        "totalApartments": "Enter number of apartments",
+        "buildingType": "Select building type",
+        "elevatorCount": "Enter number of elevators",
+        "constructionYear": "Enter construction year",
+        "address": "Enter address"
+      },
+      "errors": {
+        "complexId": {
+          "required": "Complex selection is required"
+        },
+        "buildingName": {
+          "required": "Building name is required"
+        },
+        "buildingNumber": {
+          "required": "Building number is required"
+        },
+        "totalFloors": {
+          "required": "Number of floors is required",
+          "min": "Number of floors must be greater than 1"
+        },
+        "totalApartments": {
+          "required": "Number of apartments is required",
+          "min": "Number of apartments must be greater than 1"
+        },
+        "buildingType": {
+          "required": "Building type is required"
+        },
+        "elevatorCount": {
+          "required": "Number of elevators is required",
+          "min": "Number of elevators must be greater than 1"
+        },
+        "constructionYear": {
+          "required": "Construction year is required",
+          "min": "Year must be greater than 1800",
+          "max": "Year cannot be greater than {{currentYear}}"
+        },
+        "address": {
+          "required": "Address is required"
+        }
+      }
+    },
+    "apartments": {
+      "labels": {
+        "complexName": "Complex",
+        "buildingId": "Building",
+        "buildingName": "Building Name",
+        "apartmentNumber": "Apartment Number",
+        "floor": "Floor",
+        "roomCount": "Number of Rooms",
+        "area": "Area (m²)",
+        "apartmentType": "Apartment Type",
+        "hasBalcony": "Has Balcony",
+        "balconyArea": "Balcony Area (m²)",
+        "status": "Status"
+      },
+      "placeholders": {
+        "buildingId": "Select building",
+        "buildingName": "Select building name",
+        "apartmentNumber": "Enter apartment number",
+        "floor": "Enter floor",
+        "roomCount": "Enter number of rooms",
+        "area": "Enter area",
+        "apartmentType": "Select apartment type",
+        "balconyArea": "Enter balcony area",
+        "status": "Select status"
+      },
+      "errors": {
+        "complexName": {
+          "required": "Complex selection is required"
+        },
+        "buildingId": {
+          "required": "Building selection is required"
+        },
+        "buildingName": {
+          "required": "Building name is required"
+        },
+        "apartmentNumber": {
+          "required": "Apartment number is required"
+        },
+        "floor": {
+          "required": "Floor is required"
+        },
+        "roomCount": {
+          "required": "Number of rooms is required"
+        },
+        "area": {
+          "required": "Area is required",
+          "min": "Area must be greater than 1"
+        },
+        "apartmentType": {
+          "required": "Apartment type is required"
+        },
+        "balconyArea": {
+          "min": "Balcony area must be greater than 1",
+          "required": "Balcony area is required"
+        },
+        "status": {
+          "required": "Status is required"
+        }
+      }
+    },
+    "apartmentOwners": {
+      "labels": {
+        "user": "User",
+        "complex": "Complex",
+        "building": "Building",
+        "apartment": "Apartment",
+        "purchaseDate": "Purchase Date",
+        "purchasePrice": "Purchase Price",
+        "deedNumber": "Deed Number",
+        "isMainOwner": "Main Owner",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "deedFile": "Deed Document",
+        "newUser": "New User",
+        "existingUser": "Select Existing User",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "fatherName": "Father Name",
+        "email": "Email",
+        "phone": "Phone",
+        "mobilePhone": "Mobile Phone",
+        "idcardNumber": "Fin code",
+        "dateOfBirth": "Date of Birth",
+        "password": "Password",
+        "passwordHint": "leave blank to keep unchanged"
+      },
+      "errors": {
+        "user": {
+          "required": "User must be selected"
+        },
+        "complex": {
+          "required": "Complex must be selected"
+        },
+        "building": {
+          "required": "Building must be selected"
+        },
+        "apartment": {
+          "required": "Apartment must be selected"
+        },
+        "purchaseDate": {
+          "required": "Purchase date is required"
+        },
+        "purchasePrice": {
+          "required": "Purchase price is required",
+          "min": "Price must be greater than 0"
+        },
+        "startDate": {
+          "required": "Start date is required"
+        },
+        "firstName": {
+          "required": "First name is required"
+        },
+        "lastName": {
+          "required": "Last name is required"
+        },
+        "email": {
+          "required": "Email is required",
+          "invalid": "Invalid email format"
+        },
+        "password": {
+          "required": "Password is required"
+        },
+        "idcardNumber": {
+          "required": "Fin code is required",
+          "pattern": "FIN code must be exactly 7 characters and contain only English letters and digits"
+        }
+      },
+      "sections": {
+        "userInfo": "User Information",
+        "apartmentInfo": "Apartment Information"
+      }
+    },
+    "tenants": {
+      "labels": {
+        "owner": "Apartment Owner",
+        "monthlyRent": "Monthly Rent",
+        "securityDeposit": "Security Deposit",
+        "contractStartDate": "Contract Start Date",
+        "contractEndDate": "Contract End Date",
+        "paymentDay": "Payment Day",
+        "contractDocument": "Contract Document"
+      },
+      "errors": {
+        "owner": {
+          "required": "Apartment owner must be selected"
+        },
+        "monthlyRent": {
+          "required": "Monthly rent is required"
+        },
+        "contractStartDate": {
+          "required": "Contract start date is required"
+        }
+      },
+      "sections": {
+        "tenantInfo": "Tenancy Information"
+      }
+    },
+    "parkingSpaces": {
+      "labels": {
+        "complex": "Complex",
+        "building": "Building",
+        "spaceNumber": "Space Number",
+        "spaceType": "Space Type",
+        "monthlyRentalPrice": "Catalog price",
+        "salePrice": "Sale Price",
+        "level": "Level",
+        "status": "Status",
+        "isElectricCharging": "Electric Charging Station"
+      },
+      "errors": {
+        "complex": {
+          "required": "Complex must be selected"
+        },
+        "building": {
+          "required": "Building must be selected"
+        },
+        "spaceNumber": {
+          "required": "Space number is required"
+        },
+        "spaceType": {
+          "required": "Space type must be selected"
+        },
+        "monthlyRentalPrice": {
+          "required": "Catalog price is required",
+          "min": "Price must be greater than 0"
+        },
+        "salePrice": {
+          "required": "Sale price is required",
+          "min": "Price must be greater than 0"
+        },
+        "level": {
+          "required": "Level is required"
+        },
+        "status": {
+          "required": "Status must be selected"
+        }
+      }
+    },
+    "parkingAssignments": {
+      "labels": {
+        "parkingSpace": "Parking Space",
+        "user": "User",
+        "apartment": "Apartment",
+        "assignmentType": "Assignment Type",
+        "vehicleNumber": "Vehicle Number",
+        "vehicleBrand": "Brand",
+        "vehicleModel": "Model",
+        "vehicleColor": "Color",
+        "monthlyFee": "Contract price",
+        "contractStartDate": "Contract Start",
+        "contractEndDate": "Contract End"
+      },
+      "errors": {
+        "parkingSpace": {
+          "required": "Parking space must be selected"
+        },
+        "user": {
+          "required": "User must be selected"
+        },
+        "apartment": {
+          "required": "Apartment must be selected"
+        },
+        "assignmentType": {
+          "required": "Assignment type must be selected"
+        },
+        "vehicleNumber": {
+          "required": "Vehicle number is required"
+        },
+        "vehicleBrand": {
+          "required": "Brand is required"
+        },
+        "vehicleModel": {
+          "required": "Model is required"
+        },
+        "monthlyFee": {
+          "required": "Contract price is required",
+          "min": "Amount must be greater than 0"
+        },
+        "contractStartDate": {
+          "required": "Contract start date is required"
+        },
+        "contractEndDate": {
+          "required": "Contract end date is required"
+        }
+      }
+    },
+    "payments": {
+      "labels": {
+        "complexId": "Complex",
+        "apartmentNumber": "Apartment",
+        "paymentTypeId": "Payment Type",
+        "statusId": "Status",
+        "amount": "Amount",
+        "paymentDate": "Payment Date",
+        "description": "Note"
+      },
+      "errors": {
+        "complexId": {
+          "required": "Complex is required"
+        },
+        "apartmentNumber": {
+          "required": "Apartment is required"
+        },
+        "paymentTypeId": {
+          "required": "Payment type is required"
+        },
+        "statusId": {
+          "required": "Status is required"
+        },
+        "amount": {
+          "required": "Amount is required",
+          "min": "Amount must be greater than 0"
+        },
+        "paymentDate": {
+          "required": "Payment date is required"
+        }
+      }
+    },
+    "discountPolicies": {
+      "labels": {
+        "targetType": "Target Type",
+        "targetId": "Target",
+        "userId": "User",
+        "categoryId": "Category",
+        "discountTypeId": "Discount Type",
+        "discountValue": "Discount Value",
+        "validFrom": "Valid From",
+        "validTo": "Valid To",
+        "description": "Description"
+      },
+      "errors": {
+        "targetType": {
+          "required": "Target type is required"
+        },
+        "targetId": {
+          "required": "Target is required"
+        },
+        "categoryId": {
+          "required": "Category is required"
+        },
+        "discountTypeId": {
+          "required": "Discount type is required"
+        },
+        "discountValue": {
+          "required": "Discount value is required"
+        },
+        "validFrom": {
+          "required": "Valid from date is required"
+        },
+        "validTo": {
+          "required": "Valid to date is required"
+        }
+      }
+    },
+    "serviceTariffs": {
+      "labels": {
+        "serviceTypeRefId": "Service Type",
+        "companyId": "Company",
+        "complexId": "Complex",
+        "calculationTypeRefId": "Calculation Type",
+        "unitOfMeasureRefId": "Unit of Measure",
+        "pricePerUnit": "Price Per Unit",
+        "minimumCharge": "Minimum Charge",
+        "validFrom": "Valid From",
+        "validTo": "Valid To",
+        "tier1Limit": "Tier 1 Limit",
+        "tier1Price": "Tier 1 Price",
+        "tier2Limit": "Tier 2 Limit",
+        "tier2Price": "Tier 2 Price",
+        "tier3Price": "Tier 3 Price"
+      },
+      "errors": {
+        "serviceTypeRefId": {
+          "required": "Service type is required"
+        },
+        "companyId": {
+          "required": "Company is required"
+        },
+        "complexId": {
+          "required": "Complex is required"
+        },
+        "calculationTypeRefId": {
+          "required": "Calculation type is required"
+        },
+        "unitOfMeasureRefId": {
+          "required": "Unit of measure is required"
+        },
+        "pricePerUnit": {
+          "required": "Price per unit is required"
+        },
+        "validFrom": {
+          "required": "Valid from date is required"
+        }
+      }
+    },
+    "invoices": {
+      "labels": {
+        "invoiceNumber": "Invoice №",
+        "complexId": "Complex",
+        "buildingId": "Building",
+        "targetType": "Target type",
+        "targetId": "Target",
+        "userId": "User",
+        "categoryId": "Category",
+        "description": "Description",
+        "amount": "Amount",
+        "dueDate": "Due Date",
+        "issueDate": "Issue Date",
+        "status": "Status",
+        "lateFee": "Late Fee",
+        "discount": "Discount",
+        "notes": "Notes"
+      },
+      "targetTypes": {
+        "apartment": "Apartment",
+        "commercialSpace": "Commercial Space",
+        "parkingSpace": "Garage / Parking"
+      },
+      "errors": {
+        "complexId": {
+          "required": "Complex must be selected"
+        },
+        "buildingId": {
+          "required": "Building must be selected"
+        },
+        "targetId": {
+          "required": "Target must be selected"
+        },
+        "userId": {
+          "required": "User must be selected"
+        },
+        "categoryId": {
+          "required": "Category must be selected"
+        },
+        "amount": {
+          "required": "Amount is required"
+        },
+        "dueDate": {
+          "required": "Due date is required"
+        },
+        "issueDate": {
+          "required": "Issue date is required"
+        },
+        "status": {
+          "required": "Status is required"
+        }
+      }
+    },
+    "kassaMedaxil": {
+      "labels": {
+        "invoiceId": "Invoice",
+        "amount": "Amount",
+        "paymentDate": "Payment Date",
+        "receiptNumber": "Receipt Number",
+        "transactionId": "Transaction ID",
+        "notes": "Notes"
+      },
+      "hints": {
+        "remainingAmount": "Remaining balance"
+      },
+      "errors": {
+        "invoiceId": {
+          "required": "Invoice is required"
+        },
+        "amount": {
+          "required": "Amount is required",
+          "max": "Amount cannot exceed remaining balance ({{ max }})"
+        },
+        "paymentDate": {
+          "required": "Payment date is required"
+        }
+      }
+    },
+    "bankMedaxil": {
+      "labels": {
+        "invoiceId": "Invoice",
+        "userId": "User",
+        "amount": "Amount",
+        "bankName": "Bank Name",
+        "referenceNumber": "Reference Number",
+        "paymentDate": "Payment Date",
+        "notes": "Notes"
+      },
+      "errors": {
+        "invoiceId": {
+          "required": "Invoice is required"
+        },
+        "userId": {
+          "required": "User is required"
+        },
+        "amount": {
+          "required": "Amount is required"
+        },
+        "bankName": {
+          "required": "Bank name is required"
+        },
+        "paymentDate": {
+          "required": "Payment date is required"
+        }
+      }
+    },
+    "complaints": {
+      "labels": {
+        "categoryId": "Category",
+        "userId": "User",
+        "apartmentId": "Apartment",
+        "title": "Title",
+        "description": "Description",
+        "location": "Location",
+        "priority": "Priority",
+        "status": "Status",
+        "isAnonymous": "Anonymous",
+        "dueDate": "Due Date",
+        "assignedTo": "Assigned To",
+        "assignedDate": "Assigned Date",
+        "resolvedDate": "Resolved Date",
+        "resolutionNotes": "Resolution Notes",
+        "rating": "Rating",
+        "feedback": "Feedback"
+      },
+      "errors": {
+        "categoryId": {
+          "required": "Category is required"
+        },
+        "userId": {
+          "required": "User is required"
+        },
+        "apartmentId": {
+          "required": "Apartment is required"
+        },
+        "title": {
+          "required": "Title is required"
+        },
+        "description": {
+          "required": "Description is required"
+        },
+        "priority": {
+          "required": "Priority is required"
+        },
+        "status": {
+          "required": "Status is required"
+        }
+      }
+    },
+    "roles": {
+      "labels": {
+        "roleName": "Role Name",
+        "description": "Description"
+      },
+      "errors": {
+        "roleName": {
+          "required": "Role name is required"
+        },
+        "description": {
+          "required": "Description is required"
+        }
+      }
+    },
+    "users": {
+      "labels": {
+        "username": "Username",
+        "email": "Email",
+        "password": "Password",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "fatherName": "Father Name",
+        "phone": "Phone",
+        "mobilePhone": "Mobile Phone",
+        "idcardNumber": "Fin code",
+        "dateOfBirth": "Date of Birth",
+        "emergencyContact": "Emergency Contact",
+        "emergencyPhone": "Emergency Phone",
+        "isActive": "Active"
+      },
+      "errors": {
+        "username": {
+          "required": "Username is required"
+        },
+        "email": {
+          "required": "Email is required",
+          "invalid": "Email is not valid"
+        },
+        "password": {
+          "required": "Password is required",
+          "pattern": "Password must be at least 8 characters and include uppercase, lowercase, number and special character"
+        },
+        "firstName": {
+          "required": "First name is required"
+        },
+        "lastName": {
+          "required": "Last name is required"
+        },
+        "mobilePhone": {
+          "required": "Mobile phone is required"
+        },
+        "idcardNumber": {
+          "pattern": "FIN code must be exactly 7 characters and contain only English letters and digits"
+        }
+      }
+    },
+    "sakinler": {
+      "labels": {
+        "userId": "User",
+        "apartmentId": "Apartment",
+        "deedNumber": "Deed Number",
+        "purchasePrice": "Purchase Price",
+        "purchaseDate": "Purchase Date",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "isMainOwner": "Main Owner"
+      },
+      "errors": {
+        "userId": {
+          "required": "User is required"
+        },
+        "apartmentId": {
+          "required": "Apartment is required"
+        },
+        "startDate": {
+          "required": "Start date is required"
+        }
+      }
+    },
+    "residents": {
+      "labels": {
+        "apartmentId": "Apartment",
+        "userId": "User",
+        "phone": "Phone",
+        "dateOfBirth": "Date of Birth",
+        "moveInDate": "Move-in Date",
+        "moveOutDate": "Move-out Date"
+      },
+      "errors": {
+        "apartmentId": {
+          "required": "Apartment is required"
+        },
+        "phone": {
+          "required": "Phone is required"
+        },
+        "dateOfBirth": {
+          "required": "Date of birth is required"
+        },
+        "moveInDate": {
+          "required": "Move-in date is required"
+        }
+      }
+    },
+    "announcements": {
+      "labels": {
+        "complexId": "Complex",
+        "buildingId": "Building",
+        "postedBy": "Posted By",
+        "title": "Title",
+        "content": "Content",
+        "category": "Category",
+        "type": "Type",
+        "priority": "Priority",
+        "status": "Status",
+        "expiryDate": "Expiry Date"
+      },
+      "errors": {
+        "complexId": {
+          "required": "Complex is required"
+        },
+        "postedBy": {
+          "required": "Posted by is required"
+        },
+        "title": {
+          "required": "Title is required"
+        },
+        "content": {
+          "required": "Content is required"
+        },
+        "category": {
+          "required": "Category is required"
+        },
+        "type": {
+          "required": "Type is required"
+        },
+        "priority": {
+          "required": "Priority is required"
+        },
+        "status": {
+          "required": "Status is required"
+        },
+        "expiryDate": {
+          "required": "Expiry date is required"
+        }
+      }
+    },
+    "commercialOwners": {
+      "labels": {
+        "space": "Commercial Property"
+      },
+      "errors": {
+        "space": {
+          "required": "Commercial property is required"
+        }
+      },
+      "sections": {
+        "spaceInfo": "Property Information"
+      }
+    },
+    "commercialSpaces": {
+      "labels": {
+        "complex": "Complex",
+        "building": "Building",
+        "spaceNumber": "Building number",
+        "floor": "Floor",
+        "spaceType": "Building type",
+        "area": "Area (m²)",
+        "description": "Description",
+        "monthlyRent": "Catalog price",
+        "securityDeposit": "Security deposit",
+        "hasWater": "Water",
+        "hasElectricity": "Electricity",
+        "hasSewerage": "Sewerage"
+      },
+      "errors": {
+        "complex": {
+          "required": "Complex must be selected"
+        },
+        "building": {
+          "required": "Building must be selected"
+        },
+        "spaceNumber": {
+          "required": "Building number must be entered"
+        },
+        "floor": {
+          "required": "Floor must be entered"
+        },
+        "spaceType": {
+          "required": "A property type must be selected"
+        },
+        "area": {
+          "required": "Area must be entered",
+          "min": "Area must be greater than 1"
+        },
+        "monthlyRent": {
+          "required": "Catalog price must be entered",
+          "min": "Price must be greater than 0"
+        },
+        "securityDeposit": {
+          "required": "Security deposit must be entered",
+          "min": "Amount must be greater than 0"
+        }
+      }
+    },
+    "commercialRentals": {
+      "labels": {
+        "space": "Commercial space",
+        "tenantUser": "User",
+        "tenantContactName": "Contact name",
+        "tenantCompanyName": "Company name",
+        "tenantPhone": "Phone number",
+        "tenantEmail": "Email address",
+        "businessType": "Business type",
+        "monthlyRent": "Monthly rental price",
+        "securityDeposit": "Security Deposit",
+        "paymentDay": "Payment Day (1-31)",
+        "contractStartDate": "Contract Start",
+        "contractEndDate": "Contract End",
+        "contractDocument": "Contract Document"
+      },
+      "errors": {
+        "space": {
+          "required": "Commercial Area must be selected"
+        },
+        "tenantUser": {
+          "required": "User must be selected"
+        },
+        "tenantContactName": {
+          "required": "Contact Name must be entered"
+        },
+        "tenantPhone": {
+          "required": "Phone Number must be entered"
+        },
+        "tenantEmail": {
+          "required": "Email Address must be entered"
+        },
+        "monthlyRent": {
+          "required": "Monthly Rent must be entered",
+          "min": "Price must be greater than 0"
+        },
+        "securityDeposit": {
+          "min": "Amount must be greater than 0"
+        },
+        "paymentDay": {
+          "required": "Payment day must be entered",
+          "range": "Payment day must be between 1-31"
+        },
+        "contractStartDate": {
+          "required": "Contract start date must be entered"
+        }
+      }
+    },
+    "inventory": {
+      "labels": {
+        "complex": "Complex",
+        "name": "Name",
+        "category": "Category",
+        "quantity": "Quantity",
+        "unit": "Unit of measure",
+        "status": "Status",
+        "location": "Storage location",
+        "purchaseDate": "Purchase date",
+        "purchasePrice": "Purchase price",
+        "notes": "Notes"
+      },
+      "errors": {
+        "complex": { "required": "Complex is required" },
+        "name": { "required": "Name is required" },
+        "category": { "required": "Category is required" },
+        "quantity": { "required": "Quantity is required" },
+        "unit": { "required": "Unit of measure is required" },
+        "status": { "required": "Status is required" }
+      }
+    },
+    "contractors": {
+      "labels": {
+        "companyName": "Company name",
+        "serviceType": "Service type",
+        "contactPerson": "Contact person",
+        "phone": "Phone",
+        "email": "Email",
+        "address": "Address",
+        "taxNumber": "Tax number",
+        "notes": "Notes"
+      },
+      "errors": {
+        "companyName": { "required": "Company name is required" },
+        "serviceType": { "required": "Service type is required" },
+        "contactPerson": { "required": "Contact person is required" },
+        "phone": { "required": "Phone is required" },
+        "email": { "invalid": "Invalid email address" }
+      }
+    },
+    "contractorContracts": {
+      "labels": {
+        "complexId": "Complex",
+        "buildingId": "Building",
+        "contractorId": "Contractor",
+        "contractStartDate": "Start date",
+        "contractEndDate": "End date",
+        "monthlyFee": "Monthly fee (AZN)",
+        "description": "Description",
+        "status": "Status"
+      },
+      "errors": {
+        "complexId": { "required": "Complex is required" },
+        "contractorId": { "required": "Contractor is required" },
+        "contractStartDate": { "required": "Start date is required" },
+        "contractEndDate": { "required": "End date is required" },
+        "monthlyFee": { "required": "Monthly fee is required" },
+        "status": { "required": "Status is required" }
+      }
+    },
+    "companies": {
+      "labels": {
+        "companyName": "Company name",
+        "taxNumber": "Tax number",
+        "directorName": "Director",
+        "contactPhone": "Contact phone",
+        "email": "Email",
+        "address": "Address",
+        "description": "Description",
+        "adminUser": "User"
+      },
+      "errors": {
+        "companyName": { "required": "Company name is required" },
+        "taxNumber": { "required": "Tax number is required" },
+        "directorName": { "required": "Director name is required" },
+        "contactPhone": { "required": "Contact phone is required" },
+        "email": { "invalid": "Email is invalid" },
+        "adminUser": { "required": "User must be selected" }
+      }
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Sign In",
+      "emailLabel": "Username",
+      "emailRequired": "Username is required",
+      "emailInvalid": "Please enter a valid username",
+      "passwordLabel": "Password",
+      "passwordRequired": "Password is required",
+      "forgotPassword": "Forgot password?",
+      "signInButton": "Sign In",
+      "heroTitle1": "Your residential complex",
+      "heroTitle2": "under full control",
+      "heroDescription": "Our platform simplifies residential complex management, centralizes processes, and provides control over all data from a single point.",
+      "errors": {
+        "wrongCredentials": "Wrong email or password",
+        "noAccount": "Don't have an account?",
+        "registerLink": "Register"
+      }
+    },
+    "signOut": {
+      "title": "You have signed out!",
+      "redirectingText": "Redirecting:",
+      "redirectingSignIn": "Go to:",
+      "redirectingSignInLinkText": "Sign In"
+    },
+    "forgotPassword": {
+      "title": "Forgot password?",
+      "description": "Fill out the form to reset your password",
+      "emailLabel": "Username",
+      "emailRequired": "Username is required",
+      "emailInvalid": "Please enter a valid username",
+      "sendButton": "Send reset link",
+      "backToSignIn": "Sign In",
+      "backToSignInText": "Go to:"
+    },
+    "selfRegister": {
+      "title": "Register",
+      "subtitle": "Fill in the form below to create an account",
+      "alreadyAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "labels": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "fatherName": "Father's name",
+        "idcardNumber": "Fin code",
+        "phone": "Phone",
+        "email": "Email",
+        "password": "Password",
+        "targetType": "Property type",
+        "targetId": "Property",
+        "deedNumber": "Deed number",
+        "company": "Company",
+        "complex": "Complex",
+        "building": "Building",
+        "apartment": "Apartment",
+        "unit": "Property"
+      },
+      "steps": {
+        "property": "Property details",
+        "personal": "Personal details"
+      },
+      "errors": {
+        "required": "This field is required",
+        "invalidEmail": "Invalid email address",
+        "passwordMinLength": "Password must be at least 6 characters",
+        "firstName": { "required": "First name is required" },
+        "lastName": { "required": "Last name is required" },
+        "idcardNumber": { "required": "Fin code is required", "pattern": "FIN code must be exactly 7 characters and contain only English letters and digits" },
+        "phone": { "required": "Phone is required" },
+        "email": {
+          "required": "Email is required",
+          "invalid": "Invalid email address"
+        },
+        "password": { "required": "Password is required" },
+        "targetId": { "required": "Property selection is required" },
+        "deedNumber": { "required": "Deed number is required" }
+      },
+      "haveAccount": "Already have an account?",
+      "submitButton": "Submit request",
+      "successTitle": "Request submitted!",
+      "successMessage": "Your request has been submitted. Your property will be visible after admin approval."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "Theme",
+    "scheme": "Scheme",
+    "layout": "Layout",
+    "themes": {
+      "default": "Default",
+      "brand": "Brand",
+      "teal": "Teal",
+      "rose": "Rose",
+      "purple": "Purple",
+      "amber": "Amber"
+    },
+    "schemes": {
+      "auto": "Auto",
+      "autoTooltip": "Automatically sets the scheme based on the user's operating system color scheme preference using 'prefers-color-scheme' media query.",
+      "dark": "Dark",
+      "light": "Light"
+    },
+    "layouts": {
+      "empty": "Empty",
+      "classic": "Classic",
+      "classy": "Classy",
+      "compact": "Compact",
+      "dense": "Dense",
+      "futuristic": "Futuristic",
+      "thin": "Thin",
+      "centered": "Centered",
+      "enterprise": "Enterprise",
+      "material": "Material",
+      "modern": "Modern"
+    },
+    "selectTenant": {
+      "title": "Select Complex",
+      "subtitle": "Select the complex you want to enter",
+      "noTenants": "No complexes found",
+      "createFirst": {
+        "title": "Create Your First Complex",
+        "subtitle": "Add the first complex to your company",
+        "companyLabel": "Company",
+        "complexNameLabel": "Complex name",
+        "addressLabel": "Address",
+        "totalAreaLabel": "Total area (m²)",
+        "landAreaLabel": "Land area (m²)",
+        "totalBuildingsLabel": "Number of buildings",
+        "submitButton": "Create complex",
+        "creating": "Creating...",
+        "errors": {
+          "company": "Company is required",
+          "complexName": "Complex name is required"
+        }
+      }
+    }
+  },
+  "modules": {
+    "complexes": {
+      "title": "Complexes",
+      "columns": {
+        "companyName": "Company",
+        "totalArea": "Total Area",
+        "landArea": "Land Area",
+        "totalBuildings": "Buildings"
+      },
+      "confirmation": {
+        "complexes": {
+          "title": "Delete Complex",
+          "message": "Are you sure you want to delete the \"{{complexName}}\" complex? This action cannot be undone."
+        },
+        "buildings": {
+          "title": "Delete Building",
+          "message": "Are you sure you want to delete the \"{{apartmentNumber}}\" building? This action cannot be undone."
+        },
+        "apartments": {
+          "title": "Delete Apartment",
+          "message": "Are you sure you want to delete the \"{{apartmentNumber}}\" apartment? This action cannot be undone."
+        },
+        "apartmentOwners": {
+          "title": "Delete Apartment Owner",
+          "message": "Are you sure you want to delete the \"{{apartmentOwners}}\" apartment owner? This action cannot be undone."
+        },
+        "apartmentResidents": {
+          "title": "Delete Tenant",
+          "message": "Are you sure you want to delete the \"{{apartmentResident}}\" tenant? This action cannot be undone."
+        },
+        "parking": {
+          "title": "Delete Parking Space",
+          "message": "Are you sure you want to delete the \"{{parking}}\" parking space? This action cannot be undone."
+        }
+      }
+    },
+    "buildings": {
+      "title": "Buildings",
+      "columns": {
+        "buildingNumber": "Building Number",
+        "totalFloors": "Number of Floors",
+        "totalApartments": "Number of Apartments",
+        "buildingType": "Building Type",
+        "hasElevator": "Elevator",
+        "elevatorCount": "Number of Elevators",
+        "hasParking": "Parking",
+        "constructionYear": "Construction Year"
+      }
+    },
+    "apartments": {
+      "title": "Apartments",
+      "columns": {
+        "apartmentNumber": "Apartment Number",
+        "floor": "Floor",
+        "roomCount": "Number of Rooms",
+        "area": "Area",
+        "apartmentType": "Apartment Type",
+        "hasBalcony": "Balcony",
+        "balconyArea": "Balcony Area",
+        "status": "Status"
+      }
+    },
+    "apartmentOwners": {
+      "title": "Apartment Owners",
+      "columns": {
+        "purchaseDate": "Purchase Date",
+        "purchasePrice": "Purchase Price",
+        "person": "Person",
+        "deedNumber": "Deed Number",
+        "isMainOwner": "Main Owner",
+        "startDate": "Start Date",
+        "endDate": "End Date"
+      }
+    },
+    "apartmentTenants": {
+      "title": "Apartment Tenants",
+      "noData": "No tenants found",
+      "columns": {
+        "tenantName": "Tenant",
+        "tenantPhone": "Phone №",
+        "monthlyRent": "Monthly Rent",
+        "contractStartDate": "Contract Start",
+        "contractEndDate": "Contract End"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete Tenant",
+          "message": "Are you sure you want to delete tenant \"{{name}}\"? This action cannot be undone."
+        }
+      }
+    },
+    "parkingAssignments": {
+      "title": "Parking Assignments",
+      "columns": {
+        "place": "Place",
+        "person": "Person",
+        "assignmentType": "Assignment Type",
+        "vehicleNumber": "Vehicle №",
+        "vehicleBrand": "Brand",
+        "vehicleModel": "Model",
+        "monthlyFee": "Contract Price",
+        "contractStartDate": "Start Date",
+        "contractEndDate": "End Date"
+      },
+      "noData": {
+        "title": "No assignments found",
+        "message": "Click the button above to create a new assignment"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete Assignment",
+          "message": "Are you sure you want to delete the \"{{person}}\" assignment? This action cannot be undone."
+        }
+      }
+    },
+    "commercialOwners": {
+      "title": "Property Owners",
+      "noData": "No property owners found",
+      "columns": {
+        "ownerName": "Owner",
+        "phone": "Phone",
+        "spaceNumber": "Property No",
+        "spaceTypeName": "Property Type",
+        "purchaseDate": "Purchase Date",
+        "deedNumber": "Deed No",
+        "isMainOwner": "Main Owner"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete Property Owner",
+          "message": "Are you sure you want to delete \"{{name}}\" as a property owner?"
+        }
+      }
+    },
+    "commercialSpaces": {
+      "title": "Properties",
+      "columns": {
+        "spaceNumber": "Property No",
+        "floor": "Floor",
+        "spaceType": "Property Type",
+        "area": "Area (m²)",
+        "description": "Description",
+        "salePrice": "Sale Price",
+        "monthlyRent": "Catalog price",
+        "securityDeposit": "Deposit",
+        "hasWater": "Water",
+        "hasElectricity": "Electricity",
+        "hasSewerage": "Sewerage"
+      },
+      "noData": {
+        "title": "Property not found",
+        "message": "Click the button above to create a new property"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete Property",
+          "message": "Are you sure you want to delete the property \"{{spaceNumber}}\"? This operation cannot be undone."
+        }
+      }
+    },
+    "commercialRentals": {
+      "title": "Commercial Rentals",
+      "columns": {
+        "tenantContactName": "Contact Person",
+        "tenantCompanyName": "Company",
+        "tenantPhone": "Phone",
+        "tenantEmail": "Email",
+        "businessType": "Business Type",
+        "monthlyRent": "Monthly Rent",
+        "securityDeposit": "Deposit",
+        "paymentDay": "Payment Day",
+        "contractStartDate": "Contract Start",
+        "contractEndDate": "Contract End"
+      },
+      "noData": {
+        "title": "Commercial Rental not found",
+        "message": "Click the button above to create a new rental"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete Rental",
+          "message": "Are you sure you want to delete the rental \"{{tenant}}\"? This operation cannot be undone."
+        }
+      }
+    },
+    "parking": {
+      "title": "Parking Spaces",
+      "columns": {
+        "spaceNumber": "Space №",
+        "spaceType": "Space Type",
+        "level": "Level",
+        "monthlyRentalPrice": "Catalog Price",
+        "salePrice": "Sale Price",
+        "isElectricCharging": "Electric Charging"
+      }
+    },
+    "accessCards": {
+      "title": "Access Cards",
+      "columns": {
+        "cardNumber": "Card №",
+        "cardType": "Card Type",
+        "user": "User",
+        "apartmentNumber": "Apartment №",
+        "issueDate": "Issue Date",
+        "expiryDate": "Expiry Date",
+        "accessLevels": "Access Levels",
+        "orderStatus": "Order Status",
+        "orderNotes": "Order Notes",
+        "blockReason": "Block Reason"
+      },
+      "errors": {
+        "accessLevels": {
+          "required": "At least one access level must be selected"
+        },
+        "blockReason": {
+          "required": "Block reason is required"
+        }
+      },
+      "noData": {
+        "title": "No access cards found",
+        "message": "Click the button above to create a new access card"
+      },
+      "orderStatusDialog": {
+        "title": "Update Order Status",
+        "tooltip": "Update order status",
+        "orderStatus": "Order Status",
+        "deliveredDate": "Delivered Date",
+        "errors": {
+          "orderStatus": { "required": "Order status is required" },
+          "deliveredDate": { "required": "Delivered date is required" }
+        }
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete Access Card",
+          "message": "Are you sure you want to delete access card \"{{cardNumber}}\"? This action cannot be undone."
+        }
+      }
+    },
+    "guestVehicles": {
+      "title": "Guest Vehicle Requests",
+      "columns": {
+        "plateNumber":     "Plate Number",
+        "guestName":       "Guest Name",
+        "guestPhone":      "Guest Phone",
+        "parkingSpaceName":"Parking Space",
+        "vehicleBrand":    "Brand",
+        "vehicleModel":    "Model",
+        "startDateTime":   "Start Date",
+        "endDateTime":     "End Date",
+        "status":          "Status",
+        "requestedByName": "Requested By"
+      },
+      "actions": {
+        "approve": "Approve",
+        "reject":  "Reject"
+      },
+      "filters": {
+        "status": "Status"
+      },
+      "noData": "No guest vehicle requests found",
+      "confirmation": {
+        "approve": {
+          "title":   "Approve Request",
+          "message": "Guest vehicle request for plate \"{{plateNumber}}\" will be approved."
+        },
+        "reject": {
+          "title":   "Reject Request",
+          "message": "Guest vehicle request for plate \"{{plateNumber}}\" will be rejected."
+        }
+      }
+    },
+    "accounting": {
+      "title": "Accounting",
+      "dashboard": {
+        "title": "Overview",
+        "cards": {
+          "totalInvoiced": "Total Invoiced",
+          "totalPaid": "Total Paid",
+          "totalUnpaid": "Total Unpaid",
+          "totalDiscount": "Total Discount",
+          "totalCashIncome": "Cash Income",
+          "totalBankIncome": "Bank Income",
+          "invoiceCount": "Invoice Count",
+          "paidInvoiceCount": "Paid Invoices",
+          "unpaidInvoiceCount": "Unpaid Invoices",
+          "overdueInvoiceCount": "Overdue Invoices"
+        }
+      },
+      "discountPolicies": {
+        "title": "Discount Policies",
+        "noData": "No discount policies found",
+        "columns": {
+          "person": "Person",
+          "targetType": "Target Type",
+          "discountType": "Discount Type",
+          "discountValue": "Discount Value",
+          "validFrom": "Valid From",
+          "validTo": "Valid To"
+        },
+        "confirmation": {
+          "delete": {
+            "title": "Delete Discount Policy",
+            "message": "Are you sure you want to delete the discount policy for \"{{person}}\"? This action cannot be undone."
+          }
+        }
+      },
+      "serviceTariffs": {
+        "title": "Service Tariffs",
+        "noData": "No tariffs found",
+        "columns": {
+          "serviceTypeName": "Service Type",
+          "pricePerUnit": "Price Per Unit",
+          "validFrom": "Valid From"
+        },
+        "confirmation": {
+          "delete": {
+            "title": "Delete Tariff",
+            "message": "Are you sure you want to delete the tariff \"{{serviceTypeName}}\"? This action cannot be undone."
+          }
+        }
+      },
+      "kassaMedaxil": {
+        "title": "Cash Income",
+        "noData": "No cash income records found",
+        "columns": {
+          "invoiceNumber": "Invoice №",
+          "person": "Person",
+          "amount": "Amount",
+          "paymentMethod": "Payment Method",
+          "paymentDate": "Payment Date"
+        },
+        "confirmation": {
+          "delete": {
+            "title": "Delete Cash Income",
+            "message": "Are you sure you want to delete cash income for invoice \"{{invoiceNumber}}\"? This action cannot be undone."
+          }
+        }
+      },
+      "bankMedaxil": {
+        "title": "Bank Income",
+        "noData": "No bank income records found",
+        "columns": {
+          "invoiceNumber": "Invoice №",
+          "person": "Person",
+          "amount": "Amount",
+          "bankName": "Bank Name",
+          "referenceNumber": "Reference №",
+          "paymentDate": "Payment Date"
+        },
+        "confirmation": {
+          "delete": {
+            "title": "Delete Bank Income",
+            "message": "Are you sure you want to delete bank income for invoice \"{{invoiceNumber}}\"? This action cannot be undone."
+          }
+        }
+      }
+    },
+    "payments": {
+      "title": "Payments",
+      "noData": "No payments found",
+      "columns": {
+        "apartmentNumber": "Apartment №",
+        "residentName": "Resident",
+        "paymentType": "Payment Type",
+        "amount": "Amount",
+        "paymentDate": "Payment Date"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete Payment",
+          "message": "Are you sure you want to delete the payment for \"{{resident}}\"? This action cannot be undone."
+        }
+      }
+    },
+    "invoices": {
+      "title": "Invoices",
+      "noData": "No invoices found",
+      "columns": {
+        "invoiceNumber": "Invoice №",
+        "targetIdentifier": "Object",
+        "person": "Person",
+        "categoryName": "Category",
+        "amount": "Amount",
+        "paidAmount": "Paid",
+        "dueDate": "Due Date",
+        "status": "Status"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete Invoice",
+          "message": "Are you sure you want to delete invoice \"{{invoiceNumber}}\"? This action cannot be undone."
+        }
+      }
+    },
+    "complaints": {
+      "title": "Complaints",
+      "noData": "No complaints found",
+      "columns": {
+        "complaintNumber": "Complaint №",
+        "categoryName": "Category",
+        "person": "Person",
+        "apartmentNumber": "Apartment №",
+        "title": "Title",
+        "priority": "Priority",
+        "status": "Status",
+        "createdDate": "Date"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete Complaint",
+          "message": "Are you sure you want to delete complaint \"{{complaintNumber}}\"? This action cannot be undone."
+        }
+      },
+      "messages": {
+        "title": "Messages",
+        "buttonTooltip": "Messages",
+        "noMessages": "No messages yet",
+        "placeholder": "Type your message",
+        "send": "Send",
+        "isInternal": "Internal message",
+        "internal": "Internal"
+      }
+    },
+    "users": {
+      "title": "Users",
+      "noData": "No users found",
+      "columns": {
+        "username": "Username",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "mobilePhone": "Mobile Phone",
+        "isActive": "Active"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete User",
+          "message": "Are you sure you want to delete user \"{{username}}\"? This action cannot be undone."
+        }
+      },
+      "assignRoles": {
+        "title": "Assign Role",
+        "button": "Assign Role"
+      }
+    },
+    "roles": {
+      "title": "Roles",
+      "createTitle": "New Role",
+      "editTitle": "Edit Role",
+      "noData": "No roles found",
+      "columns": {
+        "roleName": "Role Name",
+        "description": "Description"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete Role",
+          "message": "Are you sure you want to delete role \"{{roleName}}\"? This action cannot be undone."
+        }
+      },
+      "menus": {
+        "title": "Menu Permissions",
+        "buttonTooltip": "Assign Menus",
+        "noData": "No menus found",
+        "residentPortal": "Resident Portal",
+        "columns": {
+          "menu": "Menu",
+          "selected": "Selected",
+          "canView": "View",
+          "canCreate": "Create",
+          "canEdit": "Edit",
+          "canDelete": "Delete",
+          "canExport": "Export"
+        }
+      }
+    },
+    "sakinler": {
+      "title": "Residents",
+      "noData": "No residents found",
+      "columns": {
+        "person": "Person",
+        "apartmentNumber": "Apartment №",
+        "isMainOwner": "Main Owner"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete Resident",
+          "message": "Are you sure you want to delete resident \"{{person}}\"? This action cannot be undone."
+        }
+      },
+      "resetPassword": {
+        "title": "Reset Password",
+        "subtitle": "Enter a new password for",
+        "newPassword": "New Password",
+        "save": "Reset",
+        "errors": {
+          "required": "Password is required",
+          "minLength": "Password must be at least 6 characters"
+        }
+      }
+    },
+    "residents": {
+      "title": "Family Members",
+      "noData": "No family members found",
+      "apartmentFilter": "Select apartment",
+      "selectApartment": "Select an apartment to view family members",
+      "columns": {
+        "fullName": "Full Name",
+        "phone": "Phone",
+        "dateOfBirth": "Date of Birth",
+        "isRegistered": "Registered",
+        "moveInDate": "Move-in Date",
+        "moveOutDate": "Move-out Date",
+        "isActive": "Active"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete Family Member",
+          "message": "Are you sure you want to delete family member \"{{fullName}}\"? This action cannot be undone."
+        }
+      }
+    },
+    "announcements": {
+      "title": "Announcements",
+      "noData": "No announcements found",
+      "columns": {
+        "title": "Title",
+        "category": "Category",
+        "type": "Type",
+        "priority": "Priority",
+        "status": "Status",
+        "createdDate": "Date"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete Announcement",
+          "message": "Are you sure you want to delete announcement \"{{title}}\"? This action cannot be undone."
+        }
+      }
+    },
+    "reports": {
+      "title": "Reports",
+      "borcluMusteri": {
+        "title": "Debtor Customer Report",
+        "noData": "No debtor customers found",
+        "columns": {
+          "person": "Person",
+          "apartmentNumber": "Apartment №",
+          "totalDebt": "Total Debt",
+          "overdueInvoiceCount": "Overdue Invoice Count"
+        }
+      },
+      "musteri": {
+        "title": "Customer Report",
+        "noData": "No customers found",
+        "columns": {
+          "person": "Person",
+          "apartmentNumber": "Apartment №",
+          "totalInvoiced": "Total Invoiced",
+          "totalPaid": "Total Paid",
+          "totalDebt": "Debt",
+          "lastPaymentDate": "Last Payment Date"
+        }
+      },
+      "invoiceReport": {
+        "title": "Invoice Report",
+        "noData": "No invoices found",
+        "columns": {
+          "invoiceNumber": "Invoice №",
+          "person": "Person",
+          "amount": "Amount",
+          "paidAmount": "Paid Amount",
+          "status": "Status",
+          "dueDate": "Due Date"
+        }
+      }
+    },
+    "companies": {
+      "title": "Companies",
+      "noData": "No companies found",
+      "editTitle": "Edit company",
+      "createTitle": "New company",
+      "columns": {
+        "companyName": "Company name",
+        "taxNumber": "Tax number",
+        "directorName": "Director",
+        "contactPhone": "Contact phone"
+      },
+      "actions": {
+        "assignAdmin": "Assign admin"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete company?",
+          "message": "Company {{ name }} will be deleted. This action cannot be undone."
+        }
+      }
+    },
+    "inventory": {
+      "title": "Inventory",
+      "createTitle": "New inventory item",
+      "editTitle": "Edit inventory item",
+      "noData": "No inventory items found",
+      "columns": {
+        "name": "Name",
+        "category": "Category",
+        "quantity": "Quantity",
+        "unit": "Unit",
+        "status": "Status",
+        "location": "Location",
+        "purchaseDate": "Purchase date"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete inventory item?",
+          "message": "Inventory item {{ name }} will be deleted."
+        }
+      }
+    },
+    "contractors": {
+      "title": "Contractors",
+      "createTitle": "New contractor",
+      "editTitle": "Edit contractor",
+      "noData": "No contractors found",
+      "columns": {
+        "companyName": "Company name",
+        "serviceType": "Service type",
+        "contactPerson": "Contact person",
+        "phone": "Phone",
+        "email": "Email"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete contractor?",
+          "message": "Contractor {{ name }} will be deleted."
+        }
+      }
+    },
+    "contractorContracts": {
+      "title": "Contractor contracts",
+      "createTitle": "New contract",
+      "editTitle": "Edit contract",
+      "noData": "No contracts found",
+      "columns": {
+        "companyName": "Company name",
+        "serviceType": "Service type",
+        "contractStartDate": "Start date",
+        "contractEndDate": "End date",
+        "monthlyFee": "Monthly fee"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete contract?",
+          "message": "Contract for {{ name }} will be deleted."
+        }
+      }
+    },
+    "pendingClaims": {
+      "title": "Pending claims",
+      "noData": "No pending claims",
+      "tabs": {
+        "apartments": "Apartments",
+        "parking": "Parking spaces",
+        "commercial": "Commercial spaces"
+      },
+      "columns": {
+        "unitNumber": "Unit number",
+        "claimantName": "Claimant",
+        "deedNumber": "Deed number",
+        "claimDate": "Claim date"
+      },
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject"
+      },
+      "confirmation": {
+        "approve": {
+          "title": "Approve claim",
+          "message": "The claim by {{name}} for unit {{unit}} will be approved. Do you want to continue?"
+        },
+        "reject": {
+          "title": "Reject claim",
+          "message": "The claim by {{name}} for unit {{unit}} will be rejected. This action cannot be undone."
+        }
+      }
+    }
+  },
+  "resident": {
+    "portal": {
+      "title": "Resident Portal"
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "invoices": "Invoices",
+      "payments": "Payments",
+      "complaints": "Complaints",
+      "announcements": "Announcements",
+      "myProperties": "My Properties",
+      "myClaims":       "My Property Claims",
+      "guestRequests":  "Guest Requests"
+    },
+    "dashboard": {
+      "title": "Dashboard"
+    },
+    "invoices": {
+      "title": "Invoices",
+      "empty": "No invoices found",
+      "tabs": {
+        "all": "All",
+        "pending": "Pending",
+        "partial": "Partial",
+        "overdue": "Overdue",
+        "paid": "Paid",
+        "cancelled": "Cancelled"
+      },
+      "labels": {
+        "dueDate": "Due date",
+        "overdue": "Overdue",
+        "paidOf": "paid",
+        "lateFee": "Late fee",
+        "discount": "Discount"
+      },
+      "status": {
+        "Pending": "Pending",
+        "Partial": "Partial",
+        "Paid": "Paid",
+        "Overdue": "Overdue",
+        "Cancelled": "Cancelled"
+      },
+      "pay": {
+        "button": "Pay",
+        "title": "Make Payment",
+        "remaining": "Remaining amount",
+        "amount": "Payment amount (₼)",
+        "amountError": "Enter a valid amount",
+        "date": "Payment date",
+        "notes": "Notes (optional)"
+      }
+    },
+    "payments": {
+      "title": "Payments",
+      "dateRange": "Date range",
+      "empty": "No payments found",
+      "total": "Total paid",
+      "method": {
+        "Cash": "Cash",
+        "Bank Transfer": "Bank Transfer"
+      }
+    },
+    "complaints": {
+      "title": "My Complaints",
+      "empty": "No complaints found",
+      "tabs": {
+        "all": "All",
+        "open": "Open",
+        "inProgress": "In Progress",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      },
+      "status": {
+        "Open": "Open",
+        "InProgress": "In Progress",
+        "Resolved": "Resolved",
+        "Closed": "Closed"
+      },
+      "priority": {
+        "Low": "Low",
+        "Normal": "Normal",
+        "Medium": "Medium",
+        "High": "High",
+        "Important": "Important",
+        "Urgent": "Urgent",
+        "Critical": "Critical"
+      },
+      "actions": {
+        "messages": "Messages"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete complaint",
+          "message": "Are you sure you want to delete complaint \"{{ complaintNumber }}\"?"
+        }
+      },
+      "form": {
+        "title": "Title",
+        "category": "Category",
+        "priority": "Priority",
+        "apartment": "Apartment",
+        "location": "Location",
+        "description": "Description",
+        "isAnonymous": "Send anonymously",
+        "errors": {
+          "titleRequired": "Title is required",
+          "categoryRequired": "Category is required",
+          "priorityRequired": "Priority is required",
+          "apartmentRequired": "Apartment is required",
+          "descriptionRequired": "Description is required"
+        }
+      },
+      "messages": {
+        "title": "Messages",
+        "empty": "No messages yet",
+        "placeholder": "Type your message..."
+      }
+    },
+    "announcements": {
+      "title": "Announcements",
+      "tabs": {
+        "public": "Public announcements",
+        "my": "My announcements"
+      },
+      "selectComplex": "Select complex",
+      "emptyPublic": "No announcements found",
+      "emptyMy": "You have no announcements",
+      "priority": {
+        "Low": "Low",
+        "Normal": "Normal",
+        "Important": "Important",
+        "Urgent": "Urgent",
+        "High": "High"
+      },
+      "status": {
+        "Active": "Active",
+        "Pending": "Pending",
+        "Approved": "Approved",
+        "Rejected": "Rejected",
+        "Expired": "Expired"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Delete announcement",
+          "message": "Are you sure you want to delete \"{{ title }}\"?"
+        }
+      },
+      "form": {
+        "title": "Title",
+        "complex": "Complex",
+        "building": "Building (optional)",
+        "category": "Category",
+        "type": "Type",
+        "priority": "Priority",
+        "expiryDate": "Expiry date",
+        "content": "Content",
+        "errors": {
+          "titleRequired": "Title is required",
+          "complexRequired": "Complex is required",
+          "categoryRequired": "Category is required",
+          "expiryDateRequired": "Expiry date is required",
+          "contentRequired": "Content is required"
+        }
+      }
+    },
+    "myProperties": {
+      "title": "My Properties",
+      "sections": {
+        "apartments":  "Apartments",
+        "parking":     "Parking spaces",
+        "commercial":  "Commercial spaces"
+      },
+      "labels": {
+        "floor": "Floor"
+      },
+      "noApartments":  "No apartments found",
+      "noParking":     "No parking spaces found",
+      "noCommercial":  "No commercial spaces found",
+      "parking": {
+        "vehicle":  "Vehicle",
+        "contract": "Contract period"
+      },
+      "commercial": {
+        "ownerInfo":    "Ownership details",
+        "deedNumber":   "Deed number",
+        "purchaseDate": "Purchase date",
+        "mainOwner":    "Main owner",
+        "rentalInfo":   "Rental details"
+      }
+    },
+    "myClaims": {
+      "title":    "My Property Claims",
+      "newClaim": "New claim",
+      "noData":   "No claims found",
+      "tabs": {
+        "apartments": "Apartments",
+        "parking":    "Parking spaces",
+        "commercial": "Commercial spaces"
+      },
+      "labels": {
+        "targetType":  "Property type",
+        "targetName":  "Property",
+        "deedNumber":  "Deed number",
+        "claimDate":   "Claim date"
+      },
+      "errors": {
+        "targetType":  { "required": "Property type must be selected" },
+        "targetName":  { "required": "Property must be selected" },
+        "deedNumber":  { "required": "Deed number is required" }
+      }
+    },
+    "guestRequests": {
+      "title": "Guest Entry Requests",
+      "empty": "No guest requests found",
+      "tabs": {
+        "all":       "All",
+        "pending":   "Pending",
+        "active":    "Active",
+        "rejected":  "Rejected",
+        "cancelled": "Cancelled",
+        "expired":   "Expired"
+      },
+      "actions": {
+        "cancel": "Cancel"
+      },
+      "form": {
+        "title":         "New Guest Entry Request",
+        "parkingSpace":  "Parking Space",
+        "plateNumber":   "Plate Number",
+        "guestName":     "Guest Name",
+        "guestPhone":    "Guest Phone",
+        "vehicleBrand":  "Vehicle Brand",
+        "vehicleModel":  "Vehicle Model",
+        "startDateTime": "Start Date",
+        "endDateTime":   "End Date",
+        "errors": {
+          "parkingSpaceRequired": "Parking space must be selected",
+          "plateNumberRequired":  "Plate number is required",
+          "startDateRequired":    "Start date must be selected",
+          "endDateRequired":      "End date must be selected"
+        }
+      },
+      "confirmation": {
+        "cancel": {
+          "title":   "Cancel Request",
+          "message": "Guest request for plate \"{{plateNumber}}\" will be cancelled."
+        }
+      }
+    }
+  },
+  "colors": {
+    "white": "White",
+    "black": "Black",
+    "gray": "Gray",
+    "silver": "Silver",
+    "red": "Red",
+    "blue": "Blue",
+    "green": "Green",
+    "yellow": "Yellow",
+    "orange": "Orange",
+    "brown": "Brown",
+    "beige": "Beige",
+    "gold": "Gold"
+  }
+}

@@ -1,0 +1,253 @@
+<!-- parking-assignment-form.component.html -->
+
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="dropdownsLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!dropdownsLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+
+        <div class="grid grid-cols-4 gap-x-3 gap-y-0">
+
+            <!-- Park yeri (Autocomplete) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.parkingAssignments.labels.parkingSpace' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="parkingSpaceName" [matAutocomplete]="parkingSpaceAuto"
+                    (input)="onParkingSpaceSearch($event)">
+                <mat-autocomplete #parkingSpaceAuto="matAutocomplete" (optionSelected)="onParkingSpaceSelected($event)">
+                    <mat-option *ngIf="parkingSpaceSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let space of filteredParkingSpaces" [value]="space.value">
+                        {{ space.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!parkingSpaceSearchLoading && filteredParkingSpaces.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">local_parking</mat-icon>
+                <mat-error *ngIf="form.get('parkingSpaceName')?.hasError('required')">
+                    {{'forms.parkingAssignments.errors.parkingSpace.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- İstifadəçi (Autocomplete) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.parkingAssignments.labels.user' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="userName" [matAutocomplete]="userAuto"
+                    (input)="onUserSearch($event)">
+                <mat-autocomplete #userAuto="matAutocomplete" (optionSelected)="onUserSelected($event)">
+                    <mat-option *ngIf="userSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let user of filteredUsers" [value]="user.value">
+                        {{ user.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!userSearchLoading && filteredUsers.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">person</mat-icon>
+                <mat-error *ngIf="form.get('userName')?.hasError('required')">
+                    {{'forms.parkingAssignments.errors.user.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Kompleks (Dropdown) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.apartmentOwners.labels.complex' | transloco}}</mat-label>
+                <mat-select formControlName="complexId">
+                    <mat-option *ngFor="let complex of complexes" [value]="complex.key">
+                        {{ complex.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+                <mat-error *ngIf="form.get('complexId')?.hasError('required')">
+                    {{'forms.apartmentOwners.errors.complex.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Bina (Autocomplete) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.apartmentOwners.labels.building' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="buildingName" [matAutocomplete]="buildingAuto"
+                    (input)="onBuildingSearch($event)">
+                <mat-autocomplete #buildingAuto="matAutocomplete" (optionSelected)="onBuildingSelected($event)">
+                    <mat-option *ngIf="buildingSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let building of filteredBuildings" [value]="building.value">
+                        {{ building.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!buildingSearchLoading && filteredBuildings.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">domain</mat-icon>
+                <mat-error *ngIf="form.get('buildingName')?.hasError('required')">
+                    {{'forms.apartmentOwners.errors.building.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Mənzil (Autocomplete) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.apartmentOwners.labels.apartment' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="apartmentNumber" [matAutocomplete]="apartmentAuto"
+                    (input)="onApartmentSearch($event)">
+                <mat-autocomplete #apartmentAuto="matAutocomplete" (optionSelected)="onApartmentSelected($event)">
+                    <mat-option *ngIf="apartmentSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let apartment of filteredApartments" [value]="apartment.value">
+                        {{ apartment.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!apartmentSearchLoading && filteredApartments.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">meeting_room</mat-icon>
+                <mat-error *ngIf="form.get('apartmentNumber')?.hasError('required')">
+                    {{'forms.apartmentOwners.errors.apartment.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Təyinat növü (Dropdown) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.parkingAssignments.labels.assignmentType' | transloco}}</mat-label>
+                <mat-select formControlName="assignmentType">
+                    <mat-option *ngFor="let type of assignmentTypes" [value]="type.key">
+                        {{ type.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">category</mat-icon>
+                <mat-error *ngIf="form.get('assignmentType')?.hasError('required')">
+                    {{'forms.parkingAssignments.errors.assignmentType.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Nəqliyyat nömrəsi -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.parkingAssignments.labels.vehicleNumber' | transloco}}</mat-label>
+                <input matInput formControlName="vehicleNumber" mask="00-AA-000" [dropSpecialCharacters]="false"
+                    [validation]="true" [patterns]="vehicleNumberPatterns" placeholder="55-XX-555"
+                    style="text-transform: uppercase">
+                <mat-icon matPrefix class="icon-size-5">directions_car</mat-icon>
+                <mat-error *ngIf="form.get('vehicleNumber')?.hasError('required')">
+                    {{'forms.parkingAssignments.errors.vehicleNumber.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Marka -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.parkingAssignments.labels.vehicleBrand' | transloco}}</mat-label>
+                <input matInput formControlName="vehicleBrand">
+                <mat-icon matPrefix class="icon-size-5">directions_car</mat-icon>
+                <mat-error *ngIf="form.get('vehicleBrand')?.hasError('required')">
+                    {{'forms.parkingAssignments.errors.vehicleBrand.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Model -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.parkingAssignments.labels.vehicleModel' | transloco}}</mat-label>
+                <input matInput formControlName="vehicleModel">
+                <mat-icon matPrefix class="icon-size-5">directions_car</mat-icon>
+                <mat-error *ngIf="form.get('vehicleModel')?.hasError('required')">
+                    {{'forms.parkingAssignments.errors.vehicleModel.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+
+
+            <!-- Aylıq ödəniş -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.parkingAssignments.labels.monthlyFee' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="monthlyFee">
+                <span matSuffix class="text-secondary">₼</span>
+                <mat-icon matPrefix class="icon-size-5">payments</mat-icon>
+                <mat-error *ngIf="form.get('monthlyFee')?.hasError('required')">
+                    {{'forms.parkingAssignments.errors.monthlyFee.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('monthlyFee')?.hasError('min')">
+                    {{'forms.parkingAssignments.errors.monthlyFee.min' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Müqavilə başlanğıcı -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.parkingAssignments.labels.contractStartDate' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="startPicker" formControlName="contractStartDate">
+                <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                <mat-datepicker #startPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event</mat-icon>
+                <mat-error *ngIf="form.get('contractStartDate')?.hasError('required')">
+                    {{'forms.parkingAssignments.errors.contractStartDate.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Müqavilə bitməsi -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.parkingAssignments.labels.contractEndDate' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="endPicker" formControlName="contractEndDate">
+                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                <mat-datepicker #endPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event</mat-icon>
+                <mat-error *ngIf="form.get('contractEndDate')?.hasError('required')">
+                    {{'forms.parkingAssignments.errors.contractEndDate.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Rəng -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.parkingAssignments.labels.vehicleColor' | transloco}}</mat-label>
+                <mat-select formControlName="vehicleColor">
+                    <mat-option *ngFor="let color of vehicleColors" [value]="color.value">
+                        <div class="flex items-center gap-2">
+                            <!-- Rəng preview -->
+                            <span class="w-5 h-5 rounded border border-gray-300"
+                                [style.background-color]="color.colorCode"></span>
+                            <!-- Rəng adı (tərcümə olunan) -->
+                            <span>{{'colors.' + color.value | transloco}}</span>
+                        </div>
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">palette</mat-icon>
+            </mat-form-field>
+
+        </div>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="dropdownsLoading">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="dropdownsLoading || form.invalid">
+            <span>
+                {{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}
+            </span>
+        </button>
+    </div>
+
+</div>

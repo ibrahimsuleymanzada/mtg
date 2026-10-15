@@ -1,0 +1,274 @@
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="dropdownsLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!dropdownsLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+
+        <div class="grid grid-cols-4 gap-x-3 gap-y-0">
+
+            <!-- ── Yer seçimi ─────────────────────────────────────── -->
+
+            <!-- Kompleks -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.parkingSpaces.labels.complex' | transloco}}</mat-label>
+                <mat-select formControlName="complexId">
+                    <mat-option *ngFor="let complex of complexes" [value]="complex.key">
+                        {{ complex.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+                <mat-error *ngIf="form.get('complexId')?.hasError('required')">
+                    {{'forms.parkingSpaces.errors.complex.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Bina (Autocomplete) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.parkingSpaces.labels.building' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="buildingName"
+                    [matAutocomplete]="buildingAuto"
+                    (input)="onBuildingSearch($event)">
+                <mat-autocomplete #buildingAuto="matAutocomplete" (optionSelected)="onBuildingSelected($event)">
+                    <mat-option *ngIf="buildingSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let b of filteredBuildings" [value]="b.value">
+                        {{ b.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!buildingSearchLoading && filteredBuildings.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">domain</mat-icon>
+                <mat-error *ngIf="form.get('buildingName')?.hasError('required')">
+                    {{'forms.parkingSpaces.errors.building.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Kommersiya sahəsi (Autocomplete) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.commercialRentals.labels.space' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="spaceName"
+                    [matAutocomplete]="spaceAuto"
+                    (input)="onSpaceSearch($event)">
+                <mat-autocomplete #spaceAuto="matAutocomplete" (optionSelected)="onSpaceSelected($event)">
+                    <mat-option *ngIf="spaceSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let s of filteredSpaces" [value]="s.value">
+                        {{ s.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!spaceSearchLoading && filteredSpaces.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">store</mat-icon>
+                <mat-error *ngIf="form.get('spaceName')?.hasError('required')">
+                    {{'forms.commercialRentals.errors.space.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- İstifadəçi (Tenant User Autocomplete) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.commercialRentals.labels.tenantUser' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="tenantUserName"
+                    [matAutocomplete]="userAuto"
+                    (input)="onUserSearch($event)">
+                <mat-autocomplete #userAuto="matAutocomplete" (optionSelected)="onUserSelected($event)">
+                    <mat-option *ngIf="userSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let u of filteredUsers" [value]="u.value">
+                        {{ u.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!userSearchLoading && filteredUsers.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">person</mat-icon>
+                <mat-error *ngIf="form.get('tenantUserId')?.hasError('required')">
+                    {{'forms.commercialRentals.errors.tenantUser.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- ── Kiracı məlumatları ──────────────────────────────── -->
+
+            <!-- Əlaqə adı -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.commercialRentals.labels.tenantContactName' | transloco}}</mat-label>
+                <input matInput formControlName="tenantContactName">
+                <mat-icon matPrefix class="icon-size-5">badge</mat-icon>
+                <mat-error *ngIf="form.get('tenantContactName')?.hasError('required')">
+                    {{'forms.commercialRentals.errors.tenantContactName.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Şirkət adı -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.commercialRentals.labels.tenantCompanyName' | transloco}}</mat-label>
+                <input matInput formControlName="tenantCompanyName">
+                <mat-icon matPrefix class="icon-size-5">business</mat-icon>
+            </mat-form-field>
+
+            <!-- Telefon -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.commercialRentals.labels.tenantPhone' | transloco}}</mat-label>
+                <input matInput formControlName="tenantPhone">
+                <mat-icon matPrefix class="icon-size-5">phone</mat-icon>
+                <mat-error *ngIf="form.get('tenantPhone')?.hasError('required')">
+                    {{'forms.commercialRentals.errors.tenantPhone.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Email -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.commercialRentals.labels.tenantEmail' | transloco}}</mat-label>
+                <input matInput type="email" formControlName="tenantEmail">
+                <mat-icon matPrefix class="icon-size-5">email</mat-icon>
+                <mat-error *ngIf="form.get('tenantEmail')?.hasError('required')">
+                    {{'forms.commercialRentals.errors.tenantEmail.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('tenantEmail')?.hasError('email')">
+                    {{'forms.common.errors.email' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Fəaliyyət növü -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.commercialRentals.labels.businessType' | transloco}}</mat-label>
+                <input matInput formControlName="businessType">
+                <mat-icon matPrefix class="icon-size-5">work</mat-icon>
+            </mat-form-field>
+
+            <!-- ── Maliyyə məlumatları ─────────────────────────────── -->
+
+            <!-- Aylıq kirayə -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.commercialRentals.labels.monthlyRent' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="monthlyRent">
+                <span matSuffix class="text-secondary">₼</span>
+                <mat-icon matPrefix class="icon-size-5">payments</mat-icon>
+                <mat-error *ngIf="form.get('monthlyRent')?.hasError('required')">
+                    {{'forms.commercialRentals.errors.monthlyRent.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('monthlyRent')?.hasError('min')">
+                    {{'forms.commercialRentals.errors.monthlyRent.min' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Təminat depoziti -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.commercialRentals.labels.securityDeposit' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="securityDeposit">
+                <span matSuffix class="text-secondary">₼</span>
+                <mat-icon matPrefix class="icon-size-5">shield</mat-icon>
+                <mat-error *ngIf="form.get('securityDeposit')?.hasError('min')">
+                    {{'forms.commercialRentals.errors.securityDeposit.min' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Ödəniş günü -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.commercialRentals.labels.paymentDay' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="paymentDay" min="1" max="31">
+                <mat-icon matPrefix class="icon-size-5">event_repeat</mat-icon>
+                <mat-error *ngIf="form.get('paymentDay')?.hasError('required')">
+                    {{'forms.commercialRentals.errors.paymentDay.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('paymentDay')?.hasError('min') || form.get('paymentDay')?.hasError('max')">
+                    {{'forms.commercialRentals.errors.paymentDay.range' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- ── Müqavilə tarixi ─────────────────────────────────── -->
+
+            <!-- Başlanğıc tarixi -->
+            <mat-form-field class="col-span-2">
+                <mat-label>{{'forms.commercialRentals.labels.contractStartDate' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="startPicker" formControlName="contractStartDate">
+                <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                <mat-datepicker #startPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">calendar_today</mat-icon>
+                <mat-error *ngIf="form.get('contractStartDate')?.hasError('required')">
+                    {{'forms.commercialRentals.errors.contractStartDate.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Bitmə tarixi -->
+            <mat-form-field class="col-span-2">
+                <mat-label>{{'forms.commercialRentals.labels.contractEndDate' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="endPicker" formControlName="contractEndDate">
+                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                <mat-datepicker #endPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event</mat-icon>
+            </mat-form-field>
+
+            <!-- ── Müqavilə sənədi ─────────────────────────────────── -->
+
+            <div class="col-span-4 mt-1">
+                <p class="text-sm font-medium text-secondary mb-2">
+                    {{'forms.commercialRentals.labels.contractDocument' | transloco}}
+                </p>
+
+                <!-- Mövcud fayl (edit rejimində) -->
+                <div *ngIf="existingDocumentURL && !selectedFile"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-transparent mb-2">
+                    <mat-icon class="text-red-500 icon-size-5">picture_as_pdf</mat-icon>
+                    <span class="text-sm flex-1 truncate">{{ documentLabel }}</span>
+                    <a [href]="apiUrl  + existingDocumentURL" target="_blank"
+                        class="text-primary-500 text-sm font-medium hover:underline">
+                        {{'common.actions.viewFile' | transloco}}
+                    </a>
+                </div>
+
+                <!-- Fayl seçim düyməsi -->
+                <div class="flex items-center gap-3">
+                    <label class="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border border-dashed
+                                  border-gray-300 dark:border-gray-600 hover:border-primary-400
+                                  text-sm text-secondary transition-colors">
+                        <mat-icon class="icon-size-5">upload_file</mat-icon>
+                        <span>{{ selectedFile ? selectedFile.name : ('common.actions.selectFile' | transloco) }}</span>
+                        <input type="file" accept=".pdf,.doc,.docx" class="hidden" (change)="onFileSelected($event)">
+                    </label>
+                    <button *ngIf="selectedFile" mat-icon-button type="button" (click)="removeFile()"
+                        [matTooltip]="'common.actions.delete' | transloco">
+                        <mat-icon class="icon-size-4 text-warn">close</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="dropdownsLoading">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="dropdownsLoading || form.invalid">
+            <span>{{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}</span>
+        </button>
+    </div>
+
+</div>

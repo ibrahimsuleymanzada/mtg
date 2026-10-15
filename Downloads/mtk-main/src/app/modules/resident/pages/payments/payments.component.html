@@ -1,0 +1,83 @@
+<div class="flex flex-col flex-auto bg-gray-50 dark:bg-transparent p-4 sm:p-6">
+
+    <!-- Header + Date range filter -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5" [formGroup]="filterForm">
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">
+            {{ 'resident.payments.title' | transloco }}
+        </h1>
+        <div class="flex items-center gap-2">
+            <mat-form-field class="flex-auto sm:w-60" subscriptSizing="dynamic">
+                <mat-label>{{ 'resident.payments.dateRange' | transloco }}</mat-label>
+                <mat-date-range-input [rangePicker]="picker">
+                    <input matStartDate formControlName="start">
+                    <input matEndDate   formControlName="end">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+            <button mat-flat-button color="primary"
+                    class="!h-10 !min-h-0"
+                    (click)="search()">
+                {{ 'common.actions.search' | transloco }}
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="flex justify-center items-center py-16">
+        <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!loading && payments.length === 0"
+         class="flex flex-col items-center py-16 text-gray-400">
+        <mat-icon style="font-size:48px;width:48px;height:48px;" class="mb-3">receipt</mat-icon>
+        <p class="text-sm">{{ 'resident.payments.empty' | transloco }}</p>
+    </div>
+
+    <!-- Summary + cards -->
+    <ng-container *ngIf="!loading && payments.length > 0">
+
+        <!-- Total -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-4 flex items-center justify-between">
+            <span class="text-sm text-gray-500 dark:text-gray-400">{{ 'resident.payments.total' | transloco }}</span>
+            <span class="text-xl font-bold text-gray-900 dark:text-white">{{ totalAmount | number:'1.2-2' }} ₼</span>
+        </div>
+
+        <!-- Payment cards -->
+        <div class="gap-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div *ngFor="let p of payments"
+                 class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+
+                <!-- Top row: category + amount -->
+                <div class="flex items-start justify-between gap-2 mb-1">
+                    <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ p.categoryName }}</span>
+                    <span class="flex-none text-base font-bold text-green-600 dark:text-green-400">+{{ p.amount | number:'1.2-2' }} ₼</span>
+                </div>
+
+                <!-- Invoice + receipt numbers -->
+                <p class="text-xs text-gray-400 mb-2">
+                    {{ p.invoiceNumber }}
+                    <ng-container *ngIf="p.receiptNumber"> · {{ p.receiptNumber }}</ng-container>
+                </p>
+
+                <!-- Method + date -->
+                <div class="flex items-center gap-1.5">
+                    <mat-icon class="text-gray-400" style="font-size:14px;width:14px;height:14px;">
+                        {{ methodIcon(p.paymentMethod) }}
+                    </mat-icon>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                        {{ 'resident.payments.method.' + p.paymentMethod | transloco }}
+                        · {{ p.paymentDate | date:'dd.MM.yyyy' }}
+                    </span>
+                </div>
+
+                <!-- Notes -->
+                <p *ngIf="p.notes" class="text-xs text-gray-400 italic mt-1.5 line-clamp-1">{{ p.notes }}</p>
+
+            </div>
+        </div>
+
+    </ng-container>
+
+</div>

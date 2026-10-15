@@ -1,0 +1,71 @@
+<div class="flex flex-col max-h-screen -m-6">
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary text-on-primary">
+        <div class="text-lg font-medium">
+            {{'resident.myClaims.newClaim' | transloco}}
+        </div>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon class="text-current" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <form [formGroup]="form" class="flex flex-col flex-auto p-6 sm:p-8 overflow-y-auto">
+        <div class="grid grid-cols-1 gap-4">
+
+            <!-- Əmlak növü -->
+            <mat-form-field>
+                <mat-label>{{'resident.myClaims.labels.targetType' | transloco}}</mat-label>
+                <mat-select formControlName="targetType">
+                    <mat-option *ngFor="let t of targetTypes" [value]="t.value">{{ t.label }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">home_work</mat-icon>
+                <mat-error *ngIf="form.get('targetType')?.hasError('required')">
+                    {{'resident.myClaims.errors.targetType.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Əmlak seçimi (autocomplete) -->
+            <mat-form-field>
+                <mat-label>{{'resident.myClaims.labels.targetName' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="targetName"
+                    [matAutocomplete]="unitAuto"
+                    [disabled]="!form.get('targetType')?.value"
+                    (input)="onUnitSearch($event)">
+                <mat-autocomplete #unitAuto="matAutocomplete" (optionSelected)="onUnitSelected($event)">
+                    <mat-option *ngIf="unitSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let unit of filteredUnits" [value]="unit.value">
+                        {{ unit.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!unitSearchLoading && filteredUnits.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">search</mat-icon>
+                <mat-error *ngIf="form.get('targetName')?.hasError('required')">
+                    {{'resident.myClaims.errors.targetName.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Sənəd nömrəsi -->
+            <mat-form-field>
+                <mat-label>{{'resident.myClaims.labels.deedNumber' | transloco}}</mat-label>
+                <input matInput formControlName="deedNumber">
+                <mat-icon matPrefix class="icon-size-5">description</mat-icon>
+                <mat-error *ngIf="form.get('deedNumber')?.hasError('required')">
+                    {{'resident.myClaims.errors.deedNumber.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+        </div>
+    </form>
+
+    <div class="flex items-center justify-end border-t px-6 py-4 gap-3">
+        <button mat-stroked-button (click)="onCancel()">{{'common.actions.cancel' | transloco}}</button>
+        <button mat-flat-button [color]="'primary'" (click)="onSave()" [disabled]="saving">
+            <mat-spinner *ngIf="saving" diameter="20" class="mr-2"></mat-spinner>
+            {{'common.actions.send' | transloco}}
+        </button>
+    </div>
+</div>

@@ -1,0 +1,81 @@
+<div class="relative flex flex-col w-full" style="min-width: 520px; max-width: 640px;">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <div>
+            <h2 class="text-xl font-semibold">{{'modules.complaints.messages.title' | transloco}}</h2>
+            <p class="text-sm text-secondary mt-0.5">{{ data.complaintNumber }}</p>
+        </div>
+        <button mat-icon-button (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Messages List -->
+    <div class="flex flex-col gap-3 p-6 overflow-y-auto" style="max-height: 420px; min-height: 160px;">
+
+        @if (loading) {
+        <div class="flex items-center justify-center py-10">
+            <mat-spinner diameter="36"></mat-spinner>
+        </div>
+        } @else if (messages.length === 0) {
+        <div class="flex flex-col items-center justify-center py-10 text-secondary">
+            <mat-icon class="icon-size-12">chat_bubble_outline</mat-icon>
+            <span class="mt-2 text-sm">{{'modules.complaints.messages.noMessages' | transloco}}</span>
+        </div>
+        } @else {
+        @for (msg of messages; track msg.id) {
+        <div class="flex gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-800 flex items-center justify-center">
+                <mat-icon class="icon-size-4 text-primary-600 dark:text-primary-300">person</mat-icon>
+            </div>
+            <div class="flex-1">
+                <div class="flex items-baseline gap-2">
+                    <span class="text-sm font-semibold">{{ msg.senderName }}</span>
+                    <span class="text-xs text-secondary">{{ msg.createdDate | date:'dd.MM.yyyy HH:mm' }}</span>
+                    @if (msg.isInternal) {
+                    <span class="text-xs px-1.5 py-0.5 rounded bg-warn-100 text-warn-700 dark:bg-warn-800 dark:text-warn-200">
+                        {{'modules.complaints.messages.internal' | transloco}}
+                    </span>
+                    }
+                </div>
+                <p class="text-sm mt-0.5 whitespace-pre-wrap">{{ msg.messageText }}</p>
+            </div>
+        </div>
+        }
+        }
+
+    </div>
+
+    <!-- Send Form -->
+    <div class="px-6 pb-6 pt-4 border-t">
+        <form [formGroup]="form" (ngSubmit)="onSend()" class="flex flex-col gap-2">
+            <mat-form-field class="w-full" subscriptSizing="dynamic">
+                <mat-label>{{'modules.complaints.messages.placeholder' | transloco}}</mat-label>
+                <textarea matInput formControlName="messageText" rows="2"></textarea>
+            </mat-form-field>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <mat-checkbox formControlName="isInternal" class="text-sm">
+                        {{'modules.complaints.messages.isInternal' | transloco}}
+                    </mat-checkbox>
+                    <button mat-icon-button type="button" (click)="fileInput.click()"
+                        [title]="'common.attachFiles' | transloco">
+                        <mat-icon class="icon-size-5" [class.text-primary-600]="selectedFiles.length > 0">attach_file</mat-icon>
+                    </button>
+                    <span *ngIf="selectedFiles.length > 0" class="text-xs text-secondary">{{ selectedFiles.length }}</span>
+                    <input #fileInput type="file" multiple hidden (change)="onFilesSelected($event)">
+                </div>
+                <button mat-flat-button color="primary" type="submit"
+                    [disabled]="form.invalid || sending">
+                    @if (sending) {
+                    <mat-spinner diameter="18"></mat-spinner>
+                    } @else {
+                    <mat-icon class="icon-size-5">send</mat-icon>
+                    }
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>

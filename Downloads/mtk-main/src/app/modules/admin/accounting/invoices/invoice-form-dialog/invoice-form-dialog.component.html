@@ -1,0 +1,235 @@
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="dropdownsLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!dropdownsLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+
+        <!-- Sıra 1: İnvoys №, Kompleks, Status -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+
+            <!-- Invoice Number -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.invoiceNumber' | transloco}}</mat-label>
+                <input matInput formControlName="invoiceNumber" readonly>
+                <mat-icon matPrefix class="icon-size-5">receipt</mat-icon>
+            </mat-form-field>
+
+            <!-- Kompleks -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.complexId' | transloco}}</mat-label>
+                <mat-select formControlName="complexId" (selectionChange)="onComplexChange()">
+                    <mat-option *ngFor="let item of complexes" [value]="item.key">{{ item.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+                <mat-error *ngIf="form.get('complexId')?.hasError('required')">
+                    {{'forms.invoices.errors.complexId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Status -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.status' | transloco}}</mat-label>
+                <mat-select formControlName="statusId">
+                    <mat-option *ngFor="let s of invoiceStatuses" [value]="s.key">{{ s.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">flag</mat-icon>
+                <mat-error *ngIf="form.get('statusId')?.hasError('required')">
+                    {{'forms.invoices.errors.status.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+        </div>
+
+        <!-- Sıra 2: Bina, Hədəf növü, Hədəf -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-0">
+
+            <!-- Bina (autocomplete) -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.buildingId' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="buildingName" [matAutocomplete]="buildingAuto"
+                    (input)="onBuildingSearch($event)">
+                <mat-icon matPrefix class="icon-size-5">domain</mat-icon>
+                <mat-autocomplete #buildingAuto="matAutocomplete" (optionSelected)="onBuildingSelected($event)">
+                    <mat-option *ngIf="buildingSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let item of filteredBuildings" [value]="item.value">{{ item.value }}</mat-option>
+                    <mat-option *ngIf="!buildingSearchLoading && filteredBuildings.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-error *ngIf="form.get('buildingName')?.hasError('required')">
+                    {{'forms.invoices.errors.buildingId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Hədəf növü -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.targetType' | transloco}}</mat-label>
+                <mat-select formControlName="targetType" (selectionChange)="onTargetTypeChange()">
+                    <mat-option *ngFor="let t of targetTypes" [value]="t.key">{{ t.labelKey | transloco }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">category</mat-icon>
+            </mat-form-field>
+
+            <!-- Hədəf (mat-select dropdown) -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.targetId' | transloco}}</mat-label>
+                <mat-select formControlName="targetId"
+                    [disabled]="!isTargetEnabled"
+                    (selectionChange)="onTargetChange($event.value)">
+                    <mat-option *ngIf="targetLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let item of targetOptions" [value]="item.key">{{ item.value }}</mat-option>
+                    <mat-option *ngIf="!targetLoading && isTargetEnabled && targetOptions.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">meeting_room</mat-icon>
+                <mat-error *ngIf="form.get('targetId')?.hasError('required')">
+                    {{'forms.invoices.errors.targetId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+        </div>
+
+        <!-- Sıra 3: İstifadəçi, Kateqoriya, Məbləğ -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-0">
+
+            <!-- User Autocomplete -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.userId' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="person" [matAutocomplete]="userAuto"
+                    (input)="onUserSearch($event)">
+                <mat-icon matPrefix class="icon-size-5">person</mat-icon>
+                <mat-autocomplete #userAuto="matAutocomplete" (optionSelected)="onUserSelected($event)">
+                    <mat-option *ngIf="userSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let item of filteredUsers" [value]="item.value">{{ item.value }}</mat-option>
+                    <mat-option *ngIf="!userSearchLoading && filteredUsers.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-error *ngIf="form.get('person')?.hasError('required')">
+                    {{'forms.invoices.errors.userId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Category -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.categoryId' | transloco}}</mat-label>
+                <mat-select formControlName="categoryId">
+                    <mat-option *ngFor="let cat of categories" [value]="cat.key">{{ cat.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">label</mat-icon>
+                <mat-error *ngIf="form.get('categoryId')?.hasError('required')">
+                    {{'forms.invoices.errors.categoryId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Amount -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.amount' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="amount">
+                <mat-icon matPrefix class="icon-size-5">payments</mat-icon>
+                <mat-error *ngIf="form.get('amount')?.hasError('required')">
+                    {{'forms.invoices.errors.amount.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('amount')?.hasError('min')">
+                    {{'forms.common.errors.min' | transloco: {min: 0} }}
+                </mat-error>
+            </mat-form-field>
+
+        </div>
+
+        <!-- Sıra 4: Tarixlər + Cərimə + Endirim -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-0">
+
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.issueDate' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="issuePicker" formControlName="issueDate">
+                <mat-datepicker-toggle matSuffix [for]="issuePicker"></mat-datepicker-toggle>
+                <mat-datepicker #issuePicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event</mat-icon>
+                <mat-error *ngIf="form.get('issueDate')?.hasError('required')">
+                    {{'forms.invoices.errors.issueDate.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.dueDate' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="duePicker" formControlName="dueDate">
+                <mat-datepicker-toggle matSuffix [for]="duePicker"></mat-datepicker-toggle>
+                <mat-datepicker #duePicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event_busy</mat-icon>
+                <mat-error *ngIf="form.get('dueDate')?.hasError('required')">
+                    {{'forms.invoices.errors.dueDate.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.lateFee' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="lateFee">
+                <mat-icon matPrefix class="icon-size-5">warning</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.discount' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="discount">
+                <mat-icon matPrefix class="icon-size-5">local_offer</mat-icon>
+            </mat-form-field>
+
+        </div>
+
+        <!-- Sıra 5: Açıqlama + Qeydlər -->
+        <div class="grid grid-cols-1 gap-2 mt-0">
+
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.description' | transloco}}</mat-label>
+                <input matInput formControlName="description">
+                <mat-icon matPrefix class="icon-size-5">notes</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.invoices.labels.notes' | transloco}}</mat-label>
+                <textarea matInput formControlName="notes" rows="3"></textarea>
+                <mat-icon matPrefix class="icon-size-5">sticky_note_2</mat-icon>
+            </mat-form-field>
+
+        </div>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="dropdownsLoading">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="dropdownsLoading || form.invalid">
+            <span>{{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}</span>
+        </button>
+    </div>
+
+</div>

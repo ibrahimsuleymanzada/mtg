@@ -1,0 +1,59 @@
+<div class="flex flex-col w-full">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b bg-gray-50 dark:bg-transparent">
+        <h2 class="text-lg font-semibold">
+            {{ (isEdit ? 'modules.roles.editTitle' : 'modules.roles.createTitle') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    @if (dropdownsLoading) {
+    <div class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+    } @else {
+
+    <!-- Form -->
+    <form [formGroup]="form" class="flex flex-col gap-4 p-6">
+        <!-- Rol adı -->
+        <mat-form-field>
+            <mat-label>{{'forms.roles.labels.roleName' | transloco}}</mat-label>
+            <input matInput formControlName="roleName">
+            <mat-icon matPrefix class="icon-size-5">shield</mat-icon>
+            <mat-error *ngIf="form.get('roleName')?.hasError('required')">
+                {{'forms.roles.errors.roleName.required' | transloco}}
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Açıqlama -->
+        <mat-form-field>
+            <mat-label>{{'forms.roles.labels.description' | transloco}}</mat-label>
+            <textarea matInput formControlName="description" rows="3"></textarea>
+            <mat-icon matPrefix class="icon-size-5">description</mat-icon>
+            <mat-error *ngIf="form.get('description')?.hasError('required')">
+                {{'forms.roles.errors.description.required' | transloco}}
+            </mat-error>
+        </mat-form-field>
+    </form>
+
+    }
+
+    <!-- Footer -->
+    <div class="flex items-center justify-end gap-3 px-6 py-4 border-t bg-gray-50 dark:bg-transparent">
+        <button mat-stroked-button (click)="onCancel()" [disabled]="loading">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button mat-flat-button color="primary" (click)="onSave()" [disabled]="loading || dropdownsLoading">
+            @if (loading) {
+            <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+            }
+            {{'common.actions.save' | transloco}}
+        </button>
+    </div>
+</div>

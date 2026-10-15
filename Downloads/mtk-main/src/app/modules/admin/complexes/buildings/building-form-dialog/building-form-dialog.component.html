@@ -1,0 +1,166 @@
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Dropdown Loading Spinner -->
+    <div *ngIf="dropdownsLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!dropdownsLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+
+            <!-- Complex (Combobox) -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.buildings.labels.complexId' | transloco}}</mat-label>
+                <mat-select formControlName="complexId">
+                    <mat-option *ngFor="let complex of complexes" [value]="complex.key">
+                        {{ complex.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+                <mat-error *ngIf="form.get('complexId')?.hasError('required')">
+                    {{'forms.buildings.errors.complexId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Building Type (Combobox) -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.buildings.labels.buildingType' | transloco}}</mat-label>
+                <mat-select formControlName="buildingType">
+                    <mat-option *ngFor="let type of buildingTypes" [value]="type.key">
+                        {{ type.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">category</mat-icon>
+                <mat-error *ngIf="form.get('buildingType')?.hasError('required')">
+                    {{'forms.buildings.errors.buildingType.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Building Name -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.buildings.labels.buildingName' | transloco}}</mat-label>
+                <input matInput formControlName="buildingName">
+                <mat-icon matPrefix class="icon-size-5">domain</mat-icon>
+                <mat-error *ngIf="form.get('buildingName')?.hasError('required')">
+                    {{'forms.buildings.errors.buildingName.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Building Number -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.buildings.labels.buildingNumber' | transloco}}</mat-label>
+                <input matInput formControlName="buildingNumber">
+                <mat-icon matPrefix class="icon-size-5">tag</mat-icon>
+                <mat-error *ngIf="form.get('buildingNumber')?.hasError('required')">
+                    {{'forms.buildings.errors.buildingNumber.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Address (full width) -->
+            <mat-form-field class="w-full md:col-span-2">
+                <mat-label>{{'forms.buildings.labels.address' | transloco}}</mat-label>
+                <input matInput formControlName="address">
+                <mat-icon matPrefix class="icon-size-5">location_on</mat-icon>
+                <mat-error *ngIf="form.get('address')?.hasError('required')">
+                    {{'forms.buildings.errors.address.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Total Floors -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.buildings.labels.totalFloors' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="totalFloors">
+                <mat-icon matPrefix class="icon-size-5">layers</mat-icon>
+                <mat-error *ngIf="form.get('totalFloors')?.hasError('required')">
+                    {{'forms.buildings.errors.totalFloors.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('totalFloors')?.hasError('min')">
+                    {{'forms.buildings.errors.totalFloors.min' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Total Apartments -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.buildings.labels.totalApartments' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="totalApartments">
+                <mat-icon matPrefix class="icon-size-5">meeting_room</mat-icon>
+                <mat-error *ngIf="form.get('totalApartments')?.hasError('required')">
+                    {{'forms.buildings.errors.totalApartments.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('totalApartments')?.hasError('min')">
+                    {{'forms.buildings.errors.totalApartments.min' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Construction Year -->
+            <mat-form-field class="w-full h-fit">
+                <mat-label>{{'forms.buildings.labels.constructionYear' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="constructionYear" [placeholder]="currentYear.toString()">
+                <mat-icon matPrefix class="icon-size-5">calendar_today</mat-icon>
+                <mat-error *ngIf="form.get('constructionYear')?.hasError('required')">
+                    {{'forms.buildings.errors.constructionYear.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('constructionYear')?.hasError('min')">
+                    {{'forms.buildings.errors.constructionYear.min' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Checkboxes -->
+            <div class="col-span-2 md:col-span-3 flex flex-wrap items-center gap-x-6 gap-y-3 py-2">
+
+                <!-- Parkinq (əvvəl) -->
+                <mat-checkbox formControlName="hasParking" color="primary">
+                    {{'forms.buildings.labels.hasParking' | transloco}}
+                </mat-checkbox>
+
+                <!-- Lift checkbox + lift sayı inputu yan-yana -->
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                    <mat-checkbox formControlName="hasElevator" color="primary">
+                        {{'forms.buildings.labels.hasElevator' | transloco}}
+                    </mat-checkbox>
+
+                    <!-- Lift sayı — checkbox-ın yanında, yalnız seçildikdə görünür -->
+                    <mat-form-field *ngIf="hasElevator" class="w-32" style="margin-bottom: -1.25em">
+                        <mat-label>{{'forms.buildings.labels.elevatorCount' | transloco}}</mat-label>
+                        <input matInput type="number" formControlName="elevatorCount">
+                        <mat-icon matPrefix class="icon-size-5">elevator</mat-icon>
+                        <mat-error *ngIf="form.get('elevatorCount')?.hasError('required')">
+                            {{'forms.buildings.errors.elevatorCount.required' | transloco}}
+                        </mat-error>
+                        <mat-error *ngIf="form.get('elevatorCount')?.hasError('min')">
+                            {{'forms.buildings.errors.elevatorCount.min' | transloco}}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+            </div>
+
+        </div>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="dropdownsLoading">
+            {{'common.actions.cancel' | transloco}} </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="dropdownsLoading || form.invalid">
+            <span>{{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}</span>
+        </button>
+    </div>
+
+</div>

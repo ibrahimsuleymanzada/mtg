@@ -1,0 +1,212 @@
+<div class="flex flex-col flex-auto p-6 sm:p-10">
+
+    <!-- Başlıq -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="text-3xl font-extrabold tracking-tight leading-none">
+                {{ 'modules.accounting.dashboard.title' | transloco }}
+            </h2>
+            <div class="flex items-center mt-0.5 font-medium text-secondary">
+                <span>{{ 'modules.accounting.title' | transloco }}</span>
+                <mat-icon class="icon-size-5 mx-1 text-secondary" svgIcon="heroicons_solid:chevron-right"></mat-icon>
+                <span>{{ 'modules.accounting.dashboard.title' | transloco }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="flex items-center justify-center py-20">
+        <mat-spinner [diameter]="48"></mat-spinner>
+    </div>
+
+    <!-- Dashboard kartları -->
+    <ng-container *ngIf="!loading && dashboardData">
+
+        <!-- Maliyyə kartları -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+
+            <!-- Ümumi hesablanmış -->
+            <mat-card class="flex flex-col p-6 shadow rounded-2xl">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 mr-4">
+                        <mat-icon class="text-blue-600" svgIcon="heroicons_outline:document-text"></mat-icon>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-secondary leading-none">
+                            {{ 'modules.accounting.dashboard.cards.totalInvoiced' | transloco }}
+                        </div>
+                        <div class="text-2xl font-bold tracking-tight mt-1">
+                            {{ dashboardData.totalInvoiced | number:'1.2-2' }} ₼
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+            <!-- Ümumi ödənilmiş -->
+            <mat-card class="flex flex-col p-6 shadow rounded-2xl">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 mr-4">
+                        <mat-icon class="text-green-600" svgIcon="heroicons_outline:check-circle"></mat-icon>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-secondary leading-none">
+                            {{ 'modules.accounting.dashboard.cards.totalPaid' | transloco }}
+                        </div>
+                        <div class="text-2xl font-bold tracking-tight mt-1">
+                            {{ dashboardData.totalPaid | number:'1.2-2' }} ₼
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+            <!-- Ümumi borclu -->
+            <mat-card class="flex flex-col p-6 shadow rounded-2xl">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mr-4">
+                        <mat-icon class="text-red-600" svgIcon="heroicons_outline:exclamation-circle"></mat-icon>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-secondary leading-none">
+                            {{ 'modules.accounting.dashboard.cards.totalUnpaid' | transloco }}
+                        </div>
+                        <div class="text-2xl font-bold tracking-tight mt-1">
+                            {{ dashboardData.totalUnpaid | number:'1.2-2' }} ₼
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+            <!-- Ümumi güzəşt -->
+            <mat-card class="flex flex-col p-6 shadow rounded-2xl">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 mr-4">
+                        <mat-icon class="text-purple-600" svgIcon="heroicons_outline:tag"></mat-icon>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-secondary leading-none">
+                            {{ 'modules.accounting.dashboard.cards.totalDiscount' | transloco }}
+                        </div>
+                        <div class="text-2xl font-bold tracking-tight mt-1">
+                            {{ dashboardData.totalDiscount | number:'1.2-2' }} ₼
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+        </div>
+
+        <!-- Ödəniş üsulları -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+
+            <!-- Kassa daxilolması -->
+            <mat-card class="flex flex-col p-6 shadow rounded-2xl">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-100 mr-4">
+                        <mat-icon class="text-amber-600" svgIcon="heroicons_outline:banknotes"></mat-icon>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-secondary leading-none">
+                            {{ 'modules.accounting.dashboard.cards.totalCashIncome' | transloco }}
+                        </div>
+                        <div class="text-2xl font-bold tracking-tight mt-1">
+                            {{ dashboardData.totalCashIncome | number:'1.2-2' }} ₼
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+            <!-- Bank daxilolması -->
+            <mat-card class="flex flex-col p-6 shadow rounded-2xl">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-cyan-100 mr-4">
+                        <mat-icon class="text-cyan-600" svgIcon="heroicons_outline:building-library"></mat-icon>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-secondary leading-none">
+                            {{ 'modules.accounting.dashboard.cards.totalBankIncome' | transloco }}
+                        </div>
+                        <div class="text-2xl font-bold tracking-tight mt-1">
+                            {{ dashboardData.totalBankIncome | number:'1.2-2' }} ₼
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+        </div>
+
+        <!-- İnvoys sayları -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <!-- İnvoys sayı -->
+            <mat-card class="flex flex-col p-6 shadow rounded-2xl">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 mr-4">
+                        <mat-icon class="text-indigo-600" svgIcon="heroicons_outline:clipboard-document-list"></mat-icon>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-secondary leading-none">
+                            {{ 'modules.accounting.dashboard.cards.invoiceCount' | transloco }}
+                        </div>
+                        <div class="text-2xl font-bold tracking-tight mt-1">
+                            {{ dashboardData.invoiceCount }}
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+            <!-- Ödənilmiş invoys -->
+            <mat-card class="flex flex-col p-6 shadow rounded-2xl">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 mr-4">
+                        <mat-icon class="text-green-600" svgIcon="heroicons_outline:clipboard-document-check"></mat-icon>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-secondary leading-none">
+                            {{ 'modules.accounting.dashboard.cards.paidInvoiceCount' | transloco }}
+                        </div>
+                        <div class="text-2xl font-bold tracking-tight mt-1">
+                            {{ dashboardData.paidInvoiceCount }}
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+            <!-- Ödənilməmiş invoys -->
+            <mat-card class="flex flex-col p-6 shadow rounded-2xl">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-orange-100 mr-4">
+                        <mat-icon class="text-orange-600" svgIcon="heroicons_outline:clock"></mat-icon>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-secondary leading-none">
+                            {{ 'modules.accounting.dashboard.cards.unpaidInvoiceCount' | transloco }}
+                        </div>
+                        <div class="text-2xl font-bold tracking-tight mt-1">
+                            {{ dashboardData.unpaidInvoiceCount }}
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+            <!-- Vaxtı keçmiş invoys -->
+            <mat-card class="flex flex-col p-6 shadow rounded-2xl">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mr-4">
+                        <mat-icon class="text-red-600" svgIcon="heroicons_outline:x-circle"></mat-icon>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-secondary leading-none">
+                            {{ 'modules.accounting.dashboard.cards.overdueInvoiceCount' | transloco }}
+                        </div>
+                        <div class="text-2xl font-bold tracking-tight mt-1">
+                            {{ dashboardData.overdueInvoiceCount }}
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+        </div>
+
+    </ng-container>
+
+</div>

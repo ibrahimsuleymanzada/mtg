@@ -1,0 +1,89 @@
+<div class="flex flex-col flex-auto p-6 sm:p-10">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-extrabold tracking-tight leading-none">
+            {{'resident.myClaims.title' | transloco}}
+        </h1>
+        <button mat-flat-button [color]="'primary'" (click)="openNewClaimDialog()">
+            <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+            <span class="ml-2">{{'resident.myClaims.newClaim' | transloco}}</span>
+        </button>
+    </div>
+
+    @if (loading) {
+    <div class="flex items-center justify-center py-20">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+    } @else {
+
+    <mat-tab-group animationDuration="200ms">
+
+        <!-- Mənzillər -->
+        <mat-tab>
+            <ng-template mat-tab-label>
+                {{'resident.myClaims.tabs.apartments' | transloco}}
+                <span class="ml-2 px-1.5 py-0.5 rounded-full text-xs bg-primary text-white">{{ claims.apartments.length }}</span>
+            </ng-template>
+
+            <div class="mt-4">
+                <ng-container [ngTemplateOutlet]="claimsTable" [ngTemplateOutletContext]="{ items: claims.apartments }"></ng-container>
+            </div>
+        </mat-tab>
+
+        <!-- Qarajlar -->
+        <mat-tab>
+            <ng-template mat-tab-label>
+                {{'resident.myClaims.tabs.parking' | transloco}}
+                <span class="ml-2 px-1.5 py-0.5 rounded-full text-xs bg-primary text-white">{{ claims.parkingSpaces.length }}</span>
+            </ng-template>
+
+            <div class="mt-4">
+                <ng-container [ngTemplateOutlet]="claimsTable" [ngTemplateOutletContext]="{ items: claims.parkingSpaces }"></ng-container>
+            </div>
+        </mat-tab>
+
+        <!-- Ticarət Obyektləri -->
+        <mat-tab>
+            <ng-template mat-tab-label>
+                {{'resident.myClaims.tabs.commercial' | transloco}}
+                <span class="ml-2 px-1.5 py-0.5 rounded-full text-xs bg-primary text-white">{{ claims.commercialSpaces.length }}</span>
+            </ng-template>
+
+            <div class="mt-4">
+                <ng-container [ngTemplateOutlet]="claimsTable" [ngTemplateOutletContext]="{ items: claims.commercialSpaces }"></ng-container>
+            </div>
+        </mat-tab>
+
+    </mat-tab-group>
+
+    }
+</div>
+
+<!-- Shared claims table template -->
+<ng-template #claimsTable let-items="items">
+    @if (items.length === 0) {
+    <div class="flex items-center gap-2 text-secondary py-8">
+        <mat-icon>info</mat-icon>
+        <span>{{'resident.myClaims.noData' | transloco}}</span>
+    </div>
+    } @else {
+    <div class="flex flex-col gap-3">
+        <div *ngFor="let item of items"
+            class="bg-card rounded-2xl shadow p-4 flex items-center justify-between gap-4">
+            <div class="flex flex-col gap-1">
+                <span class="font-semibold text-base">{{ item.unitNumber }}</span>
+                <span class="text-sm text-secondary">{{ item.complexName }} — {{ item.buildingName }}</span>
+                <span class="text-xs text-secondary">{{'resident.myClaims.labels.deedNumber' | transloco}}: {{ item.deedNumber }}</span>
+                <span class="text-xs text-secondary">{{'resident.myClaims.labels.claimDate' | transloco}}: {{ item.claimDate | date:'dd.MM.yyyy' }}</span>
+            </div>
+            <span class="flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold" [ngClass]="statusBadgeClass(item.approvalStatus)">
+                {{ statusLabel(item.approvalStatus) }}
+            </span>
+        </div>
+    </div>
+    }
+</ng-template>

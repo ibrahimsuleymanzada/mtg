@@ -1,0 +1,201 @@
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="dropdownsLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{ 'common.dataLoading' | transloco }}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!dropdownsLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+
+        <div class="grid grid-cols-4 gap-x-3 gap-y-0">
+
+            <!-- Kompleks -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{ 'forms.parkingSpaces.labels.complex' | transloco }}</mat-label>
+                <mat-select formControlName="complexId" (selectionChange)="onComplexChange($event.value)">
+                    <mat-option *ngFor="let complex of complexes" [value]="complex.key">
+                        {{ complex.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+                <mat-error *ngIf="form.get('complexId')?.hasError('required')">
+                    {{ 'forms.common.errors.required' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Bina (Autocomplete) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{ 'forms.apartmentOwners.labels.building' | transloco }}</mat-label>
+                <input type="text" matInput formControlName="buildingName"
+                    [matAutocomplete]="buildingAuto" (input)="onBuildingSearch($event)">
+                <mat-autocomplete #buildingAuto="matAutocomplete" (optionSelected)="onBuildingSelected($event)">
+                    <mat-option *ngIf="buildingSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{ 'common.searching' | transloco }}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let b of filteredBuildings" [value]="b.value">{{ b.value }}</mat-option>
+                    <mat-option *ngIf="!buildingSearchLoading && filteredBuildings.length === 0" disabled>
+                        {{ 'common.resultNotFound' | transloco }}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">domain</mat-icon>
+                <mat-error *ngIf="form.get('buildingName')?.hasError('required')">
+                    {{ 'forms.common.errors.required' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Mənzil (Autocomplete) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{ 'forms.apartmentOwners.labels.apartment' | transloco }}</mat-label>
+                <input type="text" matInput formControlName="apartment"
+                    [matAutocomplete]="apartmentAuto" (input)="onApartmentSearch($event)">
+                <mat-autocomplete #apartmentAuto="matAutocomplete" (optionSelected)="onApartmentSelected($event)">
+                    <mat-option *ngIf="apartmentSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{ 'common.searching' | transloco }}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let a of filteredApartments" [value]="a.value">{{ a.value }}</mat-option>
+                    <mat-option *ngIf="!apartmentSearchLoading && filteredApartments.length === 0" disabled>
+                        {{ 'common.resultNotFound' | transloco }}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">meeting_room</mat-icon>
+                <mat-error *ngIf="form.get('apartment')?.hasError('required')">
+                    {{ 'forms.common.errors.required' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- İstifadəçi (Autocomplete) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{ 'forms.apartmentOwners.labels.user' | transloco }}</mat-label>
+                <input type="text" matInput formControlName="user"
+                    [matAutocomplete]="userAuto" (input)="onUserSearch($event)">
+                <mat-autocomplete #userAuto="matAutocomplete" (optionSelected)="onUserSelected($event)">
+                    <mat-option *ngIf="userSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{ 'common.searching' | transloco }}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let u of filteredUsers" [value]="u.value">{{ u.value }}</mat-option>
+                    <mat-option *ngIf="!userSearchLoading && filteredUsers.length === 0" disabled>
+                        {{ 'common.resultNotFound' | transloco }}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">person</mat-icon>
+                <mat-error *ngIf="form.get('user')?.hasError('required')">
+                    {{ 'forms.common.errors.required' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Kart növü -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{ 'modules.accessCards.columns.cardType' | transloco }}</mat-label>
+                <mat-select formControlName="cardType">
+                    <mat-option *ngFor="let type of cardTypes" [value]="type.key">
+                        {{ type.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">style</mat-icon>
+                <mat-error *ngIf="form.get('cardType')?.hasError('required')">
+                    {{ 'forms.common.errors.required' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Status -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{ 'common.columns.status' | transloco }}</mat-label>
+                <mat-select formControlName="status">
+                    <mat-option *ngFor="let s of statuses" [value]="s.key">
+                        {{ s.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">toggle_on</mat-icon>
+                <mat-error *ngIf="form.get('status')?.hasError('required')">
+                    {{ 'forms.common.errors.required' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Verilmə tarixi -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{ 'modules.accessCards.columns.issueDate' | transloco }}</mat-label>
+                <input matInput [matDatepicker]="issuePicker" formControlName="issueDate">
+                <mat-datepicker-toggle matSuffix [for]="issuePicker"></mat-datepicker-toggle>
+                <mat-datepicker #issuePicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event</mat-icon>
+                <mat-error *ngIf="form.get('issueDate')?.hasError('required')">
+                    {{ 'forms.common.errors.required' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Bitmə tarixi -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{ 'modules.accessCards.columns.expiryDate' | transloco }}</mat-label>
+                <input matInput [matDatepicker]="expiryPicker" formControlName="expiryDate">
+                <mat-datepicker-toggle matSuffix [for]="expiryPicker"></mat-datepicker-toggle>
+                <mat-datepicker #expiryPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event_busy</mat-icon>
+                <mat-error *ngIf="form.get('expiryDate')?.hasError('required')">
+                    {{ 'forms.common.errors.required' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Giriş səviyyələri (multi-select) -->
+            <mat-form-field class="col-span-2 h-fit">
+                <mat-label>{{ 'modules.accessCards.columns.accessLevels' | transloco }}</mat-label>
+                <mat-select formControlName="accessLevelIds" multiple>
+                    <mat-option *ngFor="let level of accessLevels" [value]="level.key">
+                        {{ level.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">security</mat-icon>
+                <mat-error *ngIf="form.get('accessLevelIds')?.hasError('required')">
+                    {{ 'modules.accessCards.errors.accessLevels.required' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Sifariş qeydi -->
+            <mat-form-field class="col-span-2">
+                <mat-label>{{ 'modules.accessCards.columns.orderNotes' | transloco }}</mat-label>
+                <textarea matInput formControlName="orderNotes" rows="2"></textarea>
+                <mat-icon matPrefix class="icon-size-5">notes</mat-icon>
+            </mat-form-field>
+
+            <!-- Blok səbəbi — yalnız status blok olduqda görünür -->
+            <mat-form-field class="col-span-2" *ngIf="isBlocked">
+                <mat-label>{{ 'modules.accessCards.columns.blockReason' | transloco }}</mat-label>
+                <textarea matInput formControlName="blockReason" rows="2"></textarea>
+                <mat-icon matPrefix class="icon-size-5">block</mat-icon>
+                <mat-error *ngIf="form.get('blockReason')?.hasError('required')">
+                    {{ 'modules.accessCards.errors.blockReason.required' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+        </div>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="dropdownsLoading">
+            {{ 'common.actions.cancel' | transloco }}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="dropdownsLoading || saving">
+            <mat-spinner *ngIf="saving" diameter="18" class="mr-2 inline-block"></mat-spinner>
+            {{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}
+        </button>
+    </div>
+
+</div>

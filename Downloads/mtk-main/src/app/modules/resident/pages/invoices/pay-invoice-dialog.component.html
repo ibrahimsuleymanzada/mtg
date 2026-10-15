@@ -1,0 +1,70 @@
+<div class="flex flex-col w-full">
+
+    <h2 mat-dialog-title class="!text-lg !font-semibold">
+        {{ 'resident.invoices.pay.title' | transloco }}
+    </h2>
+
+    <mat-dialog-content class="!pt-2">
+
+        <!-- Invoice summary -->
+        <div class="bg-gray-50 rounded-xl p-3 mb-4">
+            <p class="font-semibold text-gray-900">{{ data.invoice.categoryName }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ data.invoice.invoiceNumber }}</p>
+            <div class="flex justify-between items-center mt-2">
+                <span class="text-sm text-gray-500">{{ 'resident.invoices.pay.remaining' | transloco }}</span>
+                <span class="font-medium text-gray-900"
+                      [class.line-through]="data.invoice.discount > 0"
+                      [class.text-gray-400]="data.invoice.discount > 0">
+                    {{ remainingAmount | number:'1.2-2' }} ₼
+                </span>
+            </div>
+            <div *ngIf="data.invoice.discount > 0" class="flex justify-between items-center mt-1">
+                <span class="text-sm text-green-600 flex items-center gap-1">
+                    <mat-icon style="font-size:14px;width:14px;height:14px;" class="text-green-500">local_offer</mat-icon>
+                    {{ 'resident.invoices.labels.discount' | transloco }} (-{{ data.invoice.discount | number:'1.2-2' }} ₼)
+                </span>
+                <span class="font-bold text-green-700">{{ discountedRemaining | number:'1.2-2' }} ₼</span>
+            </div>
+        </div>
+
+        <form [formGroup]="form" class="flex flex-col gap-1">
+
+            <!-- Amount -->
+            <mat-form-field class="w-full">
+                <mat-label>{{ 'resident.invoices.pay.amount' | transloco }}</mat-label>
+                <input matInput type="number" formControlName="amount" step="0.01">
+                <mat-error *ngIf="form.get('amount')?.invalid">
+                    {{ 'resident.invoices.pay.amountError' | transloco }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Payment date -->
+            <mat-form-field class="w-full">
+                <mat-label>{{ 'resident.invoices.pay.date' | transloco }}</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="paymentDate">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <!-- Notes -->
+            <mat-form-field class="w-full">
+                <mat-label>{{ 'resident.invoices.pay.notes' | transloco }}</mat-label>
+                <input matInput formControlName="notes">
+            </mat-form-field>
+
+        </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" class="!px-6 !pb-4 gap-2">
+        <button mat-button (click)="onCancel()" [disabled]="loading">
+            {{ 'common.actions.cancel' | transloco }}
+        </button>
+        <button mat-flat-button color="primary"
+                [disabled]="loading || form.invalid"
+                (click)="onSave()">
+            <mat-spinner *ngIf="loading" diameter="18" class="mr-1 inline-block align-middle"></mat-spinner>
+            <span>{{ 'resident.invoices.pay.button' | transloco }}</span>
+        </button>
+    </mat-dialog-actions>
+
+</div>

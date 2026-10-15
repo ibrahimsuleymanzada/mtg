@@ -1,0 +1,168 @@
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="dropdownsLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!dropdownsLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+
+            <!-- İstifadəçi adı -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.users.labels.username' | transloco}}</mat-label>
+                <input matInput formControlName="username">
+                <mat-icon matPrefix class="icon-size-5">person</mat-icon>
+                <mat-error *ngIf="form.get('username')?.hasError('required')">
+                    {{'forms.users.errors.username.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Email -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.users.labels.email' | transloco}}</mat-label>
+                <input matInput type="email" formControlName="email">
+                <mat-icon matPrefix class="icon-size-5">email</mat-icon>
+                <mat-error *ngIf="form.get('email')?.hasError('required')">
+                    {{'forms.users.errors.email.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('email')?.hasError('email')">
+                    {{'forms.users.errors.email.invalid' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Şifrə (yalnız yeni user) -->
+            <mat-form-field *ngIf="!isEdit" class="w-full">
+                <mat-label>{{'forms.users.labels.password' | transloco}}</mat-label>
+                <input matInput [type]="passwordVisible ? 'text' : 'password'" formControlName="password">
+                <mat-icon matPrefix class="icon-size-5">lock</mat-icon>
+                <button mat-icon-button matSuffix type="button" (click)="passwordVisible = !passwordVisible">
+                    <mat-icon class="icon-size-5">{{ passwordVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="form.get('password')?.hasError('required')">
+                    {{'forms.users.errors.password.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('password')?.hasError('pattern')">
+                    {{'forms.users.errors.password.pattern' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Mobil telefon -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.users.labels.mobilePhone' | transloco}}</mat-label>
+                <input matInput formControlName="mobilePhone" mask="00-000-00-00" [prefix]="'+(994)'"
+                    [dropSpecialCharacters]="false" [showMaskTyped]="false" placeholder="+(994)00-000-00-00">
+                <mat-icon matPrefix class="icon-size-5">smartphone</mat-icon>
+                <mat-error *ngIf="form.get('mobilePhone')?.hasError('required')">
+                    {{'forms.users.errors.mobilePhone.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Ad -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.users.labels.firstName' | transloco}}</mat-label>
+                <input matInput formControlName="firstName">
+                <mat-icon matPrefix class="icon-size-5">badge</mat-icon>
+                <mat-error *ngIf="form.get('firstName')?.hasError('required')">
+                    {{'forms.users.errors.firstName.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Soyad -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.users.labels.lastName' | transloco}}</mat-label>
+                <input matInput formControlName="lastName">
+                <mat-icon matPrefix class="icon-size-5">badge</mat-icon>
+                <mat-error *ngIf="form.get('lastName')?.hasError('required')">
+                    {{'forms.users.errors.lastName.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Ata adı -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.users.labels.fatherName' | transloco}}</mat-label>
+                <input matInput formControlName="fatherName">
+                <mat-icon matPrefix class="icon-size-5">badge</mat-icon>
+            </mat-form-field>
+
+            <!-- Doğum tarixi -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.users.labels.dateOfBirth' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth">
+                <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+                <mat-datepicker #dobPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">cake</mat-icon>
+            </mat-form-field>
+
+            <!-- Şəxsiyyət vəsiqəsi -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.users.labels.idcardNumber' | transloco}}</mat-label>
+                <input matInput formControlName="idcardNumber"
+                       maxlength="7"
+                       style="text-transform: uppercase"
+                       (input)="onFINInput($event)">
+                <mat-icon matPrefix class="icon-size-5">credit_card</mat-icon>
+                <mat-error *ngIf="form.get('idcardNumber')?.hasError('pattern')">
+                    {{'forms.users.errors.idcardNumber.pattern' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Telefon -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.users.labels.phone' | transloco}}</mat-label>
+                <input matInput formControlName="phone" mask="00-000-00-00" [prefix]="'+(994)'"
+                    [dropSpecialCharacters]="false" [showMaskTyped]="false" placeholder="+(994)00-000-00-00">
+                <mat-icon matPrefix class="icon-size-5">phone</mat-icon>
+            </mat-form-field>
+
+            <!-- Təcili əlaqə şəxsi -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.users.labels.emergencyContact' | transloco}}</mat-label>
+                <input matInput formControlName="emergencyContact">
+                <mat-icon matPrefix class="icon-size-5">contact_emergency</mat-icon>
+            </mat-form-field>
+
+            <!-- Təcili əlaqə nömrəsi -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.users.labels.emergencyPhone' | transloco}}</mat-label>
+                <input matInput formControlName="emergencyPhone" mask="00-000-00-00" [prefix]="'+(994)'"
+                    [dropSpecialCharacters]="false" [showMaskTyped]="false" placeholder="+(994)00-000-00-00">
+                <mat-icon matPrefix class="icon-size-5">phone_in_talk</mat-icon>
+            </mat-form-field>
+
+            <!-- Aktiv -->
+            <div class="flex items-center py-2">
+                <mat-checkbox formControlName="isActive" color="primary">
+                    {{'forms.users.labels.isActive' | transloco}}
+                </mat-checkbox>
+            </div>
+
+        </div>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="dropdownsLoading">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="dropdownsLoading || form.invalid">
+            <span>{{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}</span>
+        </button>
+    </div>
+
+</div>

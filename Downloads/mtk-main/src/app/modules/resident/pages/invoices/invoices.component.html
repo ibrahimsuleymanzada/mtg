@@ -1,0 +1,164 @@
+<div class="flex flex-col flex-auto bg-gray-50 dark:bg-transparent p-4 sm:p-6">
+
+    <!-- Header -->
+    <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-4">
+        {{ 'resident.invoices.title' | transloco }}
+    </h1>
+
+    <!-- Status tabs -->
+    <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-2 overflow-x-auto pb-2 mb-5"
+         style="scrollbar-width: none; -ms-overflow-style: none;">
+
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeTab === 'all'
+                    ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900 dark:border-white'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setTab('all')">
+            {{ 'resident.invoices.tabs.all' | transloco }}
+            <span *ngIf="allInvoices.length" class="ml-1 opacity-70">({{ allInvoices.length }})</span>
+        </button>
+
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeTab === 'Pending'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setTab('Pending')">
+            {{ 'resident.invoices.tabs.pending' | transloco }}
+            <span *ngIf="pendingCount" class="ml-1 opacity-70">({{ pendingCount }})</span>
+        </button>
+
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeTab === 'Partial'
+                    ? 'bg-orange-500 text-white border-orange-500'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setTab('Partial')">
+            {{ 'resident.invoices.tabs.partial' | transloco }}
+            <span *ngIf="partialCount" class="ml-1 opacity-70">({{ partialCount }})</span>
+        </button>
+
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeTab === 'Overdue'
+                    ? 'bg-red-600 text-white border-red-600'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setTab('Overdue')">
+            {{ 'resident.invoices.tabs.overdue' | transloco }}
+            <span *ngIf="overdueCount" class="ml-1 opacity-70">({{ overdueCount }})</span>
+        </button>
+
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeTab === 'Paid'
+                    ? 'bg-green-600 text-white border-green-600'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setTab('Paid')">
+            {{ 'resident.invoices.tabs.paid' | transloco }}
+            <span *ngIf="paidCount" class="ml-1 opacity-70">({{ paidCount }})</span>
+        </button>
+
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeTab === 'Cancelled'
+                    ? 'bg-gray-500 text-white border-gray-500'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setTab('Cancelled')">
+            {{ 'resident.invoices.tabs.cancelled' | transloco }}
+            <span *ngIf="cancelledCount" class="ml-1 opacity-70">({{ cancelledCount }})</span>
+        </button>
+
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="flex justify-center items-center py-16">
+        <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!loading && filteredInvoices.length === 0"
+         class="flex flex-col items-center py-16 text-gray-400">
+        <mat-icon style="font-size: 48px; width: 48px; height: 48px;" class="mb-3">receipt_long</mat-icon>
+        <p class="text-sm">{{ 'resident.invoices.empty' | transloco }}</p>
+    </div>
+
+    <!-- Invoice cards -->
+    <div *ngIf="!loading && filteredInvoices.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+
+        <div *ngFor="let invoice of filteredInvoices"
+             class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+
+            <!-- Category + status badge -->
+            <div class="flex items-start justify-between gap-2 mb-1">
+                <span class="text-base font-semibold text-gray-900 dark:text-white leading-tight">
+                    {{ invoice.categoryName }}
+                </span>
+                <span class="flex-none text-xs px-2.5 py-0.5 rounded-full font-medium"
+                      [ngClass]="statusBadgeClass(invoice.status)">
+                    {{ 'resident.invoices.status.' + invoice.status | transloco }}
+                </span>
+            </div>
+
+            <!-- Invoice number -->
+            <p class="text-xs text-gray-400 mb-3">{{ invoice.invoiceNumber }}</p>
+
+            <!-- Total amount -->
+            <p class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ invoice.amount | number:'1.2-2' }} ₼</p>
+
+            <!-- Progress bar (only if partially paid) -->
+            <ng-container *ngIf="invoice.status !== 'Cancelled'">
+                <div class="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden mb-1">
+                    <div class="h-full bg-green-500 rounded-full transition-all"
+                         [style.width.%]="paidPercent(invoice)"></div>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                    {{ invoice.paidAmount | number:'1.2-2' }} ₼ {{ 'resident.invoices.labels.paidOf' | transloco }}
+                </p>
+            </ng-container>
+
+            <!-- Discount (if any) -->
+            <div *ngIf="invoice.discount > 0" class="flex items-center gap-1 mb-2">
+                <mat-icon style="font-size:14px;width:14px;height:14px;" class="text-green-500">local_offer</mat-icon>
+                <span class="text-xs text-green-600">
+                    {{ 'resident.invoices.labels.discount' | transloco }}: -{{ invoice.discount | number:'1.2-2' }} ₼
+                </span>
+            </div>
+
+            <!-- Late fee (if any) -->
+            <div *ngIf="invoice.lateFee > 0" class="flex items-center gap-1 mb-2">
+                <mat-icon style="font-size:14px;width:14px;height:14px;" class="text-red-400">warning</mat-icon>
+                <span class="text-xs text-red-500">
+                    {{ 'resident.invoices.labels.lateFee' | transloco }}: +{{ invoice.lateFee | number:'1.2-2' }} ₼
+                </span>
+            </div>
+
+            <!-- Notes (if any) -->
+            <p *ngIf="invoice.notes" class="text-xs text-gray-400 italic mb-3 line-clamp-1">{{ invoice.notes }}</p>
+
+            <!-- Footer: dates + pay button -->
+            <div class="flex items-center justify-between">
+                <div class="flex flex-col gap-0.5">
+                    <!-- Paid date for Paid invoices, due date for others -->
+                    <div *ngIf="invoice.status === 'Paid' && invoice.paidDate" class="flex items-center gap-1">
+                        <mat-icon style="font-size:14px;width:14px;height:14px;" class="text-green-400">check_circle</mat-icon>
+                        <span class="text-xs text-green-600">{{ invoice.paidDate | date:'dd.MM.yyyy' }}</span>
+                    </div>
+                    <div *ngIf="invoice.status !== 'Paid'" class="flex items-center gap-1">
+                        <mat-icon style="font-size:14px;width:14px;height:14px;"
+                                  [class.text-red-400]="isOverdue(invoice)"
+                                  [class.text-gray-400]="!isOverdue(invoice)">calendar_today</mat-icon>
+                        <span class="text-xs"
+                              [class.text-red-500]="isOverdue(invoice)"
+                              [class.text-gray-500]="!isOverdue(invoice)">
+                            {{ invoice.dueDate | date:'dd.MM.yyyy' }}
+                        </span>
+                    </div>
+                </div>
+
+                <button *ngIf="canPay(invoice)"
+                        mat-flat-button color="primary"
+                        class="!h-8 !min-h-0 !text-sm !leading-none !px-4"
+                        (click)="openPayDialog(invoice)">
+                    {{ 'resident.invoices.pay.button' | transloco }}
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</div>

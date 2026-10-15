@@ -1,0 +1,143 @@
+<div class="relative flex flex-col w-full h-full">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'modules.contractorContracts.editTitle' : 'modules.contractorContracts.createTitle') |
+            transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+        @if (dropdownsLoading) {
+        <div class="flex items-center justify-center py-16">
+            <div class="flex flex-col items-center gap-3">
+                <mat-spinner diameter="40"></mat-spinner>
+                <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+            </div>
+        </div>
+        } @else {
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+
+            <!-- Kompleks -->
+            <mat-form-field>
+                <mat-label>{{'forms.contractorContracts.labels.complexId' | transloco}}</mat-label>
+                <mat-select formControlName="complexId">
+                    <mat-option *ngFor="let item of complexes" [value]="item.key">{{ item.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+                <mat-error *ngIf="form.get('complexId')?.hasError('required')">
+                    {{'forms.contractorContracts.errors.complexId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Bina (Autocomplete) -->
+            <mat-form-field>
+                <mat-label>{{'forms.contractorContracts.labels.buildingId' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="buildingName" [matAutocomplete]="buildingAuto"
+                    (input)="onBuildingSearch($event)">
+                <mat-autocomplete #buildingAuto="matAutocomplete" (optionSelected)="onBuildingSelected($event)">
+                    <mat-option *ngIf="buildingSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let item of filteredBuildings" [value]="item.value">{{ item.value }}</mat-option>
+                    <mat-option *ngIf="!buildingSearchLoading && filteredBuildings.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">domain</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'forms.contractorContracts.labels.contractorId' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="contractorName"
+                    [matAutocomplete]="contractorAuto"
+                    (input)="onContractorSearch($event)">
+                <mat-autocomplete #contractorAuto="matAutocomplete" (optionSelected)="onContractorSelected($event)">
+                    <mat-option *ngIf="contractorSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let item of filteredContractors" [value]="item.value">
+                        {{ item.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!contractorSearchLoading && filteredContractors.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">business</mat-icon>
+                <mat-error *ngIf="form.get('contractorId')?.hasError('required')">
+                    {{'forms.contractorContracts.errors.contractorId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'forms.contractorContracts.labels.monthlyFee' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="monthlyFee">
+                <mat-icon matPrefix class="icon-size-5">attach_money</mat-icon>
+                <mat-error *ngIf="form.get('monthlyFee')?.hasError('required')">
+                    {{'forms.contractorContracts.errors.monthlyFee.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+
+
+            <mat-form-field>
+                <mat-label>{{'forms.contractorContracts.labels.contractStartDate' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="startPicker" formControlName="contractStartDate">
+                <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                <mat-datepicker #startPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event</mat-icon>
+                <mat-error *ngIf="form.get('contractStartDate')?.hasError('required')">
+                    {{'forms.contractorContracts.errors.contractStartDate.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'forms.contractorContracts.labels.contractEndDate' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="endPicker" formControlName="contractEndDate">
+                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                <mat-datepicker #endPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event</mat-icon>
+                <mat-error *ngIf="form.get('contractEndDate')?.hasError('required')">
+                    {{'forms.contractorContracts.errors.contractEndDate.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+
+
+            <mat-form-field class="col-span-2">
+                <mat-label>{{'forms.contractorContracts.labels.description' | transloco}}</mat-label>
+                <textarea matInput formControlName="description" rows="3"></textarea>
+                <mat-icon matPrefix class="icon-size-5">notes</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field class="col-span-1 h-fit">
+                <mat-label>{{'forms.contractorContracts.labels.status' | transloco}}</mat-label>
+                <mat-select formControlName="status">
+                    <mat-option *ngFor="let item of statuses" [value]="item.key">{{ item.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">info</mat-icon>
+                <mat-error *ngIf="form.get('status')?.hasError('required')">
+                    {{'forms.contractorContracts.errors.status.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+        </div>
+        }
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()" [disabled]="dropdownsLoading">
+            <span>{{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}</span>
+        </button>
+    </div>
+</div>

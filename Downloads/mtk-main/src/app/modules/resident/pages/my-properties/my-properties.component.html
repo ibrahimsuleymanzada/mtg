@@ -1,0 +1,284 @@
+<div class="flex flex-col flex-auto p-6 sm:p-10">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-extrabold tracking-tight leading-none">
+            {{'resident.myProperties.title' | transloco}}
+        </h1>
+    </div>
+
+    @if (loading) {
+    <div class="flex items-center justify-center py-20">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+    } @else {
+
+    <!-- Mənzillər -->
+    <section class="mb-10">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <mat-icon class="icon-size-5 text-primary">apartment</mat-icon>
+            {{'resident.myProperties.sections.apartments' | transloco}}
+            <span class="ml-1 text-sm font-normal text-secondary">({{ apartments.length }})</span>
+        </h2>
+
+        @if (apartments.length === 0) {
+        <div class="flex items-center gap-2 text-secondary py-4">
+            <mat-icon class="icon-size-5">info</mat-icon>
+            <span>{{'resident.myProperties.noApartments' | transloco}}</span>
+        </div>
+        } @else {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div *ngFor="let apt of apartments"
+                class="bg-card rounded-2xl shadow p-5 flex flex-col gap-3 border border-transparent hover:border-primary transition-colors">
+
+                <!-- Başlıq: mənzil nömrəsi + status -->
+                <div class="flex items-center justify-between">
+                    <span class="text-lg font-bold flex items-center gap-1">
+                        <mat-icon class="icon-size-5 text-primary">apartment</mat-icon>
+                        {{ apt.apartmentNumber }}
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                        [ngClass]="statusBadgeClass(apt.relation)">
+                        {{ apt.relation }}
+                    </span>
+                </div>
+
+                <!-- Kompleks + Bina -->
+                <div class="flex flex-col gap-1 text-sm text-secondary">
+                    <span class="flex items-center gap-1">
+                        <mat-icon class="icon-size-4">domain</mat-icon>
+                        {{ apt.complexName }}
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <mat-icon class="icon-size-4">business</mat-icon>
+                        {{ apt.buildingName }}
+                    </span>
+                </div>
+
+                <!-- Sahib məlumatları -->
+                <ng-container *ngIf="apt.relation === 'Owner'">
+                    <div class="flex flex-col gap-1 text-sm border-t pt-3">
+                        <span class="text-xs font-semibold text-secondary uppercase tracking-wide mb-1">
+                            {{'resident.myProperties.commercial.ownerInfo' | transloco}}
+                        </span>
+                        <span *ngIf="apt.deedNumber" class="flex items-center gap-1 text-secondary">
+                            <mat-icon class="icon-size-4">description</mat-icon>
+                            {{'resident.myProperties.commercial.deedNumber' | transloco}}: {{ apt.deedNumber }}
+                        </span>
+                        <span *ngIf="apt.purchaseDate" class="flex items-center gap-1 text-secondary">
+                            <mat-icon class="icon-size-4">calendar_today</mat-icon>
+                            {{'resident.myProperties.commercial.purchaseDate' | transloco}}: {{ apt.purchaseDate | date:'dd.MM.yyyy' }}
+                        </span>
+                        <span *ngIf="apt.isMainOwner" class="flex items-center gap-1 text-green-600 font-medium">
+                            <mat-icon class="icon-size-4">verified</mat-icon>
+                            {{'resident.myProperties.commercial.mainOwner' | transloco}}
+                        </span>
+                    </div>
+                </ng-container>
+
+                <!-- İcarədar məlumatları -->
+                <ng-container *ngIf="apt.relation === 'Tenant'">
+                    <div class="flex flex-col gap-1 text-sm border-t pt-3">
+                        <span class="text-xs font-semibold text-secondary uppercase tracking-wide mb-1">
+                            {{'resident.myProperties.commercial.rentalInfo' | transloco}}
+                        </span>
+                        <span *ngIf="apt.monthlyRent" class="flex items-center gap-1 font-medium">
+                            <mat-icon class="icon-size-4 text-secondary">payments</mat-icon>
+                            {{ apt.monthlyRent }} ₼/ay
+                        </span>
+                    </div>
+                    <div *ngIf="apt.contractStartDate" class="flex flex-col gap-1 text-sm border-t pt-3">
+                        <span class="text-xs font-semibold text-secondary uppercase tracking-wide mb-1">
+                            {{'resident.myProperties.parking.contract' | transloco}}
+                        </span>
+                        <div class="flex items-center justify-between text-secondary">
+                            <span class="flex items-center gap-1">
+                                <mat-icon class="icon-size-4">calendar_today</mat-icon>
+                                {{ apt.contractStartDate | date:'dd.MM.yyyy' }}
+                            </span>
+                            <mat-icon class="icon-size-4">arrow_forward</mat-icon>
+                            <span class="flex items-center gap-1">
+                                <mat-icon class="icon-size-4">event</mat-icon>
+                                {{ apt.contractEndDate ? (apt.contractEndDate | date:'dd.MM.yyyy') : '—' }}
+                            </span>
+                        </div>
+                    </div>
+                </ng-container>
+
+            </div>
+        </div>
+        }
+    </section>
+
+    <!-- Qarajlar -->
+    <section class="mb-10">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <mat-icon class="icon-size-5 text-primary">local_parking</mat-icon>
+            {{'resident.myProperties.sections.parking' | transloco}}
+            <span class="ml-1 text-sm font-normal text-secondary">({{ parkingSpaces.length }})</span>
+        </h2>
+
+        @if (parkingSpaces.length === 0) {
+        <div class="flex items-center gap-2 text-secondary py-4">
+            <mat-icon class="icon-size-5">info</mat-icon>
+            <span>{{'resident.myProperties.noParking' | transloco}}</span>
+        </div>
+        } @else {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div *ngFor="let p of parkingSpaces"
+                class="bg-card rounded-2xl shadow p-5 flex flex-col gap-3 border border-transparent hover:border-primary transition-colors">
+
+                <!-- Başlıq: yer nömrəsi + aylıq ödəniş -->
+                <div class="flex items-center justify-between">
+                    <span class="text-lg font-bold flex items-center gap-1">
+                        <mat-icon class="icon-size-5 text-primary">local_parking</mat-icon>
+                        {{ p.spaceNumber }}
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                        {{ p.monthlyFee }} ₼/ay
+                    </span>
+                </div>
+
+                <!-- Kompleks -->
+                <div class="flex items-center gap-1 text-sm text-secondary">
+                    <mat-icon class="icon-size-4">domain</mat-icon>
+                    {{ p.complexName }}
+                </div>
+
+                <!-- Avtomobil məlumatları -->
+                <div class="flex flex-col gap-1 text-sm border-t pt-3">
+                    <span class="text-xs font-semibold text-secondary uppercase tracking-wide mb-1">
+                        {{'resident.myProperties.parking.vehicle' | transloco}}
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <mat-icon class="icon-size-4 text-secondary">directions_car</mat-icon>
+                        <span class="font-medium">{{ p.vehicleBrand }} {{ p.vehicleModel }}</span>
+                    </span>
+                    <span class="flex items-center gap-1 text-secondary">
+                        <mat-icon class="icon-size-4">pin</mat-icon>
+                        {{ p.vehicleNumber }}
+                    </span>
+                </div>
+
+                <!-- Müqavilə tarixi -->
+                <div class="flex flex-col gap-1 text-sm border-t pt-3">
+                    <span class="text-xs font-semibold text-secondary uppercase tracking-wide mb-1">
+                        {{'resident.myProperties.parking.contract' | transloco}}
+                    </span>
+                    <div class="flex items-center justify-between text-secondary">
+                        <span class="flex items-center gap-1">
+                            <mat-icon class="icon-size-4">calendar_today</mat-icon>
+                            {{ p.contractStartDate | date:'dd.MM.yyyy' }}
+                        </span>
+                        <mat-icon class="icon-size-4">arrow_forward</mat-icon>
+                        <span class="flex items-center gap-1">
+                            <mat-icon class="icon-size-4">event</mat-icon>
+                            {{ p.contractEndDate | date:'dd.MM.yyyy' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </section>
+
+    <!-- Ticarət Obyektləri -->
+    <section>
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <mat-icon class="icon-size-5 text-primary">store</mat-icon>
+            {{'resident.myProperties.sections.commercial' | transloco}}
+            <span class="ml-1 text-sm font-normal text-secondary">({{ commercialSpaces.length }})</span>
+        </h2>
+
+        @if (commercialSpaces.length === 0) {
+        <div class="flex items-center gap-2 text-secondary py-4">
+            <mat-icon class="icon-size-5">info</mat-icon>
+            <span>{{'resident.myProperties.noCommercial' | transloco}}</span>
+        </div>
+        } @else {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div *ngFor="let cs of commercialSpaces"
+                class="bg-card rounded-2xl shadow p-5 flex flex-col gap-3 border border-transparent hover:border-primary transition-colors">
+
+                <!-- Başlıq: yer nömrəsi + status -->
+                <div class="flex items-center justify-between">
+                    <span class="text-lg font-bold flex items-center gap-1">
+                        <mat-icon class="icon-size-5 text-primary">store</mat-icon>
+                        {{ cs.spaceNumber }}
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                        [ngClass]="statusBadgeClass(cs.relation)">
+                        {{ cs.relation }}
+                    </span>
+                </div>
+
+                <!-- Kompleks -->
+                <div class="flex items-center gap-1 text-sm text-secondary">
+                    <mat-icon class="icon-size-4">domain</mat-icon>
+                    {{ cs.complexName }}
+                </div>
+
+                <!-- Sahib məlumatları -->
+                <ng-container *ngIf="cs.relation === 'Owner'">
+                    <div class="flex flex-col gap-1 text-sm border-t pt-3">
+                        <span class="text-xs font-semibold text-secondary uppercase tracking-wide mb-1">
+                            {{'resident.myProperties.commercial.ownerInfo' | transloco}}
+                        </span>
+                        <span *ngIf="cs.deedNumber" class="flex items-center gap-1 text-secondary">
+                            <mat-icon class="icon-size-4">description</mat-icon>
+                            {{'resident.myProperties.commercial.deedNumber' | transloco}}: {{ cs.deedNumber }}
+                        </span>
+                        <span *ngIf="cs.purchaseDate" class="flex items-center gap-1 text-secondary">
+                            <mat-icon class="icon-size-4">calendar_today</mat-icon>
+                            {{'resident.myProperties.commercial.purchaseDate' | transloco}}: {{ cs.purchaseDate | date:'dd.MM.yyyy' }}
+                        </span>
+                        <span *ngIf="cs.isMainOwner" class="flex items-center gap-1 text-green-600 font-medium">
+                            <mat-icon class="icon-size-4">verified</mat-icon>
+                            {{'resident.myProperties.commercial.mainOwner' | transloco}}
+                        </span>
+                    </div>
+                </ng-container>
+
+                <!-- İcarədar məlumatları -->
+                <ng-container *ngIf="cs.relation === 'Tenant'">
+                    <div class="flex flex-col gap-1 text-sm border-t pt-3">
+                        <span class="text-xs font-semibold text-secondary uppercase tracking-wide mb-1">
+                            {{'resident.myProperties.commercial.rentalInfo' | transloco}}
+                        </span>
+                        <span *ngIf="cs.monthlyRent" class="flex items-center gap-1 font-medium">
+                            <mat-icon class="icon-size-4 text-secondary">payments</mat-icon>
+                            {{ cs.monthlyRent }} ₼/ay
+                        </span>
+                        <span *ngIf="cs.businessType" class="flex items-center gap-1 text-secondary">
+                            <mat-icon class="icon-size-4">work</mat-icon>
+                            {{ cs.businessType }}
+                        </span>
+                    </div>
+                    <div *ngIf="cs.contractStartDate" class="flex flex-col gap-1 text-sm border-t pt-3">
+                        <span class="text-xs font-semibold text-secondary uppercase tracking-wide mb-1">
+                            {{'resident.myProperties.parking.contract' | transloco}}
+                        </span>
+                        <div class="flex items-center justify-between text-secondary">
+                            <span class="flex items-center gap-1">
+                                <mat-icon class="icon-size-4">calendar_today</mat-icon>
+                                {{ cs.contractStartDate | date:'dd.MM.yyyy' }}
+                            </span>
+                            <mat-icon class="icon-size-4">arrow_forward</mat-icon>
+                            <span class="flex items-center gap-1">
+                                <mat-icon class="icon-size-4">event</mat-icon>
+                                {{ cs.contractEndDate ? (cs.contractEndDate | date:'dd.MM.yyyy') : '—' }}
+                            </span>
+                        </div>
+                    </div>
+                </ng-container>
+
+            </div>
+        </div>
+        }
+    </section>
+
+    }
+</div>

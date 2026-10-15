@@ -1,0 +1,128 @@
+<div class="flex flex-col flex-auto items-center justify-center min-w-0 p-8">
+    <div class="w-full max-w-lg">
+
+        <!-- Header -->
+        <div class="relative">
+            <languages class="absolute top-0 right-0"></languages>
+            <div class="w-12 mb-8">
+                <img src="assets/images/logo/logo.svg">
+            </div>
+
+            <!-- Create form header -->
+            <ng-container *ngIf="showCreateForm && !loading">
+                <div class="text-4xl font-extrabold tracking-tight leading-tight">
+                    {{ 'auth.selectTenant.createFirst.title' | transloco }}
+                </div>
+                <div class="mt-2 text-secondary">
+                    {{ 'auth.selectTenant.createFirst.subtitle' | transloco }}
+                </div>
+            </ng-container>
+
+            <!-- Select tenant header -->
+            <ng-container *ngIf="!showCreateForm || loading">
+                <div class="text-4xl font-extrabold tracking-tight leading-tight">
+                    {{ 'auth.selectTenant.title' | transloco }}
+                </div>
+                <div class="mt-2 text-secondary">
+                    {{ 'auth.selectTenant.subtitle' | transloco }}
+                </div>
+            </ng-container>
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="loading" class="flex justify-center mt-12">
+            <mat-progress-spinner [diameter]="40" mode="indeterminate"></mat-progress-spinner>
+        </div>
+
+        <!-- Create First MTK Form -->
+        <ng-container *ngIf="!loading && showCreateForm">
+            <form [formGroup]="createForm" (ngSubmit)="onCreateMtk()" class="mt-8 flex flex-col gap-4">
+
+                <!-- Company -->
+                <mat-form-field>
+                    <mat-label>{{ 'auth.selectTenant.createFirst.companyLabel' | transloco }}</mat-label>
+                    <mat-select formControlName="companyId">
+                        <mat-option *ngIf="companiesLoading" disabled>
+                            <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+                        </mat-option>
+                        <mat-option *ngFor="let c of companies" [value]="c.id">{{ c.companyName }}</mat-option>
+                    </mat-select>
+                    <mat-icon matPrefix class="icon-size-5">business</mat-icon>
+                    <mat-error *ngIf="createForm.get('companyId')?.hasError('required')">
+                        {{ 'auth.selectTenant.createFirst.errors.company' | transloco }}
+                    </mat-error>
+                </mat-form-field>
+
+                <!-- Complex Name -->
+                <mat-form-field>
+                    <mat-label>{{ 'auth.selectTenant.createFirst.complexNameLabel' | transloco }}</mat-label>
+                    <input matInput formControlName="complexName">
+                    <mat-icon matPrefix class="icon-size-5">location_city</mat-icon>
+                    <mat-error *ngIf="createForm.get('complexName')?.hasError('required')">
+                        {{ 'auth.selectTenant.createFirst.errors.complexName' | transloco }}
+                    </mat-error>
+                </mat-form-field>
+
+                <!-- Address -->
+                <mat-form-field>
+                    <mat-label>{{ 'auth.selectTenant.createFirst.addressLabel' | transloco }}</mat-label>
+                    <input matInput formControlName="address">
+                    <mat-icon matPrefix class="icon-size-5">place</mat-icon>
+                </mat-form-field>
+
+                <!-- Area row -->
+                <div class="grid grid-cols-2 gap-4">
+                    <mat-form-field>
+                        <mat-label>{{ 'auth.selectTenant.createFirst.totalAreaLabel' | transloco }}</mat-label>
+                        <input matInput type="number" formControlName="totalArea" min="0">
+                        <mat-icon matPrefix class="icon-size-5">square_foot</mat-icon>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>{{ 'auth.selectTenant.createFirst.landAreaLabel' | transloco }}</mat-label>
+                        <input matInput type="number" formControlName="landArea" min="0">
+                        <mat-icon matPrefix class="icon-size-5">landscape</mat-icon>
+                    </mat-form-field>
+                </div>
+
+                <!-- Total Buildings -->
+                <mat-form-field>
+                    <mat-label>{{ 'auth.selectTenant.createFirst.totalBuildingsLabel' | transloco }}</mat-label>
+                    <input matInput type="number" formControlName="totalBuildings" min="0">
+                    <mat-icon matPrefix class="icon-size-5">domain</mat-icon>
+                </mat-form-field>
+
+                <button
+                    mat-flat-button
+                    color="primary"
+                    type="submit"
+                    class="w-full mt-2"
+                    [disabled]="createForm.invalid || creating">
+                    <mat-progress-spinner *ngIf="creating" diameter="20" mode="indeterminate" class="mr-2"></mat-progress-spinner>
+                    {{ (creating ? 'auth.selectTenant.createFirst.creating' : 'auth.selectTenant.createFirst.submitButton') | transloco }}
+                </button>
+            </form>
+        </ng-container>
+
+        <!-- Tenant cards -->
+        <div *ngIf="!loading && !showCreateForm" class="mt-8 grid grid-cols-1 gap-4">
+            <button
+                *ngFor="let tenant of tenants"
+                mat-stroked-button
+                class="h-auto py-4 px-6 text-left flex items-center gap-4 rounded-xl border-2 hover:border-primary hover:bg-primary-50 transition-all"
+                [disabled]="selecting"
+                (click)="selectTenant(tenant)">
+                <mat-icon class="text-primary icon-size-8" svgIcon="heroicons_outline:building-office-2"></mat-icon>
+                <div class="flex flex-col">
+                    <span class="text-lg font-semibold">{{ tenant.complexName }}</span>
+                </div>
+                <mat-icon class="ml-auto text-hint" svgIcon="heroicons_outline:arrow-right"></mat-icon>
+            </button>
+
+            <!-- Empty state -->
+            <div *ngIf="tenants.length === 0" class="text-center text-secondary mt-8">
+                {{ 'auth.selectTenant.empty' | transloco }}
+            </div>
+        </div>
+
+    </div>
+</div>

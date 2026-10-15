@@ -1,0 +1,135 @@
+<div class="flex flex-col flex-auto bg-gray-50 dark:bg-transparent p-4 sm:p-6">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">
+            {{ 'resident.guestRequests.title' | transloco }}
+        </h1>
+        <button mat-flat-button color="primary" (click)="openCreateDialog()">
+            <mat-icon class="icon-size-5 mr-1">add</mat-icon>
+            {{ 'common.actions.create' | transloco }}
+        </button>
+    </div>
+
+    <!-- Status tabs -->
+    <div class="flex flex-wrap gap-2 pb-2 mb-5">
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeTab === 'all'
+                    ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setTab('all')">
+            {{ 'resident.guestRequests.tabs.all' | transloco }}
+            <span *ngIf="allRequests.length" class="ml-1 opacity-70">({{ allRequests.length }})</span>
+        </button>
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeTab === 'Pending'
+                    ? 'bg-orange-500 text-white border-orange-500'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setTab('Pending')">
+            {{ 'resident.guestRequests.tabs.pending' | transloco }}
+            <span *ngIf="pendingCount" class="ml-1 opacity-70">({{ pendingCount }})</span>
+        </button>
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeTab === 'Active'
+                    ? 'bg-green-600 text-white border-green-600'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setTab('Active')">
+            {{ 'resident.guestRequests.tabs.active' | transloco }}
+            <span *ngIf="activeCount" class="ml-1 opacity-70">({{ activeCount }})</span>
+        </button>
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeTab === 'Rejected'
+                    ? 'bg-red-600 text-white border-red-600'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setTab('Rejected')">
+            {{ 'resident.guestRequests.tabs.rejected' | transloco }}
+            <span *ngIf="rejectedCount" class="ml-1 opacity-70">({{ rejectedCount }})</span>
+        </button>
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeTab === 'Cancelled'
+                    ? 'bg-gray-500 text-white border-gray-500'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setTab('Cancelled')">
+            {{ 'resident.guestRequests.tabs.cancelled' | transloco }}
+            <span *ngIf="cancelledCount" class="ml-1 opacity-70">({{ cancelledCount }})</span>
+        </button>
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeTab === 'Expired'
+                    ? 'bg-gray-400 text-white border-gray-400'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setTab('Expired')">
+            {{ 'resident.guestRequests.tabs.expired' | transloco }}
+            <span *ngIf="expiredCount" class="ml-1 opacity-70">({{ expiredCount }})</span>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="flex justify-center items-center py-16">
+        <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!loading && filteredRequests.length === 0"
+         class="flex flex-col items-center py-16 text-gray-400">
+        <mat-icon style="font-size: 48px; width: 48px; height: 48px;" class="mb-3">directions_car</mat-icon>
+        <p class="text-sm">{{ 'resident.guestRequests.empty' | transloco }}</p>
+    </div>
+
+    <!-- Request cards -->
+    <div *ngIf="!loading && filteredRequests.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div *ngFor="let req of filteredRequests"
+             class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2">
+
+            <!-- Card header -->
+            <div class="flex items-start justify-between">
+                <div class="flex items-center gap-2">
+                    <mat-icon class="icon-size-5 text-gray-400">directions_car</mat-icon>
+                    <span class="font-semibold text-gray-900 dark:text-white text-base">{{ req.plateNumber }}</span>
+                </div>
+                <!-- Status badge -->
+                <span class="text-xs px-2 py-0.5 rounded-full font-medium"
+                    [ngClass]="{
+                        'bg-orange-100 text-orange-700':  req.status === 'Pending',
+                        'bg-green-100 text-green-700':    req.status === 'Active',
+                        'bg-red-100 text-red-700':        req.status === 'Rejected',
+                        'bg-gray-100 text-gray-600':      req.status === 'Cancelled' || req.status === 'Expired'
+                    }">
+                    {{ req.status }}
+                </span>
+            </div>
+
+            <!-- Details -->
+            <div class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                <div *ngIf="req.guestName" class="flex items-center gap-1.5">
+                    <mat-icon class="icon-size-4 text-gray-400">person</mat-icon>
+                    <span>{{ req.guestName }}</span>
+                </div>
+                <div *ngIf="req.guestPhone" class="flex items-center gap-1.5">
+                    <mat-icon class="icon-size-4 text-gray-400">phone</mat-icon>
+                    <span>{{ req.guestPhone }}</span>
+                </div>
+                <div *ngIf="req.vehicleBrand" class="flex items-center gap-1.5">
+                    <mat-icon class="icon-size-4 text-gray-400">directions_car</mat-icon>
+                    <span>{{ req.vehicleBrand }} {{ req.vehicleModel }}</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <mat-icon class="icon-size-4 text-gray-400">local_parking</mat-icon>
+                    <span>{{ req.parkingSpaceName }}</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <mat-icon class="icon-size-4 text-gray-400">schedule</mat-icon>
+                    <span>{{ req.startDateTime | date:'dd.MM.yyyy HH:mm' }} – {{ req.endDateTime | date:'dd.MM.yyyy HH:mm' }}</span>
+                </div>
+            </div>
+
+            <!-- Cancel action -->
+            <div *ngIf="req.status === 'Pending'" class="pt-1 border-t border-gray-100 dark:border-gray-700 mt-1">
+                <button mat-stroked-button color="warn" class="w-full text-sm" (click)="onCancel(req)">
+                    <mat-icon class="icon-size-4 mr-1">cancel</mat-icon>
+                    {{ 'resident.guestRequests.actions.cancel' | transloco }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>

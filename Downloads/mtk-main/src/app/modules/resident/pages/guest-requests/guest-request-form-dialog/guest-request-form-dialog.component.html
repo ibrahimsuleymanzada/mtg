@@ -1,0 +1,115 @@
+<div class="relative flex flex-col w-full" style="min-width: 480px; max-width: 560px;">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-xl font-semibold">{{ 'resident.guestRequests.form.title' | transloco }}</h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="form" class="grid grid-cols-1 md:grid-cols-2 gap-2 p-6 overflow-y-auto">
+
+        <!-- Parkinq sahəsi (Autocomplete) -->
+        <!-- <mat-form-field class="col-span-2">
+            <mat-label>{{ 'resident.guestRequests.form.parkingSpace' | transloco }}</mat-label>
+            <input type="text" matInput formControlName="parkingSpaceName"
+                [matAutocomplete]="parkingAuto"
+                (input)="onParkingSearch($event)">
+            <mat-autocomplete #parkingAuto="matAutocomplete" (optionSelected)="onParkingSelected($event)">
+                <mat-option *ngIf="parkingSearchLoading" disabled>
+                    <mat-spinner diameter="20"></mat-spinner>
+                    <span class="ml-2">{{ 'common.searching' | transloco }}</span>
+                </mat-option>
+                <mat-option *ngFor="let p of filteredParkings" [value]="p.value">{{ p.value }}</mat-option>
+                <mat-option *ngIf="!parkingSearchLoading && filteredParkings.length === 0" disabled>
+                    {{ 'common.resultNotFound' | transloco }}
+                </mat-option>
+            </mat-autocomplete>
+            <mat-icon matPrefix class="icon-size-5">local_parking</mat-icon>
+            <mat-error *ngIf="form.get('parkingSpaceName')?.hasError('required')">
+                {{ 'resident.guestRequests.form.errors.parkingSpaceRequired' | transloco }}
+            </mat-error>
+        </mat-form-field> -->
+
+        <!-- Plaka nömrəsi -->
+        <mat-form-field class="col-span-2">
+            <mat-label>{{ 'resident.guestRequests.form.plateNumber' | transloco }}</mat-label>
+            <input matInput formControlName="plateNumber"
+                mask="00-AA-000"
+                [showMaskTyped]="true"
+                [dropSpecialCharacters]="false">
+            <mat-icon matPrefix class="icon-size-5">pin</mat-icon>
+            <mat-error *ngIf="form.get('plateNumber')?.hasError('required')">
+                {{ 'resident.guestRequests.form.errors.plateNumberRequired' | transloco }}
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Qonağın adı -->
+        <mat-form-field>
+            <mat-label>{{ 'resident.guestRequests.form.guestName' | transloco }}</mat-label>
+            <input matInput formControlName="guestName">
+            <mat-icon matPrefix class="icon-size-5">person</mat-icon>
+        </mat-form-field>
+
+        <!-- Qonağın telefonu -->
+        <mat-form-field>
+            <mat-label>{{ 'resident.guestRequests.form.guestPhone' | transloco }}</mat-label>
+            <input matInput formControlName="guestPhone">
+            <mat-icon matPrefix class="icon-size-5">phone</mat-icon>
+        </mat-form-field>
+
+        <!-- Avtomobil markası -->
+        <mat-form-field>
+            <mat-label>{{ 'resident.guestRequests.form.vehicleBrand' | transloco }}</mat-label>
+            <input matInput formControlName="vehicleBrand">
+            <mat-icon matPrefix class="icon-size-5">directions_car</mat-icon>
+        </mat-form-field>
+
+        <!-- Avtomobil modeli -->
+        <mat-form-field>
+            <mat-label>{{ 'resident.guestRequests.form.vehicleModel' | transloco }}</mat-label>
+            <input matInput formControlName="vehicleModel">
+            <mat-icon matPrefix class="icon-size-5">directions_car</mat-icon>
+        </mat-form-field>
+
+        <!-- Başlanğıc tarixi -->
+        <mat-form-field>
+            <mat-label>{{ 'resident.guestRequests.form.startDateTime' | transloco }}</mat-label>
+            <input matInput [matDatepicker]="startPicker" formControlName="startDateTime">
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+            <mat-icon matPrefix class="icon-size-5">event</mat-icon>
+            <mat-error *ngIf="form.get('startDateTime')?.hasError('required')">
+                {{ 'resident.guestRequests.form.errors.startDateRequired' | transloco }}
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Bitmə tarixi -->
+        <mat-form-field>
+            <mat-label>{{ 'resident.guestRequests.form.endDateTime' | transloco }}</mat-label>
+            <input matInput [matDatepicker]="endPicker" formControlName="endDateTime">
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+            <mat-icon matPrefix class="icon-size-5">event_busy</mat-icon>
+            <mat-error *ngIf="form.get('endDateTime')?.hasError('required')">
+                {{ 'resident.guestRequests.form.errors.endDateRequired' | transloco }}
+            </mat-error>
+        </mat-form-field>
+
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="loading">
+            {{ 'common.actions.cancel' | transloco }}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="loading || form.invalid">
+            <mat-spinner *ngIf="loading" diameter="20" class="mr-2"></mat-spinner>
+            <span>{{ 'common.actions.create' | transloco }}</span>
+        </button>
+    </div>
+
+</div>

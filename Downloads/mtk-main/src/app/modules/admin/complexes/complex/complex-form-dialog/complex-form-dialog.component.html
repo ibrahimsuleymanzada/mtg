@@ -1,0 +1,124 @@
+<div class="relative flex flex-col w-full h-full">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+
+
+    <!-- Form -->
+    <form [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+        @if (loading) {
+        <div class="flex items-center justify-center py-16">
+            <div class="flex flex-col items-center gap-3">
+                <mat-spinner diameter="40"></mat-spinner>
+                <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+            </div>
+        </div>
+        }@else {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <!-- Complex Name -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.complexes.labels.complexName' | transloco}}</mat-label>
+                <input matInput formControlName="complexName" required>
+                <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+                <mat-error *ngIf="form.get('complexName')?.hasError('required')">
+                    {{'forms.complexes.errors.complexName.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Company ID (Hidden or select in real scenario) -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.complexes.labels.companyId' | transloco}}</mat-label>
+                <mat-select formControlName="companyId">
+                    <mat-option *ngFor="let item of companies" [value]="item.id">
+                        {{ item.companyName }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+                <mat-error *ngIf="form.get('companyId')?.hasError('required')">
+                    {{'forms.complexes.errors.companyId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Address -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.complexes.labels.address' | transloco}}</mat-label>
+                <input matInput formControlName="address" required>
+                <mat-icon matPrefix class="icon-size-5">location_on</mat-icon>
+                <mat-error *ngIf="form.get('address')?.hasError('required')">
+                    {{'forms.complexes.errors.address.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Total Area -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.complexes.labels.totalArea' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="totalArea" required>
+                <mat-icon matPrefix class="icon-size-5">square_foot</mat-icon>
+                <mat-error *ngIf="form.get('totalArea')?.hasError('required')">
+                    {{'forms.complexes.errors.totalArea.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('totalArea')?.hasError('min')">
+                    {{'forms.complexes.errors.totalArea.min' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Land Area -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.complexes.labels.landArea' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="landArea" required>
+                <mat-icon matPrefix class="icon-size-5">landscape</mat-icon>
+                <mat-error *ngIf="form.get('landArea')?.hasError('required')">
+                    {{'forms.complexes.errors.landArea.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('landArea')?.hasError('min')">
+                    {{'forms.complexes.errors.landArea.min' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Total Buildings -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.complexes.labels.totalBuildings' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="totalBuildings" required>
+                <mat-icon matPrefix class="icon-size-5">domain</mat-icon>
+                <mat-error *ngIf="form.get('totalBuildings')?.hasError('required')">
+                    {{'forms.complexes.errors.totalBuildings.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('totalBuildings')?.hasError('min')">
+                    {{'forms.complexes.errors.totalBuildings.min' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Latitude -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.complexes.labels.latitude' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="latitude">
+                <mat-icon matPrefix class="icon-size-5">public</mat-icon>
+            </mat-form-field>
+
+            <!-- Longitude -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.complexes.labels.longitude' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="longitude">
+                <mat-icon matPrefix class="icon-size-5">public</mat-icon>
+            </mat-form-field>
+        </div>
+        }
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()" [disabled]="form.invalid">
+            <span>{{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}</span>
+        </button>
+    </div>
+</div>

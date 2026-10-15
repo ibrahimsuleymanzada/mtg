@@ -1,0 +1,126 @@
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="dropdownsLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!dropdownsLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+
+            <!-- Mənzil (Autocomplete) -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.residents.labels.apartmentId' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="apartmentDisplay" [matAutocomplete]="apartmentAuto"
+                    (input)="onApartmentSearch($event)">
+                <mat-autocomplete #apartmentAuto="matAutocomplete" (optionSelected)="onApartmentSelected($event)">
+                    <mat-option *ngIf="apartmentSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let apt of filteredApartments" [value]="apt.value">
+                        {{ apt.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!apartmentSearchLoading && filteredApartments.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">home</mat-icon>
+                <mat-error *ngIf="form.get('apartmentDisplay')?.hasError('required')">
+                    {{'forms.residents.errors.apartmentId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- İstifadəçi (Autocomplete, optional) -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.residents.labels.userId' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="fullName" [matAutocomplete]="userAuto"
+                    (input)="onUserSearch($event)">
+                <mat-autocomplete #userAuto="matAutocomplete" (optionSelected)="onUserSelected($event)">
+                    <mat-option *ngIf="userSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let user of filteredUsers" [value]="user.value">
+                        {{ user.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!userSearchLoading && filteredUsers.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">person</mat-icon>
+            </mat-form-field>
+
+            <!-- Telefon -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.residents.labels.phone' | transloco}}</mat-label>
+                <input matInput formControlName="phone" mask="00-000-00-00" [prefix]="'+(994)'"
+                    [dropSpecialCharacters]="false" [showMaskTyped]="false" placeholder="+(994)00-000-00-00">
+                <mat-icon matPrefix class="icon-size-5">phone</mat-icon>
+                <mat-error *ngIf="form.get('phone')?.hasError('required')">
+                    {{'forms.residents.errors.phone.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Doğum tarixi -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.residents.labels.dateOfBirth' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth">
+                <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+                <mat-datepicker #dobPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">cake</mat-icon>
+                <mat-error *ngIf="form.get('dateOfBirth')?.hasError('required')">
+                    {{'forms.residents.errors.dateOfBirth.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Köçmə tarixi -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.residents.labels.moveInDate' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="moveInPicker" formControlName="moveInDate">
+                <mat-datepicker-toggle matSuffix [for]="moveInPicker"></mat-datepicker-toggle>
+                <mat-datepicker #moveInPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">login</mat-icon>
+                <mat-error *ngIf="form.get('moveInDate')?.hasError('required')">
+                    {{'forms.residents.errors.moveInDate.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Çıxış tarixi -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.residents.labels.moveOutDate' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="moveOutPicker" formControlName="moveOutDate">
+                <mat-datepicker-toggle matSuffix [for]="moveOutPicker"></mat-datepicker-toggle>
+                <mat-datepicker #moveOutPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">logout</mat-icon>
+            </mat-form-field>
+
+        </div>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="dropdownsLoading">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="dropdownsLoading || form.invalid">
+            <span>{{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}</span>
+        </button>
+    </div>
+
+</div>

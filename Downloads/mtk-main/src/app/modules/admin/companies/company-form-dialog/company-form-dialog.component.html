@@ -1,0 +1,94 @@
+<div class="relative flex flex-col w-full h-full">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'modules.companies.editTitle' : 'modules.companies.createTitle') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+        @if (loading) {
+        <div class="flex items-center justify-center py-16">
+            <div class="flex flex-col items-center gap-3">
+                <mat-spinner diameter="40"></mat-spinner>
+                <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+            </div>
+        </div>
+        } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+
+            <mat-form-field class="col-span-2">
+                <mat-label>{{'forms.companies.labels.companyName' | transloco}}</mat-label>
+                <input matInput formControlName="companyName">
+                <mat-icon matPrefix class="icon-size-5">business</mat-icon>
+                <mat-error *ngIf="form.get('companyName')?.hasError('required')">
+                    {{'forms.companies.errors.companyName.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'forms.companies.labels.taxNumber' | transloco}}</mat-label>
+                <input matInput formControlName="taxNumber">
+                <mat-icon matPrefix class="icon-size-5">receipt</mat-icon>
+                <mat-error *ngIf="form.get('taxNumber')?.hasError('required')">
+                    {{'forms.companies.errors.taxNumber.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'forms.companies.labels.directorName' | transloco}}</mat-label>
+                <input matInput formControlName="directorName">
+                <mat-icon matPrefix class="icon-size-5">person</mat-icon>
+                <mat-error *ngIf="form.get('directorName')?.hasError('required')">
+                    {{'forms.companies.errors.directorName.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'forms.companies.labels.contactPhone' | transloco}}</mat-label>
+                <input matInput formControlName="contactPhone">
+                <mat-icon matPrefix class="icon-size-5">phone</mat-icon>
+                <mat-error *ngIf="form.get('contactPhone')?.hasError('required')">
+                    {{'forms.companies.errors.contactPhone.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'forms.companies.labels.email' | transloco}}</mat-label>
+                <input matInput formControlName="email" type="email">
+                <mat-icon matPrefix class="icon-size-5">email</mat-icon>
+                <mat-error *ngIf="form.get('email')?.hasError('email')">
+                    {{'forms.companies.errors.email.invalid' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="col-span-2">
+                <mat-label>{{'forms.companies.labels.address' | transloco}}</mat-label>
+                <input matInput formControlName="address">
+                <mat-icon matPrefix class="icon-size-5">location_on</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field class="col-span-2">
+                <mat-label>{{'forms.companies.labels.description' | transloco}}</mat-label>
+                <textarea matInput formControlName="description" rows="3"></textarea>
+                <mat-icon matPrefix class="icon-size-5">notes</mat-icon>
+            </mat-form-field>
+
+        </div>
+        }
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()" [disabled]="loading">
+            <span>{{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}</span>
+        </button>
+    </div>
+</div>

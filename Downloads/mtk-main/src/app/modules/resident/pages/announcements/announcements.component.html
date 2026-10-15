@@ -1,0 +1,210 @@
+<div class="flex flex-col flex-auto bg-gray-50 dark:bg-transparent p-4 sm:p-6">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">
+            {{ 'resident.announcements.title' | transloco }}
+        </h1>
+        <button *ngIf="activeSection === 'my'" mat-flat-button color="primary" (click)="openCreateDialog()">
+            <mat-icon class="icon-size-5 mr-1">add</mat-icon>
+            {{ 'common.actions.create' | transloco }}
+        </button>
+    </div>
+
+    <!-- Section tabs -->
+    <div class="flex gap-2 overflow-x-auto pb-2 mb-5"
+         style="scrollbar-width: none; -ms-overflow-style: none;">
+
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeSection === 'public'
+                    ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900 dark:border-white'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setSection('public')">
+            {{ 'resident.announcements.tabs.public' | transloco }}
+        </button>
+
+        <button class="flex-none px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap"
+                [ngClass]="activeSection === 'my'
+                    ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900 dark:border-white'
+                    : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                (click)="setSection('my')">
+            {{ 'resident.announcements.tabs.my' | transloco }}
+        </button>
+
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- PUBLIC ANNOUNCEMENTS                                            -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <ng-container *ngIf="activeSection === 'public'">
+
+        <!-- Complex selector -->
+        <div *ngIf="complexes.length > 1" class="mb-4">
+            <mat-form-field class="w-full max-w-xs" appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{ 'resident.announcements.selectComplex' | transloco }}</mat-label>
+                <mat-select [value]="selectedComplexId" (selectionChange)="onComplexChange($event.value)">
+                    <mat-option *ngFor="let c of complexes" [value]="c.key">{{ c.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+            </mat-form-field>
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="publicLoading" class="flex justify-center items-center py-16">
+            <mat-spinner diameter="40"></mat-spinner>
+        </div>
+
+        <!-- Empty -->
+        <div *ngIf="!publicLoading && publicAnnouncements.length === 0"
+             class="flex flex-col items-center py-16 text-gray-400">
+            <mat-icon style="font-size: 48px; width: 48px; height: 48px;" class="mb-3">campaign</mat-icon>
+            <p class="text-sm">{{ 'resident.announcements.emptyPublic' | transloco }}</p>
+        </div>
+
+        <!-- Cards -->
+        <div *ngIf="!publicLoading && publicAnnouncements.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div *ngFor="let ann of publicAnnouncements"
+                 class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 flex flex-col">
+
+                <!-- Category icon + title -->
+                <div class="flex items-start gap-3 mb-2">
+                    <div class="flex-none w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                        <mat-icon class="icon-size-5">{{ categoryIcon(ann.category) }}</mat-icon>
+                    </div>
+                    <div class="flex-auto min-w-0">
+                        <h3 class="text-base font-semibold text-gray-900 dark:text-white leading-tight line-clamp-2">{{ ann.title }}</h3>
+                        <p class="text-xs text-gray-400 mt-0.5">{{ ann.complexName }}</p>
+                    </div>
+                </div>
+
+                <!-- Content preview -->
+                <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 mb-3">{{ ann.content }}</p>
+
+                <!-- Badges -->
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-xs px-2.5 py-0.5 rounded-full font-medium"
+                          [ngClass]="priorityBadgeClass(ann.priority)">
+                        {{ 'resident.announcements.priority.' + ann.priority | transloco }}
+                    </span>
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium">
+                        {{ ann.category }}
+                    </span>
+                </div>
+
+                <!-- Footer: dates -->
+                <div class="flex items-center justify-between mt-auto pt-2 border-t border-gray-50 dark:border-gray-700">
+                    <div class="flex items-center gap-1">
+                        <mat-icon style="font-size:14px;width:14px;height:14px;" class="text-gray-400">calendar_today</mat-icon>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">{{ ann.createdDate | date:'dd.MM.yyyy' }}</span>
+                    </div>
+                    <div *ngIf="ann.expiryDate" class="flex items-center gap-1">
+                        <mat-icon style="font-size:14px;width:14px;height:14px;"
+                                  [class.text-red-400]="isExpired(ann.expiryDate)"
+                                  [class.text-gray-400]="!isExpired(ann.expiryDate)">event_busy</mat-icon>
+                        <span class="text-xs"
+                              [class.text-red-500]="isExpired(ann.expiryDate)"
+                              [class.text-gray-500]="!isExpired(ann.expiryDate)">
+                            {{ ann.expiryDate | date:'dd.MM.yyyy' }}
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </ng-container>
+
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- MY ANNOUNCEMENTS                                                -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <ng-container *ngIf="activeSection === 'my'">
+
+        <!-- Loading -->
+        <div *ngIf="myLoading" class="flex justify-center items-center py-16">
+            <mat-spinner diameter="40"></mat-spinner>
+        </div>
+
+        <!-- Empty -->
+        <div *ngIf="!myLoading && myAnnouncements.length === 0"
+             class="flex flex-col items-center py-16 text-gray-400">
+            <mat-icon style="font-size: 48px; width: 48px; height: 48px;" class="mb-3">campaign</mat-icon>
+            <p class="text-sm">{{ 'resident.announcements.emptyMy' | transloco }}</p>
+        </div>
+
+        <!-- Cards -->
+        <div *ngIf="!myLoading && myAnnouncements.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div *ngFor="let ann of myAnnouncements"
+                 class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 flex flex-col">
+
+                <!-- Title + menu -->
+                <div class="flex items-start justify-between gap-2 mb-1">
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white leading-tight line-clamp-2">{{ ann.title }}</h3>
+                    <button mat-icon-button [matMenuTriggerFor]="cardMenu" class="flex-none -mt-1 -mr-2">
+                        <mat-icon class="icon-size-5">more_vert</mat-icon>
+                    </button>
+                    <mat-menu #cardMenu="matMenu">
+                        <button mat-menu-item (click)="openEditDialog(ann)">
+                            <mat-icon>edit</mat-icon>
+                            <span>{{ 'common.actions.edit' | transloco }}</span>
+                        </button>
+                        <button mat-menu-item (click)="deleteAnnouncement(ann)">
+                            <mat-icon class="text-red-500">delete</mat-icon>
+                            <span class="text-red-500">{{ 'common.actions.delete' | transloco }}</span>
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <!-- Content preview -->
+                <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 mb-3">{{ ann.content }}</p>
+
+                <!-- Badges -->
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                    <span class="text-xs px-2.5 py-0.5 rounded-full font-medium"
+                          [ngClass]="statusBadgeClass(ann.status)">
+                        {{ 'resident.announcements.status.' + ann.status | transloco }}
+                    </span>
+                    <span class="text-xs px-2.5 py-0.5 rounded-full font-medium"
+                          [ngClass]="priorityBadgeClass(ann.priority)">
+                        {{ 'resident.announcements.priority.' + ann.priority | transloco }}
+                    </span>
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium">
+                        {{ ann.category }}
+                    </span>
+                </div>
+
+                <!-- Moderation note -->
+                <div *ngIf="ann.moderationNotes" class="flex items-start gap-1.5 mb-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                    <mat-icon style="font-size:16px;width:16px;height:16px;" class="text-yellow-600 dark:text-yellow-400 mt-0.5">info</mat-icon>
+                    <p class="text-xs text-yellow-700 dark:text-yellow-300">{{ ann.moderationNotes }}</p>
+                </div>
+
+                <!-- Footer: dates + views -->
+                <div class="flex items-center justify-between mt-auto pt-2 border-t border-gray-50 dark:border-gray-700">
+                    <div class="flex items-center gap-1">
+                        <mat-icon style="font-size:14px;width:14px;height:14px;" class="text-gray-400">calendar_today</mat-icon>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">{{ ann.createdDate | date:'dd.MM.yyyy' }}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-1">
+                            <mat-icon style="font-size:14px;width:14px;height:14px;" class="text-gray-400">visibility</mat-icon>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ ann.viewCount }}</span>
+                        </div>
+                        <div *ngIf="ann.expiryDate" class="flex items-center gap-1">
+                            <mat-icon style="font-size:14px;width:14px;height:14px;"
+                                      [class.text-red-400]="isExpired(ann.expiryDate)"
+                                      [class.text-gray-400]="!isExpired(ann.expiryDate)">event_busy</mat-icon>
+                            <span class="text-xs"
+                                  [class.text-red-500]="isExpired(ann.expiryDate)"
+                                  [class.text-gray-500]="!isExpired(ann.expiryDate)">
+                                {{ ann.expiryDate | date:'dd.MM.yyyy' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </ng-container>
+
+</div>

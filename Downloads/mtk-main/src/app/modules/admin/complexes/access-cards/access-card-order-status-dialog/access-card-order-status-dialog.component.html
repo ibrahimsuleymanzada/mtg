@@ -1,0 +1,66 @@
+<h2 mat-dialog-title>{{ 'modules.accessCards.orderStatusDialog.title' | transloco }}</h2>
+
+<mat-dialog-content>
+    @if (loading) {
+    <div class="flex items-center justify-center py-8">
+        <mat-spinner diameter="36"></mat-spinner>
+    </div>
+    } @else {
+    <form [formGroup]="form" class="flex flex-col gap-4 pt-2">
+
+        <!-- Kart nömrəsi (read-only) -->
+        <div class="text-sm text-secondary">
+            {{ 'modules.accessCards.columns.cardNumber' | transloco }}:
+            <span class="font-semibold text-default ml-1">{{ data.card.cardNumber }}</span>
+        </div>
+
+        <!-- Sifariş statusu -->
+        <mat-form-field>
+            <mat-label>{{ 'modules.accessCards.orderStatusDialog.orderStatus' | transloco }}</mat-label>
+            <mat-select formControlName="orderStatus">
+                <mat-option *ngFor="let opt of orderStatusOptions" [value]="opt.key">
+                    {{ opt.value }}
+                </mat-option>
+            </mat-select>
+            <mat-icon matPrefix class="icon-size-5">local_shipping</mat-icon>
+            <mat-error *ngIf="form.get('orderStatus')?.hasError('required')">
+                {{ 'modules.accessCards.orderStatusDialog.errors.orderStatus.required' | transloco }}
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Çatdırılma tarixi (yalnız Delivered seçiləndə) -->
+        @if (isDelivered) {
+        <mat-form-field>
+            <mat-label>{{ 'modules.accessCards.orderStatusDialog.deliveredDate' | transloco }}</mat-label>
+            <input matInput [matDatepicker]="deliveredDatePicker" formControlName="deliveredDate">
+            <mat-datepicker-toggle matSuffix [for]="deliveredDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #deliveredDatePicker></mat-datepicker>
+            <mat-icon matPrefix class="icon-size-5">event_available</mat-icon>
+            <mat-error *ngIf="form.get('deliveredDate')?.hasError('required')">
+                {{ 'modules.accessCards.orderStatusDialog.errors.deliveredDate.required' | transloco }}
+            </mat-error>
+        </mat-form-field>
+        }
+
+        <!-- Sifariş qeydi -->
+        <mat-form-field>
+            <mat-label>{{ 'modules.accessCards.columns.orderNotes' | transloco }}</mat-label>
+            <textarea matInput formControlName="orderNotes" rows="3"></textarea>
+            <mat-icon matPrefix class="icon-size-5">notes</mat-icon>
+        </mat-form-field>
+
+    </form>
+    }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" [disabled]="saving">
+        {{ 'common.actions.cancel' | transloco }}
+    </button>
+    <button mat-flat-button color="primary" (click)="onSave()" [disabled]="saving || loading">
+        @if (saving) {
+        <mat-spinner diameter="18" class="mr-2"></mat-spinner>
+        }
+        {{ 'common.actions.save' | transloco }}
+    </button>
+</mat-dialog-actions>

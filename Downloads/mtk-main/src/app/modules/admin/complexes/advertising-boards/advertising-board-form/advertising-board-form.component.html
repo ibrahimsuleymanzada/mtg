@@ -1,0 +1,124 @@
+<!-- advertising-board-form.component.html -->
+
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="dropdownsLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!dropdownsLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+
+        <div class="grid grid-cols-2 gap-x-3 gap-y-0">
+
+            <!-- Kompleks (Dropdown) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.advertisingBoards.labels.complex' | transloco}}</mat-label>
+                <mat-select formControlName="complexId">
+                    <mat-option *ngFor="let complex of complexes" [value]="complex.key">
+                        {{ complex.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+                <mat-error *ngIf="form.get('complexId')?.hasError('required')">
+                    {{'forms.advertisingBoards.errors.complex.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Bina (Autocomplete) -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.advertisingBoards.labels.building' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="buildingName" [matAutocomplete]="buildingAuto"
+                    (input)="onBuildingSearch($event)">
+                <mat-autocomplete #buildingAuto="matAutocomplete" (optionSelected)="onBuildingSelected($event)">
+                    <mat-option *ngIf="buildingSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let building of filteredBuildings" [value]="building.value">
+                        {{ building.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!buildingSearchLoading && filteredBuildings.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">domain</mat-icon>
+                <mat-error *ngIf="form.get('buildingName')?.hasError('required')">
+                    {{'forms.advertisingBoards.errors.building.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="grid grid-cols-3 gap-x-3 gap-y-0">
+            <!-- Yerləşmə yeri -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.advertisingBoards.labels.location' | transloco}}</mat-label>
+                <input matInput formControlName="location">
+                <mat-icon matPrefix class="icon-size-5">location_on</mat-icon>
+                <mat-error *ngIf="form.get('location')?.hasError('required')">
+                    {{'forms.advertisingBoards.errors.location.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Lövhə ölçüsü -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.advertisingBoards.labels.boardSize' | transloco}}</mat-label>
+                <input matInput formControlName="boardSize">
+                <mat-icon matPrefix class="icon-size-5">straighten</mat-icon>
+                <mat-error *ngIf="form.get('boardSize')?.hasError('required')">
+                    {{'forms.advertisingBoards.errors.boardSize.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Aylıq qiymət -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.advertisingBoards.labels.monthlyPrice' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="monthlyPrice">
+                <span matSuffix class="text-secondary">₼</span>
+                <mat-icon matPrefix class="icon-size-5">payments</mat-icon>
+                <mat-error *ngIf="form.get('monthlyPrice')?.hasError('required')">
+                    {{'forms.advertisingBoards.errors.monthlyPrice.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('monthlyPrice')?.hasError('min')">
+                    {{'forms.advertisingBoards.errors.monthlyPrice.min' | transloco}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <!-- Açıqlama -->
+        <mat-form-field class="col-span-2">
+            <mat-label>{{'forms.advertisingBoards.labels.description' | transloco}}</mat-label>
+            <textarea matInput formControlName="description" rows="3"></textarea>
+            <mat-icon matPrefix class="icon-size-5">description</mat-icon>
+        </mat-form-field>
+
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="dropdownsLoading">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="dropdownsLoading || form.invalid">
+            <span>
+                {{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}
+            </span>
+        </button>
+    </div>
+
+</div>

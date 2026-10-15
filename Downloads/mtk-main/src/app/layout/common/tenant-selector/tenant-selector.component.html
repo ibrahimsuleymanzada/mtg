@@ -1,0 +1,47 @@
+<ng-container *ngIf="isVisible">
+    <!-- Loading spinner -->
+    <mat-progress-spinner
+        *ngIf="loading"
+        class="mx-2"
+        [diameter]="20"
+        mode="indeterminate">
+    </mat-progress-spinner>
+
+    <!-- MTK dropdown button -->
+    <button
+        *ngIf="!loading"
+        mat-button
+        [matMenuTriggerFor]="tenantMenu"
+        class="flex items-center gap-1 px-3 h-10 rounded-lg"
+        [class.text-warn]="!activeTenantName">
+        <mat-icon class="icon-size-5 shrink-0" svgIcon="heroicons_outline:building-office-2"></mat-icon>
+        <span class="hidden sm:block text-sm font-medium max-w-36 truncate">
+            {{ activeTenantName || ('header.tenantSelector.select' | transloco) }}
+        </span>
+        <mat-icon class="icon-size-4 shrink-0" svgIcon="heroicons_solid:chevron-down"></mat-icon>
+    </button>
+
+    <mat-menu #tenantMenu="matMenu" [xPosition]="'before'">
+        <button
+            *ngFor="let tenant of tenants"
+            mat-menu-item
+            (click)="selectTenant(tenant)"
+            class="flex items-center gap-2">
+            <mat-icon
+                class="icon-size-5"
+                [class.text-primary]="tenant.id === activeComplexId"
+                svgIcon="heroicons_outline:building-office-2">
+            </mat-icon>
+            <span>{{ tenant.complexName }}</span>
+            <mat-icon
+                *ngIf="tenant.id === activeComplexId"
+                class="ml-auto icon-size-4 text-primary"
+                svgIcon="heroicons_solid:check">
+            </mat-icon>
+        </button>
+
+        <div *ngIf="tenants.length === 0" class="px-4 py-2 text-sm text-secondary">
+            {{ 'header.tenantSelector.empty' | transloco }}
+        </div>
+    </mat-menu>
+</ng-container>

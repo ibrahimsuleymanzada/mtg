@@ -1,0 +1,174 @@
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Dropdown Loading Spinner -->
+    <div *ngIf="dropdownsLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!dropdownsLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+
+        <div class="grid grid-cols-4 gap-x-3 gap-y-0">
+
+            <!-- Kompleks (Dropdown) — 2 sütun -->
+            <mat-form-field >
+                <mat-label>{{'forms.apartments.labels.complexName' | transloco}}</mat-label>
+                <mat-select formControlName="complexId">
+                    <mat-option *ngFor="let complex of complexes" [value]="complex.key">
+                        {{ complex.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+                <mat-error *ngIf="form.get('complexId')?.hasError('required')">
+                    {{'forms.apartments.errors.complexName.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Bina (Autocomplete) — 2 sütun -->
+            <mat-form-field >
+                <mat-label>{{'forms.apartments.labels.buildingName' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="buildingName" [matAutocomplete]="buildingAuto"
+                    (input)="onBuildingSearch($event)">
+                <mat-autocomplete #buildingAuto="matAutocomplete" (optionSelected)="onBuildingSelected($event)">
+                    <mat-option *ngIf="buildingSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let building of filteredBuildings" [value]="building.value">
+                        {{ building.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!buildingSearchLoading && filteredBuildings.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">domain</mat-icon>
+                <mat-error *ngIf="form.get('buildingName')?.hasError('required')">
+                    {{'forms.apartments.errors.buildingName.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Mənzil Nömrəsi — 1 sütun -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.apartments.labels.apartmentNumber' | transloco}}</mat-label>
+                <input matInput formControlName="apartmentNumber">
+                <mat-icon matPrefix class="icon-size-5">meeting_room</mat-icon>
+                <mat-error *ngIf="form.get('apartmentNumber')?.hasError('required')">
+                    {{'forms.apartments.errors.apartmentNumber.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Mərtəbə — 1 sütun -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.apartments.labels.floor' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="floor">
+                <mat-icon matPrefix class="icon-size-5">layers</mat-icon>
+                <mat-error *ngIf="form.get('floor')?.hasError('required')">
+                    {{'forms.apartments.errors.floor.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Otaq Sayı — 1 sütun -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.apartments.labels.roomCount' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="roomCount">
+                <mat-icon matPrefix class="icon-size-5">weekend</mat-icon>
+                <mat-error *ngIf="form.get('roomCount')?.hasError('required')">
+                    {{'forms.apartments.errors.roomCount.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Sahə (m²) — 1 sütun -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.apartments.labels.area' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="area">
+                <mat-icon matPrefix class="icon-size-5">square_foot</mat-icon>
+                <mat-error *ngIf="form.get('area')?.hasError('required')">
+                    {{'forms.apartments.errors.area.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('area')?.hasError('min')">
+                    {{'forms.apartments.errors.area.min' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Mənzil Növü (Dropdown) — 1 sütun -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.apartments.labels.apartmentType' | transloco}}</mat-label>
+                <mat-select formControlName="apartmentType">
+                    <mat-option *ngFor="let type of apartmentTypes" [value]="type.key">
+                        {{ type.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">category</mat-icon>
+                <mat-error *ngIf="form.get('apartmentType')?.hasError('required')">
+                    {{'forms.apartments.errors.apartmentType.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Status (Dropdown) — 1 sütun -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.apartments.labels.status' | transloco}}</mat-label>
+                <mat-select formControlName="status">
+                    <mat-option *ngFor="let status of statuses" [value]="status.key">
+                        {{ status.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">info</mat-icon>
+                <mat-error *ngIf="form.get('status')?.hasError('required')">
+                    {{'forms.apartments.errors.status.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+
+            <div class="col-span-2 md:col-span-4 flex flex-wrap items-center gap-x-6 gap-y-2 py-2 grid-cols-2">
+
+                <!-- Balkon checkbox + balkon sahəsi inputu -->
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 ">
+                    <mat-checkbox formControlName="hasBalcony" color="primary">
+                        {{'forms.apartments.labels.hasBalcony' | transloco}}
+                    </mat-checkbox>
+
+                    <!-- Balkon sahəsi — yalnız hasBalcony = true olduqda -->
+                    <mat-form-field *ngIf="hasBalcony" class="w-36" style="margin-bottom: -1.25em">
+                        <mat-label> {{'forms.apartments.labels.balconyArea' | transloco}}</mat-label>
+                        <input matInput type="number" formControlName="balconyArea">
+                        <mat-icon matPrefix class="icon-size-5">balcony</mat-icon>
+                        <mat-error *ngIf="form.get('balconyArea')?.hasError('required')">
+                            {{'forms.apartments.errors.balconyArea.required' | transloco}}
+                        </mat-error>
+                        <mat-error *ngIf="form.get('balconyArea')?.hasError('min')">
+                            {{'forms.apartments.errors.min.required' | transloco}}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+            </div>
+
+        </div>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]=" dropdownsLoading">
+            {{'common.actions.cancel' | transloco}} </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="dropdownsLoading || form.invalid">
+            <span>
+                {{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}
+            </span>
+        </button>
+    </div>
+
+</div>

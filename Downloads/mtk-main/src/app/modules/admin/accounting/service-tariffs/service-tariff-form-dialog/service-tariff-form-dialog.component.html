@@ -1,0 +1,176 @@
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="dropdownsLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!dropdownsLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+
+            <!-- Service Type -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.serviceTypeRefId' | transloco}}</mat-label>
+                <mat-select formControlName="serviceTypeRefId">
+                    <mat-option *ngFor="let item of serviceTypes" [value]="item.key">{{ item.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">miscellaneous_services</mat-icon>
+                <mat-error *ngIf="form.get('serviceTypeRefId')?.hasError('required')">
+                    {{'forms.serviceTariffs.errors.serviceTypeRefId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Company -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.companyId' | transloco}}</mat-label>
+                <mat-select formControlName="companyId">
+                    <mat-option *ngFor="let item of companies" [value]="item.id">{{ item.companyName }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">business</mat-icon>
+                <mat-error *ngIf="form.get('companyId')?.hasError('required')">
+                    {{'forms.serviceTariffs.errors.companyId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Complex -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.complexId' | transloco}}</mat-label>
+                <mat-select formControlName="complexId">
+                    <mat-option *ngFor="let item of complexes" [value]="item.key">{{ item.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+                <mat-error *ngIf="form.get('complexId')?.hasError('required')">
+                    {{'forms.serviceTariffs.errors.complexId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Calculation Type -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.calculationTypeRefId' | transloco}}</mat-label>
+                <mat-select formControlName="calculationTypeRefId">
+                    <mat-option *ngFor="let item of calculationTypes" [value]="item.key">{{ item.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">calculate</mat-icon>
+                <mat-error *ngIf="form.get('calculationTypeRefId')?.hasError('required')">
+                    {{'forms.serviceTariffs.errors.calculationTypeRefId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Unit of Measure -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.unitOfMeasureRefId' | transloco}}</mat-label>
+                <mat-select formControlName="unitOfMeasureRefId">
+                    <mat-option *ngFor="let item of unitOfMeasures" [value]="item.key">{{ item.value }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix class="icon-size-5">straighten</mat-icon>
+                <mat-error *ngIf="form.get('unitOfMeasureRefId')?.hasError('required')">
+                    {{'forms.serviceTariffs.errors.unitOfMeasureRefId.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Price Per Unit -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.pricePerUnit' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="pricePerUnit">
+                <mat-icon matPrefix class="icon-size-5">payments</mat-icon>
+                <mat-error *ngIf="form.get('pricePerUnit')?.hasError('required')">
+                    {{'forms.serviceTariffs.errors.pricePerUnit.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('pricePerUnit')?.hasError('min')">
+                    {{'forms.common.errors.min' | transloco: {min: 0} }}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Minimum Charge -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.minimumCharge' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="minimumCharge">
+                <mat-icon matPrefix class="icon-size-5">price_check</mat-icon>
+            </mat-form-field>
+
+            <!-- Valid From -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.validFrom' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="validFromPicker" formControlName="validFrom">
+                <mat-datepicker-toggle matSuffix [for]="validFromPicker"></mat-datepicker-toggle>
+                <mat-datepicker #validFromPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event</mat-icon>
+                <mat-error *ngIf="form.get('validFrom')?.hasError('required')">
+                    {{'forms.serviceTariffs.errors.validFrom.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Valid To -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.validTo' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="validToPicker" formControlName="validTo">
+                <mat-datepicker-toggle matSuffix [for]="validToPicker"></mat-datepicker-toggle>
+                <mat-datepicker #validToPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event_busy</mat-icon>
+            </mat-form-field>
+
+            <!-- Tier 1 Limit -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.tier1Limit' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="tier1Limit">
+                <mat-icon matPrefix class="icon-size-5">looks_one</mat-icon>
+            </mat-form-field>
+
+            <!-- Tier 1 Price -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.tier1Price' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="tier1Price">
+                <mat-icon matPrefix class="icon-size-5">payments</mat-icon>
+            </mat-form-field>
+
+            <!-- Tier 2 Limit -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.tier2Limit' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="tier2Limit">
+                <mat-icon matPrefix class="icon-size-5">looks_two</mat-icon>
+            </mat-form-field>
+
+            <!-- Tier 2 Price -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.tier2Price' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="tier2Price">
+                <mat-icon matPrefix class="icon-size-5">payments</mat-icon>
+            </mat-form-field>
+
+            <!-- Tier 3 Price -->
+            <mat-form-field class="w-full">
+                <mat-label>{{'forms.serviceTariffs.labels.tier3Price' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="tier3Price">
+                <mat-icon matPrefix class="icon-size-5">looks_3</mat-icon>
+            </mat-form-field>
+
+        </div>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="dropdownsLoading">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="dropdownsLoading || form.invalid">
+            <span>{{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}</span>
+        </button>
+    </div>
+
+</div>

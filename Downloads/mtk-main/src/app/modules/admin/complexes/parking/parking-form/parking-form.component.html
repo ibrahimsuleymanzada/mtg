@@ -1,0 +1,165 @@
+<!-- apartment-owner-form-dialog.component.html -->
+
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="dropdownsLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+<!-- Form -->
+<form *ngIf="!dropdownsLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+
+    <div class="grid grid-cols-4 gap-x-3 gap-y-0">
+
+        <!-- Kompleks (Dropdown) -->
+        <mat-form-field class="col-span-1">
+            <mat-label>{{'forms.parkingSpaces.labels.complex' | transloco}}</mat-label>
+            <mat-select formControlName="complexId">
+                <mat-option *ngFor="let complex of complexes" [value]="complex.key">
+                    {{ complex.value }}
+                </mat-option>
+            </mat-select>
+            <mat-icon matPrefix class="icon-size-5">apartment</mat-icon>
+            <mat-error *ngIf="form.get('complexId')?.hasError('required')">
+                {{'forms.parkingSpaces.errors.complex.required' | transloco}}
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Bina (Autocomplete) -->
+        <mat-form-field class="col-span-1">
+            <mat-label>{{'forms.parkingSpaces.labels.building' | transloco}}</mat-label>
+            <input type="text" matInput formControlName="buildingName" [matAutocomplete]="buildingAuto"
+                (input)="onBuildingSearch($event)">
+            <mat-autocomplete #buildingAuto="matAutocomplete" (optionSelected)="onBuildingSelected($event)">
+                <mat-option *ngIf="buildingSearchLoading" disabled>
+                    <mat-spinner diameter="20"></mat-spinner>
+                    <span class="ml-2">{{'common.searching' | transloco}}</span>
+                </mat-option>
+                <mat-option *ngFor="let building of filteredBuildings" [value]="building.value">
+                    {{ building.value }}
+                </mat-option>
+                <mat-option *ngIf="!buildingSearchLoading && filteredBuildings.length === 0" disabled>
+                    {{'common.resultNotFound' | transloco}}
+                </mat-option>
+            </mat-autocomplete>
+            <mat-icon matPrefix class="icon-size-5">domain</mat-icon>
+            <mat-error *ngIf="form.get('buildingName')?.hasError('required')">
+                {{'forms.parkingSpaces.errors.building.required' | transloco}}
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Yer nömrəsi -->
+        <mat-form-field class="col-span-1">
+            <mat-label>{{'forms.parkingSpaces.labels.spaceNumber' | transloco}}</mat-label>
+            <input matInput formControlName="spaceNumber">
+            <mat-icon matPrefix class="icon-size-5">directions_car</mat-icon>
+            <mat-error *ngIf="form.get('spaceNumber')?.hasError('required')">
+                {{'forms.parkingSpaces.errors.spaceNumber.required' | transloco}}
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Yer növü (Dropdown) -->
+        <mat-form-field class="col-span-1">
+            <mat-label>{{'forms.parkingSpaces.labels.spaceType' | transloco}}</mat-label>
+            <mat-select formControlName="spaceType">
+                <mat-option *ngFor="let type of parkingSpaceType" [value]="type.key">
+                    {{ type.value }}
+                </mat-option>
+            </mat-select>
+            <mat-icon matPrefix class="icon-size-5">category</mat-icon>
+            <mat-error *ngIf="form.get('spaceType')?.hasError('required')">
+                {{'forms.parkingSpaces.errors.spaceType.required' | transloco}}
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Aylıq icarə qiyməti -->
+        <mat-form-field class="col-span-1">
+            <mat-label>{{'forms.parkingSpaces.labels.monthlyRentalPrice' | transloco}}</mat-label>
+            <input matInput type="number" formControlName="monthlyRentalPrice">
+            <span matSuffix class="text-secondary">₼</span>
+            <mat-icon matPrefix class="icon-size-5">payments</mat-icon>
+            <mat-error *ngIf="form.get('monthlyRentalPrice')?.hasError('required')">
+                {{'forms.parkingSpaces.errors.monthlyRentalPrice.required' | transloco}}
+            </mat-error>
+            <mat-error *ngIf="form.get('monthlyRentalPrice')?.hasError('min')">
+                {{'forms.parkingSpaces.errors.monthlyRentalPrice.min' | transloco}}
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Satış qiyməti -->
+        <mat-form-field class="col-span-1">
+            <mat-label>{{'forms.parkingSpaces.labels.salePrice' | transloco}}</mat-label>
+            <input matInput type="number" formControlName="salePrice">
+            <span matSuffix class="text-secondary">₼</span>
+            <mat-icon matPrefix class="icon-size-5">payments</mat-icon>
+            <mat-error *ngIf="form.get('salePrice')?.hasError('required')">
+                {{'forms.parkingSpaces.errors.salePrice.required' | transloco}}
+            </mat-error>
+            <mat-error *ngIf="form.get('salePrice')?.hasError('min')">
+                {{'forms.parkingSpaces.errors.salePrice.min' | transloco}}
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Səviyyə/Mərtəbə -->
+        <mat-form-field class="col-span-1">
+            <mat-label>{{'forms.parkingSpaces.labels.level' | transloco}}</mat-label>
+            <input matInput type="number" formControlName="level">
+            <mat-icon matPrefix class="icon-size-5">layers</mat-icon>
+            <mat-error *ngIf="form.get('level')?.hasError('required')">
+                {{'forms.parkingSpaces.errors.level.required' | transloco}}
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Status (Dropdown) -->
+        <mat-form-field class="col-span-1">
+            <mat-label>{{'forms.parkingSpaces.labels.status' | transloco}}</mat-label>
+            <mat-select formControlName="status">
+                <mat-option *ngFor="let stat of parkingStatus" [value]="stat.key">
+                    {{ stat.value }}
+                </mat-option>
+            </mat-select>
+            <mat-icon matPrefix class="icon-size-5">info</mat-icon>
+            <mat-error *ngIf="form.get('status')?.hasError('required')">
+                {{'forms.parkingSpaces.errors.status.required' | transloco}}
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Elektrik şarj checkbox -->
+        <div class="col-span-2 flex items-center">
+            <mat-checkbox formControlName="isElectricCharging" color="primary">
+                {{'forms.parkingSpaces.labels.isElectricCharging' | transloco}}
+            </mat-checkbox>
+        </div>
+
+    </div>
+</form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="dropdownsLoading">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="dropdownsLoading || form.invalid ">
+            <span>
+                {{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}
+            </span>
+        </button>
+    </div>
+
+</div>

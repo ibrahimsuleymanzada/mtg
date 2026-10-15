@@ -1,0 +1,68 @@
+/* Fuse-Style Notification System */
+
+/* Notification Container */
+#fuse-notification-container {
+    pointer-events: none;
+}
+
+#fuse-notification-container > * {
+    pointer-events: auto;
+}
+
+/* Notification Wrapper */
+.fuse-notification-wrapper {
+    min-width: 320px;
+    max-width: 100%;
+}
+
+/* Slide-in animation from right */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Slide-out animation to right */
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out forwards;
+}
+
+.animate-slide-out-right {
+    animation: slideOutRight 0.3s ease-in forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    #fuse-notification-container {
+        left: 1rem;
+        right: 1rem;
+        top: 1rem;
+    }
+    
+    .fuse-notification-wrapper {
+        min-width: 100%;
+    }
+}
+
+/* Print styles */
+@media print {
+    #fuse-notification-container {
+        display: none !important;
+    }
+}

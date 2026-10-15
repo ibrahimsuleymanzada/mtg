@@ -1,0 +1,238 @@
+<div class="flex flex-col flex-auto items-center sm:justify-center min-w-0 md:p-8">
+    <div class="flex md:w-full md:max-w-3xl sm:rounded-2xl sm:shadow overflow-hidden sm:bg-card">
+        <div class="w-full py-8 px-4 sm:p-12">
+
+            <div class="relative max-w-xl mx-auto">
+                <languages class="absolute top-0 right-0 z-10"></languages>
+
+                <!-- Logo -->
+                <div class="w-12">
+                    <img src="assets/images/logo/logo.svg">
+                </div>
+
+                <!-- Title -->
+                <div class="mt-8 text-3xl font-extrabold tracking-tight leading-tight">
+                    {{ 'auth.selfRegister.title' | transloco }}
+                </div>
+                <div class="mt-1 text-secondary">
+                    {{ 'auth.selfRegister.subtitle' | transloco }}
+                </div>
+
+                <!-- Alert -->
+                <fuse-alert class="mt-6 -mb-2" *ngIf="showAlert" [appearance]="'outline'" [showIcon]="false"
+                    [type]="alert.type">
+                    {{ alert.message }}
+                </fuse-alert>
+
+                <!-- Success state -->
+                <ng-container *ngIf="success; else formContent">
+                    <div class="mt-8 flex flex-col items-center gap-4 text-center">
+                        <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                            <mat-icon class="text-green-600 icon-size-8">check_circle</mat-icon>
+                        </div>
+                        <div class="text-xl font-semibold">{{ 'auth.selfRegister.successTitle' | transloco }}</div>
+                        <p class="text-secondary max-w-sm">{{ 'auth.selfRegister.successMessage' | transloco }}</p>
+                        <button class="mt-4 fuse-mat-button-large" mat-flat-button [color]="'primary'"
+                            (click)="goToSignIn()">
+                            {{ 'auth.signIn.signInButton' | transloco }}
+                        </button>
+                    </div>
+                </ng-container>
+
+                <ng-template #formContent>
+                    <mat-stepper [linear]="true" class="mt-8" orientation="vertical" #stepper>
+
+                        <!-- Step 1: Əmlak seçimi -->
+                        <mat-step [stepControl]="targetForm" [label]="'auth.selfRegister.steps.property' | transloco">
+                            <form [formGroup]="targetForm">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
+
+                                    <!-- Əmlak növü -->
+                                    <mat-form-field class="sm:col-span-2">
+                                        <mat-label>{{ 'auth.selfRegister.labels.targetType' | transloco }}</mat-label>
+                                        <mat-select formControlName="targetType">
+                                            <mat-option *ngFor="let t of targetTypes" [value]="t.value">{{ t.label }}</mat-option>
+                                        </mat-select>
+                                        <mat-error *ngIf="targetForm.get('targetType')?.hasError('required')">
+                                            {{ 'auth.selfRegister.errors.required' | transloco }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <!-- Şirkət -->
+                                    <mat-form-field class="sm:col-span-2">
+                                        <mat-label>{{ 'auth.selfRegister.labels.company' | transloco }}</mat-label>
+                                        <mat-select formControlName="companyId">
+                                            <mat-option *ngIf="loadingCompanies" disabled>
+                                                <mat-spinner diameter="20"></mat-spinner>
+                                            </mat-option>
+                                            <mat-option *ngFor="let c of companies" [value]="c.key">{{ c.value }}</mat-option>
+                                        </mat-select>
+                                        <mat-error *ngIf="targetForm.get('companyId')?.hasError('required')">
+                                            {{ 'auth.selfRegister.errors.required' | transloco }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <!-- Kompleks -->
+                                    <mat-form-field>
+                                        <mat-label>{{ 'auth.selfRegister.labels.complex' | transloco }}</mat-label>
+                                        <mat-select formControlName="complexId" [disabled]="!targetForm.get('companyId')?.value">
+                                            <mat-option *ngIf="loadingComplexes" disabled>
+                                                <mat-spinner diameter="20"></mat-spinner>
+                                            </mat-option>
+                                            <mat-option *ngFor="let c of complexes" [value]="c.key">{{ c.value }}</mat-option>
+                                        </mat-select>
+                                        <mat-error *ngIf="targetForm.get('complexId')?.hasError('required')">
+                                            {{ 'auth.selfRegister.errors.required' | transloco }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <!-- Bina -->
+                                    <mat-form-field>
+                                        <mat-label>{{ 'auth.selfRegister.labels.building' | transloco }}</mat-label>
+                                        <mat-select formControlName="buildingId" [disabled]="!targetForm.get('complexId')?.value">
+                                            <mat-option *ngIf="loadingBuildings" disabled>
+                                                <mat-spinner diameter="20"></mat-spinner>
+                                            </mat-option>
+                                            <mat-option *ngFor="let b of buildings" [value]="b.key">{{ b.value }}</mat-option>
+                                        </mat-select>
+                                        <mat-error *ngIf="targetForm.get('buildingId')?.hasError('required')">
+                                            {{ 'auth.selfRegister.errors.required' | transloco }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <!-- Mənzil / Qaraj / Obyekt -->
+                                    <mat-form-field>
+                                        <mat-label>{{ 'auth.selfRegister.labels.unit' | transloco }}</mat-label>
+                                        <mat-select formControlName="targetId" [disabled]="!targetForm.get('buildingId')?.value">
+                                            <mat-option *ngIf="loadingUnits" disabled>
+                                                <mat-spinner diameter="20"></mat-spinner>
+                                            </mat-option>
+                                            <mat-option *ngFor="let u of units" [value]="u.key">{{ u.value }}</mat-option>
+                                        </mat-select>
+                                        <mat-error *ngIf="targetForm.get('targetId')?.hasError('required')">
+                                            {{ 'auth.selfRegister.errors.required' | transloco }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <!-- Sənəd nömrəsi -->
+                                    <mat-form-field>
+                                        <mat-label>{{ 'auth.selfRegister.labels.deedNumber' | transloco }}</mat-label>
+                                        <input matInput formControlName="deedNumber">
+                                        <mat-error *ngIf="targetForm.get('deedNumber')?.hasError('required')">
+                                            {{ 'auth.selfRegister.errors.required' | transloco }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                </div>
+
+                                <div class="mt-4">
+                                    <button mat-flat-button [color]="'primary'" matStepperNext>
+                                        {{ 'common.actions.next' | transloco }}
+                                    </button>
+                                </div>
+                            </form>
+                        </mat-step>
+
+                        <!-- Step 2: Şəxsi məlumatlar -->
+                        <mat-step [stepControl]="personalForm" [label]="'auth.selfRegister.steps.personal' | transloco">
+                            <form [formGroup]="personalForm">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
+
+                                    <mat-form-field>
+                                        <mat-label>{{ 'auth.selfRegister.labels.firstName' | transloco }}</mat-label>
+                                        <input matInput formControlName="firstName">
+                                        <mat-error *ngIf="personalForm.get('firstName')?.hasError('required')">
+                                            {{ 'auth.selfRegister.errors.required' | transloco }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field>
+                                        <mat-label>{{ 'auth.selfRegister.labels.lastName' | transloco }}</mat-label>
+                                        <input matInput formControlName="lastName">
+                                        <mat-error *ngIf="personalForm.get('lastName')?.hasError('required')">
+                                            {{ 'auth.selfRegister.errors.required' | transloco }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field>
+                                        <mat-label>{{ 'auth.selfRegister.labels.fatherName' | transloco }}</mat-label>
+                                        <input matInput formControlName="fatherName">
+                                    </mat-form-field>
+
+                                    <mat-form-field>
+                                        <mat-label>{{ 'auth.selfRegister.labels.idcardNumber' | transloco }}</mat-label>
+                                        <input matInput formControlName="idcardNumber"
+                                               maxlength="7"
+                                               style="text-transform: uppercase"
+                                               (input)="onFINInput($event)">
+                                        <mat-error *ngIf="personalForm.get('idcardNumber')?.hasError('required')">
+                                            {{ 'auth.selfRegister.errors.required' | transloco }}
+                                        </mat-error>
+                                        <mat-error *ngIf="personalForm.get('idcardNumber')?.hasError('pattern')">
+                                            {{ 'auth.selfRegister.errors.idcardNumber.pattern' | transloco }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field>
+                                        <mat-label>{{ 'auth.selfRegister.labels.phone' | transloco }}</mat-label>
+                                        <input matInput formControlName="phone" mask="00-000-00-00" [prefix]="'+(994)'"
+                    [dropSpecialCharacters]="false" [showMaskTyped]="false" placeholder="+(994)00-000-00-00">
+                                        <mat-error *ngIf="personalForm.get('phone')?.hasError('required')">
+                                            {{ 'auth.selfRegister.errors.required' | transloco }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field>
+                                        <mat-label>{{ 'auth.selfRegister.labels.email' | transloco }}</mat-label>
+                                        <input matInput type="email" formControlName="email">
+                                        <mat-error *ngIf="personalForm.get('email')?.hasError('email')">
+                                            {{ 'auth.selfRegister.errors.invalidEmail' | transloco }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field class="sm:col-span-2">
+                                        <mat-label>{{ 'auth.selfRegister.labels.password' | transloco }}</mat-label>
+                                        <input matInput type="password" formControlName="password" #pwField>
+                                        <button mat-icon-button type="button" matSuffix
+                                            (click)="pwField.type = pwField.type === 'password' ? 'text' : 'password'">
+                                            <mat-icon class="icon-size-5">
+                                                {{ pwField.type === 'password' ? 'visibility' : 'visibility_off' }}
+                                            </mat-icon>
+                                        </button>
+                                        <mat-error *ngIf="personalForm.get('password')?.hasError('required')">
+                                            {{ 'auth.selfRegister.errors.required' | transloco }}
+                                        </mat-error>
+                                        <mat-error *ngIf="personalForm.get('password')?.hasError('minlength')">
+                                            {{ 'auth.selfRegister.errors.passwordMinLength' | transloco }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                </div>
+
+                                <div class="mt-4 flex gap-3">
+                                    <button mat-stroked-button matStepperPrevious type="button">
+                                        {{ 'common.actions.back' | transloco }}
+                                    </button>
+                                    <button mat-flat-button [color]="'primary'" type="button"
+                                        (click)="onSubmit()" [disabled]="saving">
+                                        <mat-spinner *ngIf="saving" diameter="20" class="mr-2"></mat-spinner>
+                                        {{ 'auth.selfRegister.submitButton' | transloco }}
+                                    </button>
+                                </div>
+                            </form>
+                        </mat-step>
+
+                    </mat-stepper>
+
+                    <!-- Sign in link -->
+                    <div class="mt-6 text-center text-sm text-secondary">
+                        {{ 'auth.selfRegister.haveAccount' | transloco }}
+                        <a class="ml-1 font-medium text-primary hover:underline" [routerLink]="['/sign-in']">
+                            {{ 'auth.signIn.signInButton' | transloco }}
+                        </a>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</div>

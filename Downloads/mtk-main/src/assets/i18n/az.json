@@ -1,0 +1,2242 @@
+﻿{
+  "common": {
+    "dataLoading": "Məlumatlar yüklənir...",
+    "searching": "Axtarılır...",
+    "resultNotFound": "Nəticə tapılmadı....",
+    "notSelected": "Seçilməyib",
+    "columns": {
+      "actions": "Əməliyyat",
+      "address": "Ünvan",
+      "complexName": "Kompleks adı",
+      "buildingName": "Bina adı",
+      "status": "Status",
+      "isActive": "Aktiv"
+    },
+    "boolean": {
+      "yes": "Bəli",
+      "no": "Xeyr"
+    },
+    "filters": {
+      "beginDate": "Başlanğıc tarixi",
+      "endDate": "Bitmə tarixi",
+      "errors": {
+        "beginDate": {
+          "required": "Başlanğıc tarixi seçilməlidir"
+        },
+        "endDate": {
+          "required": "Bitmə tarixi seçilməlidir"
+        },
+        "dateRange": {
+          "invalid": "Başlanğıc tarixi bitmə tarixindən sonra ola bilməz"
+        }
+      }
+    },
+    "actions": {
+      "enter": "Daxil ol",
+      "signOut": "Çıxış et",
+      "save": "Yadda saxla",
+      "cancel": "Ləğv et",
+      "delete": "Sil",
+      "edit": "Redaktə et",
+      "create": "Yarat",
+      "new": "Yeni",
+      "search": "Axtar",
+      "filter": "Filterlə",
+      "reset": "Sıfırla",
+      "back": "Geri",
+      "next": "Növbəti",
+      "close": "Bağla",
+      "selectFile": "Fayl seç",
+      "viewFile": "Faylı gör",
+      "clearDateRange": "Tarix aralığını təmizlə",
+      "changeTenant": "Tenant dəyiş"
+    },
+    "breadcrumbs": {
+      "modules": "Modullar"
+    },
+    "changePassword": {
+      "title": "Şifrəni dəyişdir",
+      "oldPassword": "Köhnə şifrə",
+      "newPassword": "Yeni şifrə",
+      "confirmPassword": "Yeni şifrənin təkrarı",
+      "errors": {
+        "oldPasswordRequired": "Köhnə şifrə tələb olunur",
+        "newPasswordRequired": "Yeni şifrə tələb olunur",
+        "newPasswordPattern": "Şifrədə min. 6 simvol, böyük-kiçik hərf və bir xüsusi simvol olmalıdır",
+        "confirmPasswordRequired": "Şifrə təkrarı tələb olunur",
+        "passwordMismatch": "Şifrələr uyğun gəlmir"
+      }
+    },
+    "attachFiles": "Fayl əlavə et",
+    "filesSelected": "fayl seçilib",
+    "all": "Hamısı",
+    "noData": "Məlumat yoxdur"
+  },
+  "header":{
+    "tenantSelector": {
+      "select": "Tenant seçin",
+      "empty": "Tenant yoxdur"
+    }
+  },
+  "forms": {
+    "common": {
+      "labels": {
+        "id": "ID",
+        "address": "Ünvan",
+        "latitude": "Enlik (Latitude)",
+        "longitude": "Uzunluq (Longitude)"
+      },
+      "errors": {
+        "required": "Bu sahə tələb olunur",
+        "min": "Minimum dəyər {{min}} olmalıdır",
+        "max": "Maksimum dəyər {{max}} olmalıdır",
+        "minLength": "Minimum {{min}} simvol olmalıdır",
+        "maxLength": "Maksimum {{max}} simvol olmalıdır",
+        "email": "Düzgün e-mail daxil edin",
+        "pattern": "Format düzgün deyil",
+        "invalidNumber": "Düzgün rəqəm daxil edin"
+      },
+      "placeholders": {
+        "select": "Seçin",
+        "enter": "Daxil edin",
+        "search": "Axtarış"
+      }
+    },
+    "complexes": {
+      "labels": {
+        "companyId": "Şirkət",
+        "complexName": "Kompleks Adı",
+        "address": "Ünvan",
+        "totalArea": "Ümumi Sahə (m²)",
+        "landArea": "Torpaq Sahəsi (m²)",
+        "totalBuildings": "Binalar Sayı",
+        "latitude": "Enlik (Latitude)",
+        "longitude": "Uzunluq (Longitude)"
+      },
+      "placeholders": {
+        "companyId": "Şirkət seçin",
+        "complexName": "Kompleks adını daxil edin",
+        "address": "Ünvanı daxil edin",
+        "totalArea": "Ümumi sahəni daxil edin",
+        "landArea": "Torpaq sahəsini daxil edin",
+        "totalBuildings": "Binalar sayını daxil edin",
+        "latitude": "Enlik koordinatını daxil edin",
+        "longitude": "Uzunluq koordinatını daxil edin"
+      },
+      "errors": {
+        "companyId": {
+          "required": "Şirkət seçimi tələb olunur"
+        },
+        "complexName": {
+          "required": "Kompleks adı tələb olunur"
+        },
+        "address": {
+          "required": "Ünvan tələb olunur"
+        },
+        "totalArea": {
+          "required": "Ümumi sahə tələb olunur",
+          "min": "Sahə 1-dən böyük olmalıdır"
+        },
+        "landArea": {
+          "required": "Torpaq sahəsi tələb olunur",
+          "min": "Sahə 1-dən böyük olmalıdır"
+        },
+        "totalBuildings": {
+          "required": "Binalar sayı tələb olunur",
+          "min": "Say 1-dən böyük olmalıdır"
+        }
+      }
+    },
+    "buildings": {
+      "labels": {
+        "complexId": "Kompleks",
+        "buildingName": "Bina Adı",
+        "buildingNumber": "Bina Nömrəsi",
+        "totalFloors": "Mərtəbə Sayı",
+        "totalApartments": "Mənzil Sayı",
+        "buildingType": "Bina Növü",
+        "hasElevator": "Lift var",
+        "elevatorCount": "Lift Sayı",
+        "hasParking": "Parkinq var",
+        "constructionYear": "Tikinti İli",
+        "address": "Ünvan"
+      },
+      "placeholders": {
+        "complexId": "Kompleks seçin",
+        "buildingName": "Bina adını daxil edin",
+        "buildingNumber": "Bina nömrəsini daxil edin",
+        "totalFloors": "Mərtəbə sayını daxil edin",
+        "totalApartments": "Mənzil sayını daxil edin",
+        "buildingType": "Bina növünü seçin",
+        "elevatorCount": "Lift sayını daxil edin",
+        "constructionYear": "Tikinti ilini daxil edin",
+        "address": "Ünvanı daxil edin"
+      },
+      "errors": {
+        "complexId": {
+          "required": "Kompleks seçimi tələb olunur"
+        },
+        "buildingName": {
+          "required": "Bina adı tələb olunur"
+        },
+        "buildingNumber": {
+          "required": "Bina nömrəsi tələb olunur"
+        },
+        "totalFloors": {
+          "required": "Mərtəbə sayı tələb olunur",
+          "min": "Mərtəbə sayı 1-dən böyük olmalıdır"
+        },
+        "totalApartments": {
+          "required": "Mənzil sayı tələb olunur",
+          "min": "Mənzil sayı 1-dən böyük olmalıdır"
+        },
+        "buildingType": {
+          "required": "Bina növü tələb olunur"
+        },
+        "elevatorCount": {
+          "required": "Lift sayı tələb olunur",
+          "min": "Lift sayı 1-dən böyük olmalıdır"
+        },
+        "constructionYear": {
+          "required": "Tikinti ili tələb olunur",
+          "min": "İl 1800-dən böyük olmalıdır",
+          "max": "İl {{currentYear}}-dən böyük ola bilməz"
+        },
+        "address": {
+          "required": "Ünvan tələb olunur"
+        }
+      }
+    },
+    "apartments": {
+      "labels": {
+        "complexName": "Kompleks",
+        "buildingId": "Bina",
+        "buildingName": "Bina Adı",
+        "apartmentNumber": "Mənzil Nömrəsi",
+        "floor": "Mərtəbə",
+        "roomCount": "Otaq Sayı",
+        "area": "Sahə (m²)",
+        "apartmentType": "Mənzil Tipi",
+        "hasBalcony": "Balkon var",
+        "balconyArea": "Balkon Sahəsi (m²)",
+        "status": "Status"
+      },
+      "placeholders": {
+        "buildingId": "Bina seçin",
+        "buildingName": "Bina adını seçin",
+        "apartmentNumber": "Mənzil nömrəsini daxil edin",
+        "floor": "Mərtəbəni daxil edin",
+        "roomCount": "Otaq sayını daxil edin",
+        "area": "Sahəni daxil edin",
+        "apartmentType": "Mənzil tipini seçin",
+        "balconyArea": "Balkon sahəsini daxil edin",
+        "status": "Status seçin"
+      },
+      "errors": {
+        "complexName": {
+          "required": "Kompleks seçimi tələb olunur"
+        },
+        "buildingId": {
+          "required": "Bina seçimi tələb olunur"
+        },
+        "buildingName": {
+          "required": "Bina adı tələb olunur"
+        },
+        "apartmentNumber": {
+          "required": "Mənzil nömrəsi tələb olunur"
+        },
+        "floor": {
+          "required": "Mərtəbə tələb olunur"
+        },
+        "roomCount": {
+          "required": "Otaq sayı tələb olunur"
+        },
+        "area": {
+          "required": "Sahə tələb olunur",
+          "min": "Sahə 1-dən böyük olmalıdır"
+        },
+        "apartmentType": {
+          "required": "Mənzil tipi tələb olunur"
+        },
+        "balconyArea": {
+          "min": "Balkon sahəsi 1-dən böyük olmalıdır",
+          "required": "Balkon sahəsi tələb olunur"
+        },
+        "status": {
+          "required": "Status tələb olunur"
+        }
+      }
+    },
+    "apartmentOwners": {
+      "labels": {
+        "user": "İstifadəçi",
+        "complex": "Kompleks",
+        "building": "Bina",
+        "apartment": "Mənzil",
+        "purchaseDate": "Alış tarixi",
+        "purchasePrice": "Alış qiyməti",
+        "deedNumber": "Kupça nömrəsi",
+        "isMainOwner": "Əsas sahibir",
+        "startDate": "Başlama tarixi",
+        "endDate": "Bitmə tarixi",
+        "deedFile": "Kupça sənədi",
+        "newUser": "Yeni istifadəçi",
+        "existingUser": "Mövcud istifadəçi seç",
+        "firstName": "Ad",
+        "lastName": "Soyad",
+        "fatherName": "Ata adı",
+        "email": "E-poçt",
+        "phone": "Telefon",
+        "mobilePhone": "Mobil telefon",
+        "idcardNumber": "Fin kodu",
+        "dateOfBirth": "Doğum tarixi",
+        "password": "Şifrə",
+        "passwordHint": "boş buraxsanız dəyişilməyəcək"
+      },
+      "errors": {
+        "user": {
+          "required": "İstifadəçi seçilməlidir"
+        },
+        "complex": {
+          "required": "Kompleks seçilməlidir"
+        },
+        "building": {
+          "required": "Bina seçilməlidir"
+        },
+        "apartment": {
+          "required": "Mənzil seçilməlidir"
+        },
+        "purchaseDate": {
+          "required": "Alış tarixi daxil edilməlidir"
+        },
+        "purchasePrice": {
+          "required": "Alış qiyməti daxil edilməlidir",
+          "min": "Qiymət 0-dan böyük olmalıdır"
+        },
+        "startDate": {
+          "required": "Başlama tarixi daxil edilməlidir"
+        },
+        "firstName": {
+          "required": "Ad daxil edilməlidir"
+        },
+        "lastName": {
+          "required": "Soyad daxil edilməlidir"
+        },
+        "email": {
+          "required": "E-poçt daxil edilməlidir",
+          "invalid": "E-poçt formatı düzgün deyil"
+        },
+        "password": {
+          "required": "Şifrə daxil edilməlidir"
+        },
+        "idcardNumber": {
+          "required": "Fin kod daxil edilməlidir",
+          "pattern": "FIN kod 7 simvoldan ibarət olmalı və yalnız ingilis hərfləri ilə rəqəmlərdən ibarət olmalıdır"
+        }
+      },
+      "sections": {
+        "userInfo": "İstifadəçi məlumatları",
+        "apartmentInfo": "Mənzil məlumatları"
+      }
+    },
+    "tenants": {
+      "labels": {
+        "owner": "Mənzil sahibi",
+        "monthlyRent": "Aylıq icarə haqqı",
+        "securityDeposit": "Girov depozit",
+        "contractStartDate": "Müqavilə başlama tarixi",
+        "contractEndDate": "Müqavilə bitmə tarixi",
+        "paymentDay": "Ödəniş günü",
+        "contractDocument": "Müqavilə sənədi"
+      },
+      "errors": {
+        "owner": {
+          "required": "Mənzil sahibi seçilməlidir"
+        },
+        "monthlyRent": {
+          "required": "Aylıq icarə haqqı daxil edilməlidir"
+        },
+        "contractStartDate": {
+          "required": "Müqavilə başlama tarixi daxil edilməlidir"
+        }
+      },
+      "sections": {
+        "tenantInfo": "İcarə məlumatları"
+      }
+    },
+    "parkingSpaces": {
+      "labels": {
+        "complex": "Kompleks",
+        "building": "Bina",
+        "spaceNumber": "Yer nömrəsi",
+        "spaceType": "Yer növü",
+        "monthlyRentalPrice": "Kataloq qiyməti",
+        "salePrice": "Satış qiyməti",
+        "level": "Səviyyə",
+        "status": "Status",
+        "isElectricCharging": "Elektrik şarj stansiyası"
+      },
+      "errors": {
+        "complex": {
+          "required": "Kompleks seçilməlidir"
+        },
+        "building": {
+          "required": "Bina seçilməlidir"
+        },
+        "spaceNumber": {
+          "required": "Yer nömrəsi daxil edilməlidir"
+        },
+        "spaceType": {
+          "required": "Yer növü seçilməlidir"
+        },
+        "monthlyRentalPrice": {
+          "required": "Kataloq qiyməti daxil edilməlidir",
+          "min": "Qiymət 0-dan böyük olmalıdır"
+        },
+        "salePrice": {
+          "required": "Satış qiyməti daxil edilməlidir",
+          "min": "Qiymət 0-dan böyük olmalıdır"
+        },
+        "level": {
+          "required": "Səviyyə daxil edilməlidir"
+        },
+        "status": {
+          "required": "Status seçilməlidir"
+        }
+      }
+    },
+    "parkingAssignments": {
+      "labels": {
+        "parkingSpace": "Park yeri",
+        "user": "İstifadəçi",
+        "apartment": "Mənzil",
+        "assignmentType": "Təyinat növü",
+        "vehicleNumber": "Nəqliyyat nömrəsi",
+        "vehicleBrand": "Marka",
+        "vehicleModel": "Model",
+        "vehicleColor": "Rəng",
+        "monthlyFee": "Müqavilə qiyməti",
+        "contractStartDate": "Müqavilə başlanğıcı",
+        "contractEndDate": "Müqavilə bitməsi"
+      },
+      "errors": {
+        "parkingSpace": {
+          "required": "Park yeri seçilməlidir"
+        },
+        "user": {
+          "required": "İstifadəçi seçilməlidir"
+        },
+        "apartment": {
+          "required": "Mənzil seçilməlidir"
+        },
+        "assignmentType": {
+          "required": "Təyinat növü seçilməlidir"
+        },
+        "vehicleNumber": {
+          "required": "Nəqliyyat nömrəsi daxil edilməlidir"
+        },
+        "vehicleBrand": {
+          "required": "Marka daxil edilməlidir"
+        },
+        "vehicleModel": {
+          "required": "Model daxil edilməlidir"
+        },
+        "monthlyFee": {
+          "required": "Müqavilə qiyməti daxil edilməlidir",
+          "min": "Məbləğ 0-dan böyük olmalıdır"
+        },
+        "contractStartDate": {
+          "required": "Müqavilə başlanğıcı daxil edilməlidir"
+        },
+        "contractEndDate": {
+          "required": "Müqavilə bitməsi daxil edilməlidir"
+        }
+      }
+    },
+    "payments": {
+      "labels": {
+        "complexId": "Kompleks",
+        "apartmentNumber": "Mənzil",
+        "paymentTypeId": "Ödəniş növü",
+        "statusId": "Status",
+        "amount": "Məbləğ",
+        "paymentDate": "Ödəniş tarixi",
+        "description": "Qeyd"
+      },
+      "errors": {
+        "complexId": {
+          "required": "Kompleks seçilməlidir"
+        },
+        "apartmentNumber": {
+          "required": "Mənzil seçilməlidir"
+        },
+        "paymentTypeId": {
+          "required": "Ödəniş növü seçilməlidir"
+        },
+        "statusId": {
+          "required": "Status seçilməlidir"
+        },
+        "amount": {
+          "required": "Məbləğ daxil edilməlidir",
+          "min": "Məbləğ 0-dan böyük olmalıdır"
+        },
+        "paymentDate": {
+          "required": "Ödəniş tarixi seçilməlidir"
+        }
+      }
+    },
+    "discountPolicies": {
+      "labels": {
+        "targetType": "Obyekt növü",
+        "targetId": "Obyekt",
+        "userId": "İstifadəçi",
+        "categoryId": "Kateqoriya",
+        "discountTypeId": "Güzəşt növü",
+        "discountValue": "Güzəşt dəyəri",
+        "validFrom": "Başlanğıc tarixi",
+        "validTo": "Bitmə tarixi",
+        "description": "Açıqlama"
+      },
+      "errors": {
+        "targetType": {
+          "required": "Obyekt növü seçilməlidir"
+        },
+        "targetId": {
+          "required": "Obyekt seçilməlidir"
+        },
+        "categoryId": {
+          "required": "Kateqoriya seçilməlidir"
+        },
+        "discountTypeId": {
+          "required": "Güzəşt növü seçilməlidir"
+        },
+        "discountValue": {
+          "required": "Güzəşt dəyəri daxil edilməlidir"
+        },
+        "validFrom": {
+          "required": "Başlanğıc tarixi seçilməlidir"
+        },
+        "validTo": {
+          "required": "Bitmə tarixi seçilməlidir"
+        }
+      }
+    },
+    "serviceTariffs": {
+      "labels": {
+        "serviceTypeRefId": "Xidmət növü",
+        "companyId": "Şirkət",
+        "complexId": "Kompleks",
+        "calculationTypeRefId": "Hesablama növü",
+        "unitOfMeasureRefId": "Ölçü vahidi",
+        "pricePerUnit": "Vahid qiyməti",
+        "minimumCharge": "Minimum ödəniş",
+        "validFrom": "Qüvvəyə minmə tarixi",
+        "validTo": "Bitmə tarixi",
+        "tier1Limit": "1-ci hədd limiti",
+        "tier1Price": "1-ci hədd qiyməti",
+        "tier2Limit": "2-ci hədd limiti",
+        "tier2Price": "2-ci hədd qiyməti",
+        "tier3Price": "3-cü hədd qiyməti"
+      },
+      "errors": {
+        "serviceTypeRefId": {
+          "required": "Xidmət növü seçilməlidir"
+        },
+        "companyId": {
+          "required": "Şirkət seçilməlidir"
+        },
+        "complexId": {
+          "required": "Kompleks seçilməlidir"
+        },
+        "calculationTypeRefId": {
+          "required": "Hesablama növü seçilməlidir"
+        },
+        "unitOfMeasureRefId": {
+          "required": "Ölçü vahidi seçilməlidir"
+        },
+        "pricePerUnit": {
+          "required": "Vahid qiyməti daxil edilməlidir"
+        },
+        "validFrom": {
+          "required": "Qüvvəyə minmə tarixi seçilməlidir"
+        }
+      }
+    },
+    "invoices": {
+      "labels": {
+        "invoiceNumber": "İnvoys №",
+        "complexId": "Kompleks",
+        "buildingId": "Bina",
+        "targetType": "Obyekt növü",
+        "targetId": "Obyekt",
+        "userId": "İstifadəçi",
+        "categoryId": "Kateqoriya",
+        "description": "Açıqlama",
+        "amount": "Məbləğ",
+        "dueDate": "Son ödəniş tarixi",
+        "issueDate": "Tarix",
+        "status": "Status",
+        "lateFee": "Gecikmə cəriməsi",
+        "discount": "Endirim",
+        "notes": "Qeydlər"
+      },
+      "targetTypes": {
+        "apartment": "Mənzil",
+        "commercialSpace": "Kommersiya sahəsi",
+        "parkingSpace": "Qaraj / Dayanacaq"
+      },
+      "errors": {
+        "complexId": {
+          "required": "Kompleks seçilməlidir"
+        },
+        "buildingId": {
+          "required": "Bina seçilməlidir"
+        },
+        "targetId": {
+          "required": "Obyekt seçilməlidir"
+        },
+        "userId": {
+          "required": "İstifadəçi seçilməlidir"
+        },
+        "categoryId": {
+          "required": "Kateqoriya seçilməlidir"
+        },
+        "amount": {
+          "required": "Məbləğ daxil edilməlidir"
+        },
+        "dueDate": {
+          "required": "Son ödəniş tarixi seçilməlidir"
+        },
+        "issueDate": {
+          "required": "Tarix seçilməlidir"
+        },
+        "status": {
+          "required": "Status seçilməlidir"
+        }
+      }
+    },
+    "kassaMedaxil": {
+      "labels": {
+        "invoiceId": "İnvoys",
+        "amount": "Məbləğ",
+        "paymentDate": "Ödəniş tarixi",
+        "receiptNumber": "Qəbz nömrəsi",
+        "transactionId": "Əməliyyat ID",
+        "notes": "Qeydlər"
+      },
+      "hints": {
+        "remainingAmount": "Qalan məbləğ"
+      },
+      "errors": {
+        "invoiceId": {
+          "required": "İnvoys seçilməlidir"
+        },
+        "amount": {
+          "required": "Məbləğ daxil edilməlidir",
+          "max": "Məbləğ qalan borcdan ({{ max }}) çox ola bilməz"
+        },
+        "paymentDate": {
+          "required": "Ödəniş tarixi seçilməlidir"
+        }
+      }
+    },
+    "bankMedaxil": {
+      "labels": {
+        "invoiceId": "İnvoys",
+        "userId": "İstifadəçi",
+        "amount": "Məbləğ",
+        "bankName": "Bank adı",
+        "referenceNumber": "İstinad nömrəsi",
+        "paymentDate": "Ödəniş tarixi",
+        "notes": "Qeydlər"
+      },
+      "errors": {
+        "invoiceId": {
+          "required": "İnvoys seçilməlidir"
+        },
+        "userId": {
+          "required": "İstifadəçi seçilməlidir"
+        },
+        "amount": {
+          "required": "Məbləğ daxil edilməlidir"
+        },
+        "bankName": {
+          "required": "Bank adı daxil edilməlidir"
+        },
+        "paymentDate": {
+          "required": "Ödəniş tarixi seçilməlidir"
+        }
+      }
+    },
+    "complaints": {
+      "labels": {
+        "categoryId": "Kateqoriya",
+        "userId": "İstifadəçi",
+        "apartmentId": "Mənzil",
+        "title": "Başlıq",
+        "description": "Açıqlama",
+        "location": "Yer",
+        "priority": "Prioritet",
+        "status": "Status",
+        "isAnonymous": "Anonim",
+        "dueDate": "Son tarix",
+        "assignedTo": "Cavabdeh",
+        "assignedDate": "Tapşırılma tarixi",
+        "resolvedDate": "Həll tarixi",
+        "resolutionNotes": "Həll qeydi",
+        "rating": "Reytinq",
+        "feedback": "Rəy"
+      },
+      "errors": {
+        "categoryId": {
+          "required": "Kateqoriya seçilməlidir"
+        },
+        "userId": {
+          "required": "İstifadəçi seçilməlidir"
+        },
+        "apartmentId": {
+          "required": "Mənzil seçilməlidir"
+        },
+        "title": {
+          "required": "Başlıq daxil edilməlidir"
+        },
+        "description": {
+          "required": "Açıqlama daxil edilməlidir"
+        },
+        "priority": {
+          "required": "Prioritet seçilməlidir"
+        },
+        "status": {
+          "required": "Status seçilməlidir"
+        }
+      }
+    },
+    "roles": {
+      "labels": {
+        "roleName": "Rol adı",
+        "description": "Açıqlama"
+      },
+      "errors": {
+        "roleName": {
+          "required": "Rol adı daxil edilməlidir"
+        },
+        "description": {
+          "required": "Açıqlama daxil edilməlidir"
+        }
+      }
+    },
+    "users": {
+      "labels": {
+        "username": "İstifadəçi adı",
+        "email": "E-poçt",
+        "password": "Şifrə",
+        "firstName": "Ad",
+        "lastName": "Soyad",
+        "fatherName": "Ata adı",
+        "phone": "Telefon",
+        "mobilePhone": "Mobil telefon",
+        "idcardNumber": "Fin kodu",
+        "dateOfBirth": "Doğum tarixi",
+        "emergencyContact": "Təcili əlaqə şəxsi",
+        "emergencyPhone": "Təcili əlaqə nömrəsi",
+        "isActive": "Aktiv"
+      },
+      "errors": {
+        "username": {
+          "required": "İstifadəçi adı daxil edilməlidir"
+        },
+        "email": {
+          "required": "E-poçt daxil edilməlidir",
+          "invalid": "E-poçt düzgün deyil"
+        },
+        "password": {
+          "required": "Şifrə daxil edilməlidir",
+          "pattern": "Şifrə minimum 8 simvol, böyük hərf, kiçik hərf, rəqəm və xüsusi simvol ehtiva etməlidir"
+        },
+        "firstName": {
+          "required": "Ad daxil edilməlidir"
+        },
+        "lastName": {
+          "required": "Soyad daxil edilməlidir"
+        },
+        "mobilePhone": {
+          "required": "Mobil telefon daxil edilməlidir"
+        },
+        "idcardNumber": {
+          "pattern": "FIN kod 7 simvoldan ibarət olmalı və yalnız ingilis hərfləri ilə rəqəmlərdən ibarət olmalıdır"
+        }
+      }
+    },
+    "sakinler": {
+      "labels": {
+        "userId": "İstifadəçi",
+        "apartmentId": "Mənzil",
+        "deedNumber": "Sənəd nömrəsi",
+        "purchasePrice": "Alış qiyməti",
+        "purchaseDate": "Alış tarixi",
+        "startDate": "Başlama tarixi",
+        "endDate": "Bitmə tarixi",
+        "isMainOwner": "Əsas sahib"
+      },
+      "errors": {
+        "userId": {
+          "required": "İstifadəçi seçilməlidir"
+        },
+        "apartmentId": {
+          "required": "Mənzil seçilməlidir"
+        },
+        "startDate": {
+          "required": "Başlama tarixi seçilməlidir"
+        }
+      }
+    },
+    "residents": {
+      "labels": {
+        "apartmentId": "Mənzil",
+        "userId": "İstifadəçi",
+        "phone": "Telefon",
+        "dateOfBirth": "Doğum tarixi",
+        "moveInDate": "Köçmə tarixi",
+        "moveOutDate": "Çıxış tarixi"
+      },
+      "errors": {
+        "apartmentId": {
+          "required": "Mənzil seçilməlidir"
+        },
+        "phone": {
+          "required": "Telefon daxil edilməlidir"
+        },
+        "dateOfBirth": {
+          "required": "Doğum tarixi seçilməlidir"
+        },
+        "moveInDate": {
+          "required": "Köçmə tarixi seçilməlidir"
+        }
+      }
+    },
+    "announcements": {
+      "labels": {
+        "complexId": "Kompleks",
+        "buildingId": "Bina",
+        "postedBy": "Elan edən",
+        "title": "Başlıq",
+        "content": "Məzmun",
+        "category": "Kateqoriya",
+        "type": "Növ",
+        "priority": "Prioritet",
+        "status": "Status",
+        "expiryDate": "Bitmə tarixi"
+      },
+      "errors": {
+        "complexId": {
+          "required": "Kompleks seçilməlidir"
+        },
+        "postedBy": {
+          "required": "Elan edən seçilməlidir"
+        },
+        "title": {
+          "required": "Başlıq daxil edilməlidir"
+        },
+        "content": {
+          "required": "Məzmun daxil edilməlidir"
+        },
+        "category": {
+          "required": "Kateqoriya seçilməlidir"
+        },
+        "type": {
+          "required": "Növ seçilməlidir"
+        },
+        "priority": {
+          "required": "Prioritet seçilməlidir"
+        },
+        "status": {
+          "required": "Status seçilməlidir"
+        },
+        "expiryDate": {
+          "required": "Bitmə tarixi seçilməlidir"
+        }
+      }
+    },
+    "commercialOwners": {
+      "labels": {
+        "space": "Kommersiya obyekti"
+      },
+      "errors": {
+        "space": {
+          "required": "Kommersiya obyekti seçilməlidir"
+        }
+      },
+      "sections": {
+        "spaceInfo": "Obyekt məlumatları"
+      }
+    },
+    "commercialSpaces": {
+      "labels": {
+        "complex": "Kompleks",
+        "building": "Bina",
+        "spaceNumber": "Obyekt nömrəsi",
+        "floor": "Mərtəbə",
+        "spaceType": "Obyekt növü",
+        "area": "Sahə (m²)",
+        "description": "Açıqlama",
+        "salePrice": "Satış qiyməti",
+        "monthlyRent": "Kataloq qiyməti",
+        "securityDeposit": "Təminat depoziti",
+        "hasWater": "Su",
+        "hasElectricity": "Elektrik",
+        "hasSewerage": "Kanalizasiya"
+      },
+      "errors": {
+        "complex": {
+          "required": "Kompleks seçilməlidir"
+        },
+        "building": {
+          "required": "Bina seçilməlidir"
+        },
+        "spaceNumber": {
+          "required": "Obyekt nömrəsi daxil edilməlidir"
+        },
+        "floor": {
+          "required": "Mərtəbə daxil edilməlidir"
+        },
+        "spaceType": {
+          "required": "Obyekt növü seçilməlidir"
+        },
+        "area": {
+          "required": "Sahə daxil edilməlidir",
+          "min": "Sahə 1-dən böyük olmalıdır"
+        },
+        "salePrice": {
+          "required": "Satış qiyməti daxil edilməlidir",
+          "min": "Qiymət 0-dan böyük olmalıdır"
+
+        },
+        "monthlyRent": {
+          "required": "Kataloq qiyməti daxil edilməlidir",
+          "min": "Qiymət 0-dan böyük olmalıdır"
+        },
+        "securityDeposit": {
+          "required": "Təminat depoziti daxil edilməlidir",
+          "min": "Məbləğ 0-dan böyük olmalıdır"
+        }
+      }
+    },
+    "commercialRentals": {
+      "labels": {
+        "space": "Kommersiya sahəsi",
+        "tenantUser": "İstifadəçi",
+        "tenantContactName": "Əlaqə şəxsinin adı",
+        "tenantCompanyName": "Şirkət adı",
+        "tenantPhone": "Telefon nömrəsi",
+        "tenantEmail": "E-mail ünvanı",
+        "businessType": "Fəaliyyət növü",
+        "monthlyRent": "Müqavilə qiyməti",
+        "securityDeposit": "Təminat depoziti",
+        "paymentDay": "Ödəniş günü (1-31)",
+        "contractStartDate": "Müqavilə başlanğıcı",
+        "contractEndDate": "Müqavilə bitməsi",
+        "contractDocument": "Müqavilə sənədi"
+      },
+      "errors": {
+        "space": {
+          "required": "Kommersiya sahəsi seçilməlidir"
+        },
+        "tenantUser": {
+          "required": "İstifadəçi seçilməlidir"
+        },
+        "tenantContactName": {
+          "required": "Əlaqə şəxsinin adı daxil edilməlidir"
+        },
+        "tenantPhone": {
+          "required": "Telefon nömrəsi daxil edilməlidir"
+        },
+        "tenantEmail": {
+          "required": "E-mail ünvanı daxil edilməlidir"
+        },
+        "monthlyRent": {
+          "required": "Müqavilə qiyməti daxil edilməlidir",
+          "min": "Qiymət 0-dan böyük olmalıdır"
+        },
+        "securityDeposit": {
+          "min": "Məbləğ 0-dan böyük olmalıdır"
+        },
+        "paymentDay": {
+          "required": "Ödəniş günü daxil edilməlidir",
+          "range": "Ödəniş günü 1-31 arasında olmalıdır"
+        },
+        "contractStartDate": {
+          "required": "Müqavilə başlanğıc tarixi daxil edilməlidir"
+        }
+      }
+    },
+    "advertisingBoards": {
+      "labels": {
+        "complex": "Kompleks",
+        "building": "Bina",
+        "location": "Yerləşmə yeri",
+        "boardSize": "Lövhə ölçüsü",
+        "description": "Açıqlama",
+        "monthlyPrice": "Kataloq qiyməti"
+      },
+      "errors": {
+        "complex": {
+          "required": "Kompleks seçilməlidir"
+        },
+        "building": {
+          "required": "Bina seçilməlidir"
+        },
+        "location": {
+          "required": "Yerləşmə yeri daxil edilməlidir"
+        },
+        "boardSize": {
+          "required": "Lövhə ölçüsü daxil edilməlidir"
+        },
+        "monthlyPrice": {
+          "required": "Kataloq qiyməti daxil edilməlidir",
+          "min": "Qiymət 0-dan böyük olmalıdır"
+        }
+      }
+    },
+    "advertisingRental": {
+      "labels": {
+        "board": "Reklam lövhəsi",
+        "companyName": "Şirkət adı",
+        "contactPerson": "Əlaqə şəxsi",
+        "contactPhone": "Əlaqə nömrəsi",
+        "monthlyFee": "Müqavilə qiyməti",
+        "contractStartDate": "Müqavilə başlanğıcı",
+        "contractEndDate": "Müqavilə bitməsi"
+      },
+      "errors": {
+        "board": {
+          "required": "Reklam lövhəsi seçilməlidir"
+        },
+        "companyName": {
+          "required": "Şirkət adı daxil edilməlidir"
+        },
+        "contactPerson": {
+          "required": "Əlaqə şəxsi daxil edilməlidir"
+        },
+        "contactPhone": {
+          "required": "Əlaqə nömrəsi daxil edilməlidir"
+        },
+        "monthlyFee": {
+          "required": "Müqavilə qiyməti daxil edilməlidir",
+          "min": "Məbləğ 0-dan böyük olmalıdır"
+        },
+        "contractStartDate": {
+          "required": "Müqavilə başlanğıcı daxil edilməlidir"
+        },
+        "contractEndDate": {
+          "required": "Müqavilə bitməsi daxil edilməlidir"
+        }
+      }
+    },
+    "inventory": {
+      "labels": {
+        "complex": "Kompleks",
+        "name": "Ad",
+        "category": "Kateqoriya",
+        "quantity": "Miqdar",
+        "unit": "Ölçü vahidi",
+        "status": "Status",
+        "location": "Saxlama yeri",
+        "purchaseDate": "Alış tarixi",
+        "purchasePrice": "Alış qiyməti",
+        "notes": "Qeydlər"
+      },
+      "errors": {
+        "complex": { "required": "Kompleks seçilməlidir" },
+        "name": { "required": "Ad məcburidir" },
+        "category": { "required": "Kateqoriya seçilməlidir" },
+        "quantity": { "required": "Miqdar məcburidir" },
+        "unit": { "required": "Ölçü vahidi seçilməlidir" },
+        "status": { "required": "Status seçilməlidir" }
+      }
+    },
+    "contractors": {
+      "labels": {
+        "companyName": "Şirkət adı",
+        "serviceType": "Xidmət növü",
+        "contactPerson": "Əlaqə şəxsi",
+        "phone": "Telefon",
+        "email": "E-poçt",
+        "address": "Ünvan",
+        "taxNumber": "VÖEN",
+        "notes": "Qeydlər"
+      },
+      "errors": {
+        "companyName": { "required": "Şirkət adı məcburidir" },
+        "serviceType": { "required": "Xidmət növü seçilməlidir" },
+        "contactPerson": { "required": "Əlaqə şəxsi məcburidir" },
+        "phone": { "required": "Telefon məcburidir" },
+        "email": { "invalid": "E-poçt düzgün deyil" }
+      }
+    },
+    "contractorContracts": {
+      "labels": {
+        "complexId": "Kompleks",
+        "buildingId": "Bina",
+        "contractorId": "Podratçı",
+        "contractStartDate": "Başlanğıc tarixi",
+        "contractEndDate": "Bitmə tarixi",
+        "monthlyFee": "Aylıq haqq (AZN)",
+        "description": "Açıqlama",
+        "status": "Status"
+      },
+      "errors": {
+        "complexId": { "required": "Kompleks seçilməlidir" },
+        "contractorId": { "required": "Podratçı seçilməlidir" },
+        "contractStartDate": { "required": "Başlanğıc tarixi məcburidir" },
+        "contractEndDate": { "required": "Bitmə tarixi məcburidir" },
+        "monthlyFee": { "required": "Aylıq haqq məcburidir" },
+        "status": { "required": "Status seçilməlidir" }
+      }
+    },
+    "companies": {
+      "labels": {
+        "companyName": "Şirkət adı",
+        "taxNumber": "VÖEN",
+        "directorName": "Direktor",
+        "contactPhone": "Əlaqə telefonu",
+        "email": "E-poçt",
+        "address": "Ünvan",
+        "description": "Açıqlama",
+        "adminUser": "İstifadəçi"
+      },
+      "errors": {
+        "companyName": { "required": "Şirkət adı məcburidir" },
+        "taxNumber": { "required": "VÖEN məcburidir" },
+        "directorName": { "required": "Direktor adı məcburidir" },
+        "contactPhone": { "required": "Əlaqə telefonu məcburidir" },
+        "email": { "invalid": "E-poçt düzgün deyil" },
+        "adminUser": { "required": "İstifadəçi seçilməlidir" }
+      }
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Daxil ol",
+      "emailLabel": "İstifadıçi adı",
+      "emailRequired": "İstifadıçi adı tələb olunur",
+      "emailInvalid": "Zəhmət olmasa, düzgün İstifadıçi adı daxil edin",
+      "passwordLabel": "Şifrə",
+      "passwordRequired": "Şifrə tələb olunur",
+      "forgotPassword": "Şifrəni unutmusunuz?",
+      "signInButton": "Daxil ol",
+      "heroTitle1": "Yaşayış kompleksiniz",
+      "heroTitle2": "tam nəzarət altında",
+      "heroDescription": "Platformamız yaşayış komplekslərinin idarə olunmasını sadələşdirir, prosesləri mərkəzləşdirir və bütün məlumatlara bir nöqtədən nəzarət imkanı yaradır.",
+      "noAccount": "Hesabınız yoxdur?",
+      "registerLink": "Qeydiyyatdan keç",
+      "errors": {
+        "wrongCredentials": "Yanlış e-poçt və ya şifrə"
+      }
+    },
+    "signOut": {
+      "title": "Siz hesabdan çıxış etdiniz!",
+      "redirectingText": "Yönləndirilir:",
+      "redirectingSignIn": "Keçid et:",
+      "redirectingSignInLinkText": "Daxil ol"
+    },
+    "forgotPassword": {
+      "title": "Şifrəni unutmusunuz?",
+      "description": "Parolunuzu sıfırlamaq üçün formu doldurun",
+      "emailLabel": "İstifadıçi adı",
+      "emailRequired": "İstifadıçi adı tələb olunur",
+      "emailInvalid": "Zəhmət olmasa, düzgün İstifadıçi adı daxil edin",
+      "sendButton": "Sıfırlama linki göndər",
+      "backToSignIn": "Daxil ol",
+      "backToSignInText": "Keçid et:"
+    },
+    "selfRegister": {
+      "title": "Qeydiyyat",
+      "subtitle": "Hesab yaratmaq üçün aşağıdakı formu doldurun",
+      "alreadyAccount": "Artıq hesabınız var?",
+      "signIn": "Daxil olun",
+      "labels": {
+        "firstName": "Ad",
+        "lastName": "Soyad",
+        "fatherName": "Ata adı",
+        "idcardNumber": "Fin kodu",
+        "phone": "Telefon",
+        "email": "E-poçt",
+        "password": "Şifrə",
+        "targetType": "Əmlak növü",
+        "targetId": "Əmlak",
+        "deedNumber": "Sənəd nömrəsi",
+        "company": "Şirkət",
+        "complex": "Kompleks",
+        "building": "Bina",
+        "apartment": "Mənzil",
+        "unit": "Əmlak"
+      },
+      "steps": {
+        "property": "Əmlak məlumatları",
+        "personal": "Şəxsi məlumatlar"
+      },
+      "errors": {
+        "required": "Bu sahə məcburidir",
+        "invalidEmail": "E-poçt düzgün deyil",
+        "passwordMinLength": "Şifrə minimum 6 simvol olmalıdır",
+        "firstName": { "required": "Ad məcburidir" },
+        "lastName": { "required": "Soyad məcburidir" },
+        "idcardNumber": { "required": "Şəxsiyyət nömrəsi məcburidir", "pattern": "FIN kod 7 simvoldan ibarət olmalı və yalnız ingilis hərfləri ilə rəqəmlərdən ibarət olmalıdır" },
+        "phone": { "required": "Telefon məcburidir" },
+        "email": {
+          "required": "E-poçt məcburidir",
+          "invalid": "E-poçt düzgün deyil"
+        },
+        "password": { "required": "Şifrə məcburidir" },
+        "targetId": { "required": "Əmlak seçilməlidir" },
+        "deedNumber": { "required": "Sənəd nömrəsi məcburidir" }
+      },
+      "haveAccount": "Artıq hesabınız var?",
+      "submitButton": "Müraciəti göndər",
+      "successTitle": "Müraciətiniz qəbul edildi!",
+      "successMessage": "Müraciətiniz göndərildi. Admin təsdiqindən sonra əmlakınız görünəcək."
+    },
+    "selectTenant": {
+      "title": "MTK seçin",
+      "subtitle": "Daxil olmaq istədiyiniz kompleksi seçin",
+      "noTenants": "Heç bir kompleks tapılmadı",
+      "createFirst": {
+        "title": "İlk MTK-nı yaradın",
+        "subtitle": "Şirkətinizə ilk kompleksi əlavə edin",
+        "companyLabel": "Şirkət",
+        "complexNameLabel": "MTK adı",
+        "addressLabel": "Ünvan",
+        "totalAreaLabel": "Ümumi sahə (m²)",
+        "landAreaLabel": "Torpaq sahəsi (m²)",
+        "totalBuildingsLabel": "Bina sayı",
+        "submitButton": "MTK yarat",
+        "creating": "Yaradılır...",
+        "errors": {
+          "company": "Şirkət seçilməlidir",
+          "complexName": "MTK adı daxil edilməlidir"
+        }
+      }
+    }
+  },
+  "settings": {
+    "title": "Tənzimləmələr",
+    "theme": "Tema",
+    "scheme": "Sxem",
+    "layout": "Tərtibat",
+    "themes": {
+      "default": "Standart",
+      "brand": "Brend",
+      "teal": "Mavi-yaşıl",
+      "rose": "Qızılgül",
+      "purple": "Bənövşəyi",
+      "amber": "Kəhrəba"
+    },
+    "schemes": {
+      "auto": "Avto",
+      "autoTooltip": "'Tercih-rəng sxemi' media sorğusundan istifadə edərək istifadəçinin əməliyyat sisteminin rəng sxemi seçiminə əsaslanan sxemi avtomatik təyin edir.",
+      "dark": "Gecə",
+      "light": "Gündüz"
+    },
+    "layouts": {
+      "empty": "Boş",
+      "classic": "Klassik",
+      "classy": "Zərif",
+      "compact": "Yığcam",
+      "dense": "Sıx",
+      "futuristic": "Futuristik",
+      "thin": "Nazik",
+      "centered": "Mərkəzləşdirilmiş",
+      "enterprise": "Korporativ",
+      "material": "Material",
+      "modern": "Modern"
+    }
+  },
+  "modules": {
+    "complexes": {
+      "title": "Komplekslər",
+      "columns": {
+        "companyName": "Şirkət",
+        "totalArea": "Ümumi Sahə",
+        "landArea": "Torpaq Sahəsi",
+        "totalBuildings": "Binalar"
+      },
+      "confirmation": {
+        "complexes": {
+          "title": "Kompleksi sil",
+          "message": "\"{{complexName}}\" kompleksini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        },
+        "buildings": {
+          "title": "Binanı sil",
+          "message": "\"{{apartmentNumber}}\" binasını silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        },
+        "apartments": {
+          "title": "Mənzili sil",
+          "message": "\"{{apartmentNumber}}\" mənzilini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        },
+        "apartmentOwners": {
+          "title": "Mənzil sahibini sil",
+          "message": "\"{{apartmentOwners}}\" mənzil sahibini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        },
+        "apartmentResidents": {
+          "title": "İcarədarı sil",
+          "message": "\"{{apartmentResident}}\" icarədarını silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        },
+        "parking": {
+          "title": "Park yerini sil",
+          "message": "\"{{parking}}\" park yerini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      }
+    },
+    "buildings": {
+      "title": "Binalar",
+      "columns": {
+        "buildingNumber": "Bina nömrəsi",
+        "totalFloors": "Mərtəbə sayı",
+        "totalApartments": "Mənzil sayı",
+        "buildingType": "Bina tipi",
+        "hasElevator": "Lift",
+        "elevatorCount": "Lift sayı",
+        "hasParking": "Dayanacaq",
+        "constructionYear": "Tikinti ili"
+      }
+    },
+    "apartments": {
+      "title": "Mənzillər",
+      "columns": {
+        "apartmentNumber": "Mənzil nömrəsi",
+        "floor": "Mərtəbə",
+        "roomCount": "Otaq sayı",
+        "area": "Sahəsi",
+        "apartmentType": "Mənzil tipi",
+        "hasBalcony": "Balkon",
+        "balconyArea": "Balkon sahəsi",
+        "status": "Status"
+      }
+    },
+    "apartmentOwners": {
+      "title": "Mənzil sahibləri",
+      "columns": {
+        "purchaseDate": "Alış tarixi",
+        "purchasePrice": "Alış qiyməti",
+        "person": "Şəxs",
+        "deedNumber": "Kupça nömrəsi",
+        "isMainOwner": "Əsas sahibir",
+        "startDate": "Başlama tarixi",
+        "endDate": "Bitmə tarixi"
+      }
+    },
+    "apartmentTenants": {
+      "title": "Mənzil icarədarları",
+      "noData": "Mənzil icarədarı tapılmadı",
+      "columns": {
+        "tenantName": "İcarədar",
+        "tenantPhone": "Telefon №",
+        "monthlyRent": "Aylıq icarə",
+        "contractStartDate": "Müqavilə başlanğıcı",
+        "contractEndDate": "Müqavilə sonu"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "İcarədarı sil",
+          "message": "\"{{name}}\" icarədarını silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      }
+    },
+    "parkingAssignments": {
+      "title": "Qaraj sahibləri",
+      "columns": {
+        "place": "Yer",
+        "person": "Şəxs",
+        "assignmentType": "Təyinat növü",
+        "vehicleNumber": "Nəqliyyat №",
+        "vehicleBrand": "Marka",
+        "vehicleModel": "Model",
+        "monthlyFee": "Müqavilə qiyməti",
+        "contractStartDate": "Başlanğıc tarixi",
+        "contractEndDate": "Bitmə tarixi"
+      },
+      "noData": {
+        "title": "Qaraj sahibi tapılmadı",
+        "message": "Yeni qaraj sahibi yaratmaq üçün yuxarıdakı düyməni klikləyin"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Qaraj sahibini sil",
+          "message": "\"{{person}}\" qaraj sahibini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      }
+    },
+    "commercialOwners": {
+      "title": "Obyekt Sahibləri",
+      "noData": "Obyekt sahibi tapılmadı",
+      "columns": {
+        "ownerName": "Sahib",
+        "phone": "Telefon",
+        "spaceNumber": "Obyekt №",
+        "spaceTypeName": "Obyekt növü",
+        "purchaseDate": "Alış tarixi",
+        "deedNumber": "Kupça №",
+        "isMainOwner": "Əsas malik"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Obyekt sahibini sil",
+          "message": "\"{{name}}\" obyekt sahibini silmək istədiyinizdən əminsiniz?"
+        }
+      }
+    },
+    "commercialSpaces": {
+      "title": "Obyektlər",
+      "columns": {
+        "spaceNumber": "Obyekt №",
+        "floor": "Mərtəbə",
+        "spaceType": "Obyekt növü",
+        "area": "Sahə (m²)",
+        "description": "Açıqlama",
+        "salePrice": "Satış qiyməti",
+        "monthlyRent": "Kataloq qiyməti",
+        "securityDeposit": "Depozit",
+        "hasWater": "Su",
+        "hasElectricity": "Elektrik",
+        "hasSewerage": "Kanalizasiya"
+      },
+      "noData": {
+        "title": "Obyekt tapılmadı",
+        "message": "Yeni obyekt yaratmaq üçün yuxarıdakı düyməni klikləyin"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Obyekti sil",
+          "message": "\"{{spaceNumber}}\" obyekti silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      }
+    },
+    "commercialRentals": {
+      "title": "Kommersiya icarələri",
+      "columns": {
+        "tenantContactName": "Əlaqə şəxsi",
+        "tenantCompanyName": "Şirkət",
+        "tenantPhone": "Telefon",
+        "tenantEmail": "E-mail",
+        "businessType": "Fəaliyyət növü",
+        "monthlyRent": "Aylıq kirayə",
+        "securityDeposit": "Depozit",
+        "paymentDay": "Ödəniş günü",
+        "contractStartDate": "Müqavilə başlanğıcı",
+        "contractEndDate": "Müqavilə bitməsi"
+      },
+      "noData": {
+        "title": "Kommersiya icarəsi tapılmadı",
+        "message": "Yeni icarə yaratmaq üçün yuxarıdakı düyməni klikləyin"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "İcarəni sil",
+          "message": "\"{{tenant}}\" icarəsini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      }
+    },
+    "accessCards": {
+      "title": "Giriş Kartları",
+      "columns": {
+        "cardNumber": "Kart №",
+        "cardType": "Kart növü",
+        "user": "İstifadəçi",
+        "apartmentNumber": "Mənzil №",
+        "issueDate": "Verilmə tarixi",
+        "expiryDate": "Bitmə tarixi",
+        "accessLevels": "Giriş səviyyələri",
+        "orderStatus": "Sifariş statusu",
+        "orderNotes": "Sifariş qeydi",
+        "blockReason": "Blok səbəbi"
+      },
+      "errors": {
+        "accessLevels": {
+          "required": "Ən az bir giriş səviyyəsi seçilməlidir"
+        },
+        "blockReason": {
+          "required": "Blok səbəbi daxil edilməlidir"
+        }
+      },
+      "noData": {
+        "title": "Giriş kartı tapılmadı",
+        "message": "Yeni giriş kartı yaratmaq üçün yuxarıdakı düyməni klikləyin"
+      },
+      "orderStatusDialog": {
+        "title": "Sifariş statusunu yenilə",
+        "tooltip": "Sifariş statusunu yenilə",
+        "orderStatus": "Sifariş statusu",
+        "deliveredDate": "Çatdırılma tarixi",
+        "errors": {
+          "orderStatus": { "required": "Sifariş statusu seçilməlidir" },
+          "deliveredDate": { "required": "Çatdırılma tarixi məcburidir" }
+        }
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Giriş kartını sil",
+          "message": "\"{{cardNumber}}\" giriş kartını silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      }
+    },
+    "advertisingBoards": {
+      "title": "Reklam lövhələri",
+      "columns": {
+        "location": "Yerləşmə yeri",
+        "boardSize": "Lövhə ölçüsü",
+        "description": "Açıqlama",
+        "monthlyPrice": "Kataloq qiyməti"
+      },
+      "noData": {
+        "title": "Reklam lövhəsi tapılmadı",
+        "message": "Yeni reklam lövhəsi yaratmaq üçün yuxarıdakı düyməni klikləyin"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Reklam lövhəsini sil",
+          "message": "\"{{board}}\" reklam lövhəsini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      }
+    },
+    "advertisingRental": {
+      "title": "Reklam lövhəsi icarəsi",
+      "columns": {
+        "location": "Yerləşmə yeri",
+        "companyName": "Şirkət adı",
+        "contactPerson": "Əlaqə şəxsi",
+        "contactPhone": "Əlaqə nömrəsi",
+        "monthlyFee": "Müqavilə qiyməti",
+        "contractStartDate": "Müqavilə başlanğıcı",
+        "contractEndDate": "Müqavilə bitməsi"
+      },
+      "noData": {
+        "title": "İcarə tapılmadı",
+        "message": "Yeni icarə yaratmaq üçün yuxarıdakı düyməni klikləyin"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "İcarəni sil",
+          "message": "\"{{company}}\" şirkətinin icarəsini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      }
+    },
+    "parking": {
+      "title": "Qarajlar",
+      "columns": {
+        "spaceNumber": "Park №",
+        "spaceType": "Park tipi",
+        "level": "Səviyyə",
+        "monthlyRentalPrice": "Kataloq qiyməti",
+        "salePrice": "Satış qiyməti",
+        "isElectricCharging": "Elektrik şarjı"
+      }
+    },
+    "accounting": {
+      "title": "Mühasibatlıq",
+      "dashboard": {
+        "title": "İcmal",
+        "cards": {
+          "totalInvoiced": "Ümumi hesablanmış",
+          "totalPaid": "Ümumi ödənilmiş",
+          "totalUnpaid": "Ümumi borclu",
+          "totalDiscount": "Ümumi güzəşt",
+          "totalCashIncome": "Kassa daxilolması",
+          "totalBankIncome": "Bank daxilolması",
+          "invoiceCount": "İnvoys sayı",
+          "paidInvoiceCount": "Ödənilmiş invoys",
+          "unpaidInvoiceCount": "Ödənilməmiş invoys",
+          "overdueInvoiceCount": "Vaxtı keçmiş invoys"
+        }
+      },
+      "discountPolicies": {
+        "title": "Güzəştlər",
+        "noData": "Güzəşt tapılmadı",
+        "columns": {
+          "person": "Şəxs",
+          "targetType": "Obyekt növü",
+          "discountType": "Güzəşt növü",
+          "discountValue": "Güzəşt dəyəri",
+          "validFrom": "Başlanğıc tarixi",
+          "validTo": "Bitmə tarixi"
+        },
+        "confirmation": {
+          "delete": {
+            "title": "Güzəşti sil",
+            "message": "\"{{person}}\" üçün güzəşti silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+          }
+        }
+      },
+      "serviceTariffs": {
+        "title": "Tariflər",
+        "noData": "Tarif tapılmadı",
+        "columns": {
+          "serviceTypeName": "Xidmət növü",
+          "pricePerUnit": "Vahid qiyməti",
+          "validFrom": "Qüvvəyə minmə tarixi"
+        },
+        "confirmation": {
+          "delete": {
+            "title": "Tarifi sil",
+            "message": "\"{{serviceTypeName}}\" tarifini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+          }
+        }
+      },
+      "kassaMedaxil": {
+        "title": "Kassa Mədaxil",
+        "noData": "Kassa mədaxil tapılmadı",
+        "columns": {
+          "invoiceNumber": "İnvoys №",
+          "person": "Şəxs",
+          "amount": "Məbləğ",
+          "paymentMethod": "Ödəniş üsulu",
+          "paymentDate": "Ödəniş tarixi"
+        },
+        "confirmation": {
+          "delete": {
+            "title": "Kassa mədaxili sil",
+            "message": "\"{{invoiceNumber}}\" nömrəli kassa mədaxilini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+          }
+        }
+      },
+      "bankMedaxil": {
+        "title": "Bank Mədaxil",
+        "noData": "Bank mədaxil tapılmadı",
+        "columns": {
+          "invoiceNumber": "İnvoys №",
+          "person": "Şəxs",
+          "amount": "Məbləğ",
+          "bankName": "Bank adı",
+          "referenceNumber": "İstinad nömrəsi",
+          "paymentDate": "Ödəniş tarixi"
+        },
+        "confirmation": {
+          "delete": {
+            "title": "Bank mədaxili sil",
+            "message": "\"{{invoiceNumber}}\" nömrəli bank mədaxilini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+          }
+        }
+      }
+    },
+    "payments": {
+      "title": "Ödənişlər",
+      "noData": "Ödəniş tapılmadı",
+      "columns": {
+        "apartmentNumber": "Mənzil №",
+        "residentName": "Sakin",
+        "paymentType": "Ödəniş növü",
+        "amount": "Məbləğ",
+        "paymentDate": "Ödəniş tarixi"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Ödənişi sil",
+          "message": "\"{{resident}}\" sakininin ödənişini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      }
+    },
+    "invoices": {
+      "title": "İnvoys",
+      "noData": "İnvoys tapılmadı",
+      "columns": {
+        "invoiceNumber": "İnvoys №",
+        "targetIdentifier": "Obyekt",
+        "person": "Şəxs",
+        "categoryName": "Kateqoriya",
+        "amount": "Məbləğ",
+        "paidAmount": "Ödənilmiş",
+        "dueDate": "Son tarix",
+        "status": "Status"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "İnvoysu sil",
+          "message": "\"{{invoiceNumber}}\" nömrəli invoysu silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      }
+    },
+    "complaints": {
+      "title": "Müraciətlər",
+      "noData": "Müraciət tapılmadı",
+      "columns": {
+        "complaintNumber": "Müraciət №",
+        "categoryName": "Kateqoriya",
+        "person": "Şəxs",
+        "apartmentNumber": "Mənzil №",
+        "title": "Başlıq",
+        "priority": "Prioritet",
+        "status": "Status",
+        "createdDate": "Tarix"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Müraciəti sil",
+          "message": "\"{{complaintNumber}}\" nömrəli müraciəti silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      },
+      "messages": {
+        "title": "Mesajlar",
+        "buttonTooltip": "Mesajlar",
+        "noMessages": "Hələ mesaj yoxdur",
+        "placeholder": "Mesajınızı daxil edin",
+        "send": "Göndər",
+        "isInternal": "Daxili mesaj",
+        "internal": "Daxili"
+      }
+    },
+    "users": {
+      "title": "İstifadəçilər",
+      "noData": "İstifadəçi tapılmadı",
+      "columns": {
+        "username": "İstifadəçi adı",
+        "firstName": "Ad",
+        "lastName": "Soyad",
+        "email": "E-poçt",
+        "mobilePhone": "Mobil telefon",
+        "isActive": "Aktiv"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "İstifadəçini sil",
+          "message": "\"{{username}}\" istifadəçisini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      },
+      "assignRoles": {
+        "title": "Rol təyin et",
+        "button": "Rol təyin et"
+      }
+    },
+    "roles": {
+      "title": "Rollar",
+      "createTitle": "Yeni rol",
+      "editTitle": "Rolu düzəliş et",
+      "noData": "Rol tapılmadı",
+      "columns": {
+        "roleName": "Rol adı",
+        "description": "Açıqlama"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Rolu sil",
+          "message": "\"{{roleName}}\" rolunu silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      },
+      "menus": {
+        "title": "Menyu İcazələri",
+        "buttonTooltip": "Menyu təyin et",
+        "noData": "Menyu tapılmadı",
+        "residentPortal": "Sakin Portalı",
+        "columns": {
+          "menu": "Menyu",
+          "selected": "Seçildi",
+          "canView": "Baxış",
+          "canCreate": "Yarat",
+          "canEdit": "Düzəliş",
+          "canDelete": "Sil",
+          "canExport": "İxrac"
+        }
+      }
+    },
+    "sakinler": {
+      "title": "Sakinlər",
+      "noData": "Sakin tapılmadı",
+      "columns": {
+        "person": "Şəxs",
+        "apartmentNumber": "Mənzil №",
+        "isMainOwner": "Əsas sahib"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Sakini sil",
+          "message": "\"{{person}}\" sakinini silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      },
+      "resetPassword": {
+        "title": "Şifrəni sıfırla",
+        "subtitle": "üçün yeni şifrə daxil edin.",
+        "newPassword": "Yeni şifrə",
+        "save": "Sıfırla",
+        "errors": {
+          "required": "Şifrə daxil edilməlidir",
+          "minLength": "Şifrə ən az 6 simvol olmalıdır"
+        }
+      }
+    },
+    "residents": {
+      "title": "Ailə Üzvləri",
+      "noData": "Ailə üzvü tapılmadı",
+      "apartmentFilter": "Mənzil seçin",
+      "selectApartment": "Ailə üzvlərini görmək üçün mənzil seçin",
+      "columns": {
+        "fullName": "Ad Soyad",
+        "phone": "Telefon",
+        "dateOfBirth": "Doğum tarixi",
+        "isRegistered": "Qeydiyyatlı",
+        "moveInDate": "Köçmə tarixi",
+        "moveOutDate": "Çıxış tarixi",
+        "isActive": "Aktiv"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Ailə üzvünü sil",
+          "message": "\"{{fullName}}\" ailə üzvünü silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      }
+    },
+    "announcements": {
+      "title": "Elanlar",
+      "noData": "Elan tapılmadı",
+      "columns": {
+        "title": "Başlıq",
+        "category": "Kateqoriya",
+        "type": "Növ",
+        "priority": "Prioritet",
+        "status": "Status",
+        "createdDate": "Tarix"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Elanı sil",
+          "message": "\"{{title}}\" elanını silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      }
+    },
+    "reports": {
+      "title": "Hesabatlar",
+      "borcluMusteri": {
+        "title": "Borclu Müştəri Hesabatı",
+        "noData": "Borclu müştəri tapılmadı",
+        "columns": {
+          "person": "Şəxs",
+          "apartmentNumber": "Mənzil №",
+          "totalDebt": "Ümumi borc",
+          "overdueInvoiceCount": "Gecikmiş invoys sayı"
+        }
+      },
+      "musteri": {
+        "title": "Müştəri Hesabatı",
+        "noData": "Müştəri tapılmadı",
+        "columns": {
+          "person": "Şəxs",
+          "apartmentNumber": "Mənzil №",
+          "totalInvoiced": "Cəmi invoys məbləği",
+          "totalPaid": "Ödənilmiş məbləğ",
+          "totalDebt": "Borc",
+          "lastPaymentDate": "Son ödəniş tarixi"
+        }
+      },
+      "invoiceReport": {
+        "title": "İnvoys Hesabatı",
+        "noData": "İnvoys tapılmadı",
+        "columns": {
+          "invoiceNumber": "İnvoys №",
+          "person": "Şəxs",
+          "amount": "Məbləğ",
+          "paidAmount": "Ödənilmiş",
+          "status": "Status",
+          "dueDate": "Son ödəniş tarixi"
+        }
+      }
+    },
+    "companies": {
+      "title": "Şirkətlər",
+      "noData": "Şirkət tapılmadı",
+      "editTitle": "Şirkəti redaktə et",
+      "createTitle": "Yeni şirkət",
+      "columns": {
+        "companyName": "Şirkət adı",
+        "taxNumber": "VÖEN",
+        "directorName": "Direktor",
+        "contactPhone": "Əlaqə telefonu"
+      },
+      "actions": {
+        "assignAdmin": "Admin təyin et"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Şirkət silinsin?",
+          "message": "{{ name }} şirkəti silinəcək. Bu əməliyyat geri alına bilməz."
+        }
+      }
+    },
+    "inventory": {
+      "title": "İnventarizasiya",
+      "createTitle": "Yeni inventar",
+      "editTitle": "İnventarı redaktə et",
+      "noData": "İnventar tapılmadı",
+      "columns": {
+        "name": "Ad",
+        "category": "Kateqoriya",
+        "quantity": "Miqdar",
+        "unit": "Vahid",
+        "status": "Status",
+        "location": "Yer",
+        "purchaseDate": "Alış tarixi"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "İnventar silinsin?",
+          "message": "{{ name }} inventarı silinəcək."
+        }
+      }
+    },
+    "contractors": {
+      "title": "Podratçılar",
+      "createTitle": "Yeni podratçı",
+      "editTitle": "Podratçını redaktə et",
+      "noData": "Podratçı tapılmadı",
+      "columns": {
+        "companyName": "Şirkət adı",
+        "serviceType": "Xidmət növü",
+        "contactPerson": "Əlaqə şəxsi",
+        "phone": "Telefon",
+        "email": "E-poçt"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Podratçı silinsin?",
+          "message": "{{ name }} podratçısı silinəcək."
+        }
+      }
+    },
+    "contractorContracts": {
+      "title": "Podratçı müqavilələri",
+      "createTitle": "Yeni müqavilə",
+      "editTitle": "Müqaviləni redaktə et",
+      "noData": "Müqavilə tapılmadı",
+      "columns": {
+        "companyName": "Şirkət adı",
+        "serviceType": "Xidmət növü",
+        "contractStartDate": "Başlanğıc tarixi",
+        "contractEndDate": "Bitmə tarixi",
+        "monthlyFee": "Aylıq haqq"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Müqavilə silinsin?",
+          "message": "{{ name }} müqaviləsi silinəcək."
+        }
+      }
+    },
+    "pendingClaims": {
+      "title": "Gözləyən müraciətlər",
+      "noData": "Gözləyən müraciət yoxdur",
+      "tabs": {
+        "apartments": "Mənzillər",
+        "parking": "Qarajlar",
+        "commercial": "Ticarət obyektləri"
+      },
+      "columns": {
+        "unitNumber": "Nömrə",
+        "claimantName": "Müraciətçi",
+        "deedNumber": "Sənəd nömrəsi",
+        "claimDate": "Müraciət tarixi"
+      },
+      "actions": {
+        "approve": "Təsdiq et",
+        "reject": "Rədd et"
+      },
+      "confirmation": {
+        "approve": {
+          "title": "Müraciəti təsdiq et",
+          "message": "{{name}} şəxsinin {{unit}} nömrəli əmlak müraciəti təsdiq ediləcək. Davam etmək istəyirsiniz?"
+        },
+        "reject": {
+          "title": "Müraciəti rədd et",
+          "message": "{{name}} şəxsinin {{unit}} nömrəli əmlak müraciəti rədd ediləcək. Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      }
+    },
+    "guestVehicles": {
+      "title": "Qonaq nəqliyyatı",
+      "columns": {
+        "plateNumber":      "Plaka",
+        "guestName":        "Qonaq adı",
+        "guestPhone":       "Qonaq telefonu",
+        "parkingSpaceName": "Parkinq yeri",
+        "vehicleBrand":     "Marka",
+        "startDateTime":    "Başlanğıc",
+        "endDateTime":      "Bitmə",
+        "status":           "Status",
+        "requestedByName":  "Sorğu edən"
+      },
+      "actions": {
+        "approve": "Təsdiq et",
+        "reject":  "Rədd et"
+      },
+      "confirmation": {
+        "approve": {
+          "title":   "Sorğunu təsdiq et",
+          "message": "{{plateNumber}} plaka nömrəli nəqliyyata giriş icazəsi veriləcək. Davam etmək istəyirsiniz?"
+        },
+        "reject": {
+          "title":   "Sorğunu rədd et",
+          "message": "{{plateNumber}} plaka nömrəli nəqliyyata giriş icazəsi rədd ediləcək."
+        }
+      }
+    }
+  },
+  "resident": {
+    "portal": {
+      "title": "Sakin Portalı"
+    },
+    "nav": {
+      "dashboard": "İdarə paneli",
+      "invoices": "Hesab-fakturalar",
+      "payments": "Ödənişlər",
+      "complaints": "Şikayətlər",
+      "announcements": "Elanlar",
+      "myProperties": "Əmlaklarım",
+      "myClaims": "Əmlak müraciətlərim",
+      "guestRequests": "Qonaq sorğuları"
+    },
+    "dashboard": {
+      "title": "İdarə paneli"
+    },
+    "invoices": {
+      "title": "Hesab-fakturalar",
+      "empty": "İnvoys tapılmadı",
+      "tabs": {
+        "all": "Hamısı",
+        "pending": "Gözləmədə",
+        "partial": "Qismən ödənmiş",
+        "overdue": "Gecikmiş",
+        "paid": "Ödənilib",
+        "cancelled": "Ləğv edilib"
+      },
+      "labels": {
+        "dueDate": "Son tarix",
+        "overdue": "Gecikmiş",
+        "paidOf": "ödənilib",
+        "lateFee": "Gecikdirmə faizi",
+        "discount": "Endirim"
+      },
+      "status": {
+        "Pending": "Gözləmədə",
+        "Paid": "Ödənilib",
+        "Overdue": "Gecikmiş",
+        "Partial": "Qismən ödənmiş",
+        "Cancelled": "Ləğv edilib"
+      },
+      "pay": {
+        "button": "Ödə",
+        "title": "Ödəniş et",
+        "remaining": "Qalıq məbləğ",
+        "amount": "Ödəniş məbləği (₼)",
+        "amountError": "Düzgün məbləğ daxil edin",
+        "date": "Ödəniş tarixi",
+        "notes": "Qeyd (ixtiyari)"
+      }
+    },
+    "payments": {
+      "title": "Ödənişlər",
+      "dateRange": "Tarix aralığı",
+      "empty": "Ödəniş tapılmadı",
+      "total": "Cəmi ödəniş",
+      "method": {
+        "Cash": "Nağd",
+        "Bank Transfer": "Bank köçürməsi"
+      }
+    },
+    "complaints": {
+      "title": "Müraciətlərim",
+      "empty": "Müraciət tapılmadı",
+      "tabs": {
+        "all": "Hamısı",
+        "open": "Açıq",
+        "inProgress": "İcrada",
+        "resolved": "Həll olunub",
+        "closed": "Bağlı"
+      },
+      "status": {
+        "Open": "Açıq",
+        "InProgress": "İcrada",
+        "Resolved": "Həll olunub",
+        "Closed": "Bağlı"
+      },
+      "priority": {
+        "Low": "Aşağı",
+        "Normal": "Normal",
+        "Medium": "Orta",
+        "High": "Yüksək",
+        "Important": "Vacib",
+        "Urgent": "Təcili",
+        "Critical": "Kritik"
+      },
+      "actions": {
+        "messages": "Mesajlar"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Müraciəti sil",
+          "message": "\"{{ complaintNumber }}\" nömrəli müraciəti silmək istədiyinizdən əminsiniz?"
+        }
+      },
+      "form": {
+        "title": "Başlıq",
+        "category": "Kateqoriya",
+        "priority": "Prioritet",
+        "apartment": "Mənzil",
+        "location": "Məkan",
+        "description": "Açıqlama",
+        "isAnonymous": "Anonim göndər",
+        "errors": {
+          "titleRequired": "Başlıq məcburidir",
+          "categoryRequired": "Kateqoriya seçilməlidir",
+          "priorityRequired": "Prioritet seçilməlidir",
+          "apartmentRequired": "Mənzil seçilməlidir",
+          "descriptionRequired": "Açıqlama məcburidir"
+        }
+      },
+      "messages": {
+        "title": "Mesajlar",
+        "empty": "Hələ mesaj yoxdur",
+        "placeholder": "Mesajınızı yazın..."
+      }
+    },
+    "announcements": {
+      "title": "Elanlar",
+      "tabs": {
+        "public": "Ümumi elanlar",
+        "my": "Mənim elanlarım"
+      },
+      "selectComplex": "Kompleks seçin",
+      "emptyPublic": "Elan tapılmadı",
+      "emptyMy": "Sizin elan yoxdur",
+      "priority": {
+        "Low": "Aşağı",
+        "Normal": "Normal",
+        "Important": "Vacib",
+        "Urgent": "Təcili",
+        "High": "Yüksək"
+      },
+      "status": {
+        "Active": "Aktiv",
+        "Pending": "Gözləmədə",
+        "Approved": "Təsdiqlənib",
+        "Rejected": "Rədd edilib",
+        "Expired": "Müddəti bitib"
+      },
+      "confirmation": {
+        "delete": {
+          "title": "Elanı sil",
+          "message": "\"{{ title }}\" elanını silmək istədiyinizdən əminsiniz?"
+        }
+      },
+      "form": {
+        "title": "Başlıq",
+        "complex": "Kompleks",
+        "building": "Bina (ixtiyari)",
+        "category": "Kateqoriya",
+        "type": "Növ",
+        "priority": "Prioritet",
+        "expiryDate": "Bitmə tarixi",
+        "content": "Məzmun",
+        "errors": {
+          "titleRequired": "Başlıq məcburidir",
+          "complexRequired": "Kompleks seçilməlidir",
+          "categoryRequired": "Kateqoriya seçilməlidir",
+          "expiryDateRequired": "Bitmə tarixi seçilməlidir",
+          "contentRequired": "Məzmun məcburidir"
+        }
+      }
+    },
+    "myProperties": {
+      "title": "Əmlaklarım",
+      "sections": {
+        "apartments":  "Mənzillər",
+        "parking":     "Qarajlar",
+        "commercial":  "Ticarət obyektləri"
+      },
+      "labels": {
+        "floor": "Mərtəbə"
+      },
+      "noApartments":  "Mənzil tapılmadı",
+      "noParking":     "Qaraj tapılmadı",
+      "noCommercial":  "Ticarət obyekti tapılmadı",
+      "parking": {
+        "vehicle":  "Avtomobil",
+        "contract": "Müqavilə müddəti"
+      },
+      "commercial": {
+        "ownerInfo":    "Sahiblik məlumatları",
+        "deedNumber":   "Sənəd nömrəsi",
+        "purchaseDate": "Alış tarixi",
+        "mainOwner":    "Əsas sahib",
+        "rentalInfo":   "İcarə məlumatları"
+      }
+    },
+    "myClaims": {
+      "title":    "Əmlak müraciətlərim",
+      "newClaim": "Yeni müraciət",
+      "noData":   "Müraciət tapılmadı",
+      "tabs": {
+        "apartments": "Mənzillər",
+        "parking":    "Qarajlar",
+        "commercial": "Ticarət obyektləri"
+      },
+      "labels": {
+        "targetType":  "Əmlak növü",
+        "targetName":  "Əmlak",
+        "deedNumber":  "Sənəd nömrəsi",
+        "claimDate":   "Müraciət tarixi"
+      },
+      "errors": {
+        "targetType":  { "required": "Əmlak növü seçilməlidir" },
+        "targetName":  { "required": "Əmlak seçilməlidir" },
+        "deedNumber":  { "required": "Sənəd nömrəsi məcburidir" }
+      }
+    },
+    "guestRequests": {
+      "title": "Qonaq girişi sorğuları",
+      "empty": "Qonaq sorğusu tapılmadı",
+      "tabs": {
+        "all":       "Hamısı",
+        "pending":   "Gözləyir",
+        "active":    "Aktiv",
+        "rejected":  "Rədd edilib",
+        "cancelled": "Ləğv edilib",
+        "expired":   "Müddəti bitib"
+      },
+      "actions": {
+        "cancel": "Ləğv et"
+      },
+      "form": {
+        "title":         "Yeni qonaq girişi sorğusu",
+        "parkingSpace":  "Parkinq yeri",
+        "plateNumber":   "Plaka nömrəsi",
+        "guestName":     "Qonaq adı",
+        "guestPhone":    "Qonaq telefonu",
+        "vehicleBrand":  "Avtomobil markası",
+        "vehicleModel":  "Avtomobil modeli",
+        "startDateTime": "Başlanğıc tarixi",
+        "endDateTime":   "Bitmə tarixi",
+        "errors": {
+          "parkingSpaceRequired": "Parkinq yeri seçilməlidir",
+          "plateNumberRequired":  "Plaka nömrəsi məcburidir",
+          "startDateRequired":    "Başlanğıc tarixi seçilməlidir",
+          "endDateRequired":      "Bitmə tarixi seçilməlidir"
+        }
+      },
+      "confirmation": {
+        "cancel": {
+          "title":   "Sorğunu ləğv et",
+          "message": "{{plateNumber}} plaka nömrəli qonaq sorğusu ləğv ediləcək."
+        }
+      }
+    }
+  },
+  "colors": {
+    "white": "Ağ",
+    "black": "Qara",
+    "gray": "Boz",
+    "silver": "Gümüşü",
+    "red": "Qırmızı",
+    "blue": "Mavi",
+    "green": "Yaşıl",
+    "yellow": "Sarı",
+    "orange": "Narıncı",
+    "brown": "Qəhvəyi",
+    "beige": "Bej",
+    "gold": "Qızılı"
+  }
+}

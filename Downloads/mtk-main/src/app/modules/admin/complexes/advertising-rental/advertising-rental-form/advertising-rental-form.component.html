@@ -1,0 +1,136 @@
+<!-- advertising-rental-form.component.html -->
+
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h2 class="text-2xl font-semibold">
+            {{ (isEdit ? 'common.actions.edit' : 'common.actions.create') | transloco }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="flex items-center justify-center py-16">
+        <div class="flex flex-col items-center gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!isLoading" [formGroup]="form" class="flex flex-col flex-auto p-6 overflow-y-auto">
+
+        <div class="grid grid-cols-3 gap-x-3 gap-y-0">
+
+            <!-- Reklam lövhəsi (Autocomplete) -->
+            <mat-form-field class="col-span-3">
+                <mat-label>{{'forms.advertisingRental.labels.board' | transloco}}</mat-label>
+                <input type="text" matInput formControlName="location" [matAutocomplete]="boardAuto"
+                    (input)="onBoardSearch($event)">
+                <mat-autocomplete #boardAuto="matAutocomplete" (optionSelected)="onBoardSelected($event)">
+                    <mat-option *ngIf="boardSearchLoading" disabled>
+                        <mat-spinner diameter="20"></mat-spinner>
+                        <span class="ml-2">{{'common.searching' | transloco}}</span>
+                    </mat-option>
+                    <mat-option *ngFor="let board of filteredBoards" [value]="board.value">
+                        {{ board.value }}
+                    </mat-option>
+                    <mat-option *ngIf="!boardSearchLoading && filteredBoards.length === 0" disabled>
+                        {{'common.resultNotFound' | transloco}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-icon matPrefix class="icon-size-5">campaign</mat-icon>
+                <mat-error *ngIf="form.get('location')?.hasError('required')">
+                    {{'forms.advertisingRental.errors.board.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Şirkət adı -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.advertisingRental.labels.companyName' | transloco}}</mat-label>
+                <input matInput formControlName="companyName">
+                <mat-icon matPrefix class="icon-size-5">business</mat-icon>
+                <mat-error *ngIf="form.get('companyName')?.hasError('required')">
+                    {{'forms.advertisingRental.errors.companyName.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Əlaqə şəxsi -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.advertisingRental.labels.contactPerson' | transloco}}</mat-label>
+                <input matInput formControlName="contactPerson">
+                <mat-icon matPrefix class="icon-size-5">person</mat-icon>
+                <mat-error *ngIf="form.get('contactPerson')?.hasError('required')">
+                    {{'forms.advertisingRental.errors.contactPerson.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Əlaqə nömrəsi -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.advertisingRental.labels.contactPhone' | transloco}}</mat-label>
+                <input matInput formControlName="contactPhone" mask="0000000000" [dropSpecialCharacters]="false"
+                    placeholder="0501234567">
+                <mat-icon matPrefix class="icon-size-5">phone</mat-icon>
+                <mat-error *ngIf="form.get('contactPhone')?.hasError('required')">
+                    {{'forms.advertisingRental.errors.contactPhone.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Aylıq ödəniş -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.advertisingRental.labels.monthlyFee' | transloco}}</mat-label>
+                <input matInput type="number" formControlName="monthlyFee">
+                <span matSuffix class="text-secondary">₼</span>
+                <mat-icon matPrefix class="icon-size-5">payments</mat-icon>
+                <mat-error *ngIf="form.get('monthlyFee')?.hasError('required')">
+                    {{'forms.advertisingRental.errors.monthlyFee.required' | transloco}}
+                </mat-error>
+                <mat-error *ngIf="form.get('monthlyFee')?.hasError('min')">
+                    {{'forms.advertisingRental.errors.monthlyFee.min' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Müqavilə başlanğıcı -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.advertisingRental.labels.contractStartDate' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="startPicker" formControlName="contractStartDate">
+                <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                <mat-datepicker #startPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event</mat-icon>
+                <mat-error *ngIf="form.get('contractStartDate')?.hasError('required')">
+                    {{'forms.advertisingRental.errors.contractStartDate.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Müqavilə bitməsi -->
+            <mat-form-field class="col-span-1">
+                <mat-label>{{'forms.advertisingRental.labels.contractEndDate' | transloco}}</mat-label>
+                <input matInput [matDatepicker]="endPicker" formControlName="contractEndDate">
+                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                <mat-datepicker #endPicker></mat-datepicker>
+                <mat-icon matPrefix class="icon-size-5">event</mat-icon>
+                <mat-error *ngIf="form.get('contractEndDate')?.hasError('required')">
+                    {{'forms.advertisingRental.errors.contractEndDate.required' | transloco}}
+                </mat-error>
+            </mat-form-field>
+
+        </div>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end px-6 py-4 border-t bg-gray-50 dark:bg-gray-900">
+        <button mat-button (click)="onCancel()" [disabled]="isLoading">
+            {{'common.actions.cancel' | transloco}}
+        </button>
+        <button class="ml-2" mat-flat-button color="primary" (click)="onSave()"
+            [disabled]="isLoading || form.invalid">
+            <span>
+                {{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}
+            </span>
+        </button>
+    </div>
+
+</div>

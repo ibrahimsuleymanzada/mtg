@@ -1,0 +1,125 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between sm:py-4 sm:px-10 bg-default dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center font-medium">
+                <div>
+                    <a class="whitespace-nowrap text-primary-500">{{'common.breadcrumbs.modules' | transloco}}</a>
+                </div>
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                    <a class="ml-1 text-primary-500">{{'modules.pendingClaims.title' | transloco}}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex flex-auto overflow-hidden">
+        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
+            <div class="p-6 sm:p-10">
+
+                @if (loading) {
+                <div class="flex items-center justify-center py-16">
+                    <div class="flex flex-col items-center gap-3">
+                        <mat-spinner diameter="40"></mat-spinner>
+                        <span class="text-sm text-secondary">{{'common.dataLoading' | transloco}}</span>
+                    </div>
+                </div>
+                } @else {
+
+                <mat-tab-group animationDuration="0ms" class="bg-card shadow rounded-2xl overflow-hidden">
+
+                    <!-- Tab 1: Mənzillər -->
+                    <mat-tab [label]="'modules.pendingClaims.tabs.apartments' | transloco">
+                        <div class="p-6 overflow-x-auto">
+                            <ng-container [ngTemplateOutlet]="claimsTable" [ngTemplateOutletContext]="{ $implicit: apartmentsSource }"></ng-container>
+                        </div>
+                    </mat-tab>
+
+                    <!-- Tab 2: Qarajlar -->
+                    <mat-tab [label]="'modules.pendingClaims.tabs.parking' | transloco">
+                        <div class="p-6 overflow-x-auto">
+                            <ng-container [ngTemplateOutlet]="claimsTable" [ngTemplateOutletContext]="{ $implicit: parkingSource }"></ng-container>
+                        </div>
+                    </mat-tab>
+
+                    <!-- Tab 3: Ticarət obyektləri -->
+                    <mat-tab [label]="'modules.pendingClaims.tabs.commercial' | transloco">
+                        <div class="p-6 overflow-x-auto">
+                            <ng-container [ngTemplateOutlet]="claimsTable" [ngTemplateOutletContext]="{ $implicit: commercialSource }"></ng-container>
+                        </div>
+                    </mat-tab>
+
+                </mat-tab-group>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Shared table template -->
+<ng-template #claimsTable let-source>
+    <table class="w-full bg-transparent" mat-table [dataSource]="source" [trackBy]="trackByFn">
+
+        <ng-container matColumnDef="unitNumber">
+            <th mat-header-cell *matHeaderCellDef class="font-semibold text-secondary">{{'modules.pendingClaims.columns.unitNumber' | transloco}}</th>
+            <td mat-cell *matCellDef="let element">{{ element.unitNumber }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="buildingName">
+            <th mat-header-cell *matHeaderCellDef class="font-semibold text-secondary">{{'common.columns.buildingName' | transloco}}</th>
+            <td mat-cell *matCellDef="let element">{{ element.buildingName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="complexName">
+            <th mat-header-cell *matHeaderCellDef class="font-semibold text-secondary">{{'common.columns.complexName' | transloco}}</th>
+            <td mat-cell *matCellDef="let element">{{ element.complexName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="claimantName">
+            <th mat-header-cell *matHeaderCellDef class="font-semibold text-secondary">{{'modules.pendingClaims.columns.claimantName' | transloco}}</th>
+            <td mat-cell *matCellDef="let element">{{ element.claimantName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="deedNumber">
+            <th mat-header-cell *matHeaderCellDef class="font-semibold text-secondary">{{'modules.pendingClaims.columns.deedNumber' | transloco}}</th>
+            <td mat-cell *matCellDef="let element">{{ element.deedNumber }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="claimDate">
+            <th mat-header-cell *matHeaderCellDef class="font-semibold text-secondary">{{'modules.pendingClaims.columns.claimDate' | transloco}}</th>
+            <td mat-cell *matCellDef="let element">{{ element.claimDate }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions" stickyEnd>
+            <th mat-header-cell *matHeaderCellDef class="font-semibold text-secondary">{{'common.columns.actions' | transloco}}</th>
+            <td mat-cell *matCellDef="let element">
+                <div class="flex items-center gap-2">
+                    <button mat-flat-button color="primary" class="min-w-0 px-3"
+                        [matTooltip]="'modules.pendingClaims.actions.approve' | transloco"
+                        (click)="onApprove(element)">
+                        <mat-icon class="icon-size-5">check_circle</mat-icon>
+                        <span class="ml-1 text-sm">{{'modules.pendingClaims.actions.approve' | transloco}}</span>
+                    </button>
+                    <button mat-flat-button color="warn" class="min-w-0 px-3"
+                        [matTooltip]="'modules.pendingClaims.actions.reject' | transloco"
+                        (click)="onReject(element)">
+                        <mat-icon class="icon-size-5">cancel</mat-icon>
+                        <span class="ml-1 text-sm">{{'modules.pendingClaims.actions.reject' | transloco}}</span>
+                    </button>
+                </div>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr class="order-row h-16 hover:bg-gray-100 dark:hover:bg-hover" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    </table>
+
+    <div *ngIf="source.data.length === 0" class="flex flex-col items-center justify-center py-12">
+        <mat-icon class="icon-size-16 text-secondary" [svgIcon]="'heroicons_outline:inbox'"></mat-icon>
+        <div class="mt-4 text-lg font-semibold text-secondary">{{'modules.pendingClaims.noData' | transloco}}</div>
+    </div>
+</ng-template>
