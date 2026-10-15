@@ -12,9 +12,15 @@
     // Composer
     .feed-textarea {
         @apply flex-auto min-w-0 resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-lg;
-        @apply text-gray-900 placeholder-gray-400 outline-none transition-colors;
-        @apply focus:border-indigo-500 dark:bg-white/5 dark:border-white/10 dark:text-white dark:placeholder-gray-500;
+        @apply text-gray-900 outline-none transition-colors;
+        @apply focus:border-indigo-500 dark:bg-white/5 dark:border-white/10 dark:text-white;
         min-height: 5.5rem;
+
+        &::placeholder { color: #94a3b8; }
+
+        .dark & {
+            &::placeholder { color: #64748b; }
+        }
     }
 
     .feed-tool {
