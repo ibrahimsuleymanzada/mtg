@@ -99,7 +99,16 @@
                         <mat-icon [svgIcon]="'heroicons_outline:ellipsis-horizontal'"></mat-icon>
                     </button>
                     <mat-menu #postMenu="matMenu">
-                        <button mat-menu-item>Paylaş</button>
+                        <ng-container *ngIf="isAdmin">
+                            <button mat-menu-item (click)="togglePin(post)">
+                                <mat-icon [svgIcon]="'heroicons_outline:bookmark'"></mat-icon>
+                                <span>{{ post.pinned ? 'Bərkidilməni ləğv et' : 'Bərkid' }}</span>
+                            </button>
+                            <button mat-menu-item (click)="deletePost(post)">
+                                <mat-icon class="text-rose-500" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                                <span class="text-rose-500">Sil</span>
+                            </button>
+                        </ng-container>
                         <button mat-menu-item>Şikayət et</button>
                     </mat-menu>
                 </header>

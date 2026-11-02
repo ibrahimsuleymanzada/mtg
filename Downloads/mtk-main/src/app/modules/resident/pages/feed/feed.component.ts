@@ -35,6 +35,9 @@ interface FeedPost {
 export class ResidentFeedComponent {
     readonly currentUser = { name: 'İbrahim Süleymanzadə', initials: 'is' };
 
+    // Mock flag: admin actions (pin / delete) are visible only when true.
+    isAdmin = true;
+
     draft = '';
     audience = 'Bütün sakinlər';
     audiences = ['Bütün sakinlər', 'Mənim blokum', 'Mənim mərtəbəm'];
@@ -109,6 +112,21 @@ export class ResidentFeedComponent {
 
     trackById(_: number, post: FeedPost): number {
         return post.id;
+    }
+
+    deletePost(post: FeedPost): void {
+        this.posts = this.posts.filter(p => p.id !== post.id);
+    }
+
+    togglePin(post: FeedPost): void {
+        const pinned = !post.pinned;
+        const updated = { ...post, pinned };
+        const rest = this.posts.filter(p => p.id !== post.id);
+
+        // A newly pinned post moves to the top of the feed; unpinning keeps its place.
+        this.posts = pinned
+            ? [updated, ...rest]
+            : this.posts.map(p => (p.id === post.id ? updated : p));
     }
 
     toggleLike(post: FeedPost): void {
