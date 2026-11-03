@@ -2,7 +2,10 @@ import { Injectable } from '@angular/core';
 import { Observable, delay, of } from 'rxjs';
 import { BaseApiService } from '../base-api.service';
 import { ApiResponse, PaginatedResponse } from '../../models/api-response.model';
-import { FeedComment, FeedCommentFormData, FeedLikeResult, FeedPinData, FeedPost, FeedPostFormData } from '../../models/resident/feed.types';
+import {
+    FeedComment, FeedCommentFormData, FeedCommentUpdateData, FeedLikeResult, FeedMedia,
+    FeedPinData, FeedPost, FeedPostFormData, FeedPostUpdateData,
+} from '../../models/resident/feed.types';
 
 /**
  * Pinned posts always stay on top; the original order is preserved inside each group
@@ -33,18 +36,20 @@ export class FeedService extends BaseApiService {
     private readonly mockUser = { name: 'İbrahim Süleymanzadə', initials: 'is' };
     private mockPosts: FeedPost[] = this.buildMockPosts();
 
-    // ── API ─────────────────────────────────────────────────────────────
+    // ── Posts ───────────────────────────────────────────────────────────
 
-    getPosts(): Observable<ApiResponse<PaginatedResponse<FeedPost>>> {
+    /** Page numbers start at 1. `count` in the response is the total number of posts. */
+    getPosts(page: number, pageSize: number): Observable<ApiResponse<PaginatedResponse<FeedPost>>> {
         if (this.useMock) {
-            const result = this.mockPosts.map(p => ({ ...p }));
-            return this.mockResponse({ result, count: result.length });
+            const sorted = sortFeedPosts(this.mockPosts);
+            const result = sorted.slice((page - 1) * pageSize, page * pageSize).map(p => ({ ...p }));
+            return this.mockResponse({ result, count: sorted.length });
         }
 
         const request: any = {
             currentPageName:  'feed',
-            nextPageNumber:   1,
-            visibleItemCount: 100,
+            nextPageNumber:   page,
+            visibleItemCount: pageSize,
             filters:          [],
             exportToExcel:    false,
         };
@@ -52,7 +57,14 @@ export class FeedService extends BaseApiService {
     }
 
     createPost(data: FeedPostFormData): Observable<ApiResponse<FeedPost>> {
+        const files = data.files ?? [];
+
         if (this.useMock) {
+            const media: FeedMedia[] = files.map(file => ({
+                type: file.type.startsWith('video/') ? 'video' : 'image',
+                url:  URL.createObjectURL(file),
+                name: file.name,
+            }));
             const post: FeedPost = {
                 id:        Date.now(),
                 author:    this.mockUser.name,
@@ -63,6 +75,7 @@ export class FeedService extends BaseApiService {
                 createdAt: new Date().toISOString(),
                 audience:  data.audience,
                 text:      data.text,
+                media,
                 likes:     0,
                 comments:  [],
                 liked:     false,
@@ -71,7 +84,25 @@ export class FeedService extends BaseApiService {
             return this.mockResponse({ ...post });
         }
 
-        return this.save<FeedPost>('Resident/SaveFeedPost', data);
+        const body = { text: data.text, audience: data.audience };
+        return files.length
+            ? this.saveMultipart<FeedPost>('Resident/SaveFeedPost', body, files)
+            : this.save<FeedPost>('Resident/SaveFeedPost', body);
+    }
+
+    /** Only the author may edit a post; the backend must enforce this too. */
+    updatePost(data: FeedPostUpdateData): Observable<ApiResponse<FeedPost>> {
+        if (this.useMock) {
+            const post = this.mockPosts.find(p => p.id === data.id);
+            if (!post || !post.mine) {
+                return this.mockError<FeedPost>('Paylaşımı redaktə etmək mümkün deyil', 403);
+            }
+            const updated: FeedPost = { ...post, text: data.text, edited: true };
+            this.mockPosts = this.mockPosts.map(p => (p.id === data.id ? updated : p));
+            return this.mockResponse({ ...updated });
+        }
+
+        return this.save<FeedPost>('Resident/UpdateFeedPost', data);
     }
 
     deletePost(id: number): Observable<ApiResponse<any>> {
@@ -98,9 +129,7 @@ export class FeedService extends BaseApiService {
         if (this.useMock) {
             const post = this.mockPosts.find(p => p.id === id);
             if (!post) {
-                return of<ApiResponse<FeedLikeResult>>({
-                    data: null as any, message: 'Paylaşım tapılmadı', statusCode: 404, status: false,
-                }).pipe(delay(250));
+                return this.mockError<FeedLikeResult>('Paylaşım tapılmadı', 404);
             }
             const liked = !post.liked;
             const updated = { ...post, liked, likes: Math.max(0, post.likes + (liked ? 1 : -1)) };
@@ -111,13 +140,13 @@ export class FeedService extends BaseApiService {
         return this.save<FeedLikeResult>('Resident/ToggleFeedPostLike', { id });
     }
 
+    // ── Comments ────────────────────────────────────────────────────────
+
     addComment(data: FeedCommentFormData): Observable<ApiResponse<FeedComment>> {
         if (this.useMock) {
             const post = this.mockPosts.find(p => p.id === data.postId);
             if (!post) {
-                return of<ApiResponse<FeedComment>>({
-                    data: null as any, message: 'Paylaşım tapılmadı', statusCode: 404, status: false,
-                }).pipe(delay(250));
+                return this.mockError<FeedComment>('Paylaşım tapılmadı', 404);
             }
             const comment: FeedComment = {
                 id:        Date.now(),
@@ -127,26 +156,39 @@ export class FeedService extends BaseApiService {
                 createdAt: new Date().toISOString(),
                 mine:      true,
             };
-            this.mockPosts = this.mockPosts.map(p =>
-                p.id === data.postId ? { ...p, comments: [...p.comments, comment] } : p);
+            this.patchMockComments(data.postId, comments => [...comments, comment]);
             return this.mockResponse({ ...comment });
         }
 
         return this.save<FeedComment>('Resident/AddFeedPostComment', data);
     }
 
-    /** Only the author may delete a comment; the backend must enforce this too. */
+    /** Only the author may edit a comment; the backend must enforce this too. */
+    updateComment(data: FeedCommentUpdateData): Observable<ApiResponse<FeedComment>> {
+        if (this.useMock) {
+            const comment = this.mockPosts.find(p => p.id === data.postId)?.comments.find(c => c.id === data.commentId);
+            if (!comment || !comment.mine) {
+                return this.mockError<FeedComment>('Şərhi redaktə etmək mümkün deyil', 403);
+            }
+            const updated: FeedComment = { ...comment, text: data.text, edited: true };
+            this.patchMockComments(data.postId, comments => comments.map(c => (c.id === data.commentId ? updated : c)));
+            return this.mockResponse({ ...updated });
+        }
+
+        return this.save<FeedComment>('Resident/UpdateFeedPostComment', data);
+    }
+
+    /**
+     * The author or an admin may delete a comment. The backend decides who is allowed;
+     * the mock accepts any existing comment.
+     */
     deleteComment(postId: number, commentId: number): Observable<ApiResponse<any>> {
         if (this.useMock) {
-            const post = this.mockPosts.find(p => p.id === postId);
-            const comment = post?.comments.find(c => c.id === commentId);
-            if (!post || !comment || !comment.mine) {
-                return of<ApiResponse<any>>({
-                    data: null, message: 'Şərhi silmək mümkün deyil', statusCode: 403, status: false,
-                }).pipe(delay(250));
+            const exists = this.mockPosts.find(p => p.id === postId)?.comments.some(c => c.id === commentId);
+            if (!exists) {
+                return this.mockError<any>('Şərh tapılmadı', 404);
             }
-            this.mockPosts = this.mockPosts.map(p =>
-                p.id === postId ? { ...p, comments: p.comments.filter(c => c.id !== commentId) } : p);
+            this.patchMockComments(postId, comments => comments.filter(c => c.id !== commentId));
             return this.mockResponse(null);
         }
 
@@ -159,8 +201,27 @@ export class FeedService extends BaseApiService {
         return of<ApiResponse<T>>({ data, message: '', statusCode: 200, status: true }).pipe(delay(250));
     }
 
+    private mockError<T>(message: string, statusCode: number): Observable<ApiResponse<T>> {
+        return of<ApiResponse<T>>({ data: null as any, message, statusCode, status: false }).pipe(delay(250));
+    }
+
+    private patchMockComments(postId: number, fn: (comments: FeedComment[]) => FeedComment[]): void {
+        this.mockPosts = this.mockPosts.map(p => (p.id === postId ? { ...p, comments: fn(p.comments) } : p));
+    }
+
     private buildMockPosts(): FeedPost[] {
         const ago = (hours: number): string => new Date(Date.now() - hours * 3_600_000).toISOString();
+
+        const older: [string, string, string, number, boolean][] = [
+            ['Rəşad Quliyev',   'RQ', 'Zirzəmidəki dayanacaqda 14 nömrəli yerə kimsə maşın qoyub, sahibi xahiş olunur çıxarsın.', 96, false],
+            ['Nigar Əliyeva',   'NƏ', 'Uşaq meydançasındakı yellənçək təmir olunub, çox sağ olun idarəyə!', 120, false],
+            [this.mockUser.name, this.mockUser.initials, 'Kim C blokunda mənzil icarəyə verən tanıyır? Qohumum üçün axtarırıq.', 144, true],
+            ['Elnur Məmmədov',  'EM', 'Axşam saat 23:00-dan sonra 5-ci mərtəbədə yüksək səs gəlir, xahiş edirik nəzərə alın.', 170, false],
+            ['Leyla Hüseynova', 'LH', 'Zibil qutuları yenidən yerləşdirilib, indi həyətin sonundadır.', 200, false],
+            ['Tural Əhmədov',   'TƏ', 'Pulsuz uşaq geyimləri paylayıram, mühafizə postunda paketlər var.', 230, false],
+            [this.mockUser.name, this.mockUser.initials, 'Həyətdəki işıqlandırma lampalarından ikisi yanmır, idarəyə müraciət göndərdim.', 260, true],
+            ['Sevda Rzayeva',   'SR', 'Dünən axşam giriş qapısının domofonu işləmirdi, indi düzəlib?', 300, false],
+        ];
 
         return [
             {
@@ -195,6 +256,7 @@ export class FeedService extends BaseApiService {
                 likes: 8,
                 comments: [
                     { id: 104, author: 'Nigar Əliyeva', initials: 'NƏ', text: 'Bizim uşaq tapıb gətirmişdi, sahibi tapıldımı?', createdAt: ago(20), mine: false },
+                    { id: 105, author: this.mockUser.name, initials: this.mockUser.initials, text: 'Sahibi axtarılır, mühafizədən soruşun.', createdAt: ago(18), mine: true },
                 ],
                 liked: true,
             },
@@ -212,6 +274,20 @@ export class FeedService extends BaseApiService {
                 comments: [],
                 liked: false,
             },
+            ...older.map(([author, initials, text, hours, mine], i): FeedPost => ({
+                id: 10 + i,
+                author,
+                initials,
+                official: false,
+                mine,
+                pinned: false,
+                createdAt: ago(hours),
+                audience: 'Bütün sakinlər',
+                text,
+                likes: (i * 3) % 11,
+                comments: [],
+                liked: false,
+            })),
         ];
     }
 }

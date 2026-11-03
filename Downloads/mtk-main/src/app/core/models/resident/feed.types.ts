@@ -1,3 +1,9 @@
+export interface FeedMedia {
+    type: 'image' | 'video';
+    url:  string;
+    name: string;
+}
+
 export interface FeedComment {
     id:        number;
     author:    string;
@@ -5,11 +11,18 @@ export interface FeedComment {
     text:      string;
     createdAt: string;      // ISO date string
     mine:      boolean;
+    edited?:   boolean;
 }
 
 export interface FeedCommentFormData {
     postId: number;
     text:   string;
+}
+
+export interface FeedCommentUpdateData {
+    postId:    number;
+    commentId: number;
+    text:      string;
 }
 
 export interface FeedPost {
@@ -22,7 +35,9 @@ export interface FeedPost {
     createdAt:     string;      // ISO date string
     audience:      string;
     text:          string;
+    edited?:       boolean;
     imageCaption?: string;
+    media?:        FeedMedia[];
     likes:         number;
     comments:      FeedComment[];
     liked:         boolean;
@@ -31,6 +46,12 @@ export interface FeedPost {
 export interface FeedPostFormData {
     text:     string;
     audience: string;
+    files?:   File[];
+}
+
+export interface FeedPostUpdateData {
+    id:   number;
+    text: string;
 }
 
 export interface FeedPinData {
