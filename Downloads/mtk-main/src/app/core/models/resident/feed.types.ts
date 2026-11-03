@@ -23,3 +23,9 @@ export interface FeedPinData {
     id:     number;
     pinned: boolean;
 }
+
+export interface FeedLikeResult {
+    id:    number;
+    liked: boolean;
+    likes: number;
+}

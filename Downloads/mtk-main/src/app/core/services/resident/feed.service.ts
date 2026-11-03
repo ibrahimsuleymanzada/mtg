@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, delay, of } from 'rxjs';
 import { BaseApiService } from '../base-api.service';
 import { ApiResponse, PaginatedResponse } from '../../models/api-response.model';
-import { FeedPinData, FeedPost, FeedPostFormData } from '../../models/resident/feed.types';
+import { FeedLikeResult, FeedPinData, FeedPost, FeedPostFormData } from '../../models/resident/feed.types';
 
 /**
  * Pinned posts always stay on top; the original order is preserved inside each group
@@ -91,6 +91,24 @@ export class FeedService extends BaseApiService {
 
         const data: FeedPinData = { id, pinned };
         return this.save<FeedPost>('Resident/PinFeedPost', data);
+    }
+
+    /** Likes the post if it is not liked yet, removes the like otherwise. */
+    toggleLike(id: number): Observable<ApiResponse<FeedLikeResult>> {
+        if (this.useMock) {
+            const post = this.mockPosts.find(p => p.id === id);
+            if (!post) {
+                return of<ApiResponse<FeedLikeResult>>({
+                    data: null as any, message: 'Paylaşım tapılmadı', statusCode: 404, status: false,
+                }).pipe(delay(250));
+            }
+            const liked = !post.liked;
+            const updated = { ...post, liked, likes: Math.max(0, post.likes + (liked ? 1 : -1)) };
+            this.mockPosts = this.mockPosts.map(p => (p.id === id ? updated : p));
+            return this.mockResponse({ id, liked: updated.liked, likes: updated.likes });
+        }
+
+        return this.save<FeedLikeResult>('Resident/ToggleFeedPostLike', { id });
     }
 
     // ── Mock helpers ────────────────────────────────────────────────────

@@ -50,6 +50,7 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
     publishing = false;
 
     private _unsubscribeAll = new Subject<void>();
+    private _likingIds = new Set<number>();
 
     constructor(
         private _feedService:         FeedService,
@@ -130,8 +131,32 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
     }
 
     toggleLike(post: FeedPost): void {
-        post.liked = !post.liked;
-        post.likes += post.liked ? 1 : -1;
+        if (this._likingIds.has(post.id)) return;   // ignore clicks while the request is in flight
+        this._likingIds.add(post.id);
+
+        // Optimistic update: the heart reacts instantly, the server response is the source of truth.
+        const liked = !post.liked;
+        this._patchPost(post.id, { liked, likes: Math.max(0, post.likes + (liked ? 1 : -1)) });
+
+        this._feedService.toggleLike(post.id)
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                finalize(() => this._likingIds.delete(post.id)),
+            )
+            .subscribe({
+                next: (res) => {
+                    if (res.status) {
+                        this._patchPost(post.id, { liked: res.data.liked, likes: res.data.likes });
+                    } else {
+                        this._patchPost(post.id, { liked: post.liked, likes: post.likes });
+                        this._notificationService.info(res.message);
+                    }
+                },
+                error: () => {
+                    this._patchPost(post.id, { liked: post.liked, likes: post.likes });
+                    this._notificationService.error('Əməliyyat zamanı xəta baş verdi');
+                },
+            });
     }
 
     publish(): void {
@@ -159,6 +184,11 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                 },
                 error: () => this._notificationService.error('Paylaşım göndərilmədi'),
             });
+    }
+
+    private _patchPost(id: number, patch: Partial<FeedPost>): void {
+        this.posts = this.posts.map(p => (p.id === id ? { ...p, ...patch } : p));
+        this._cdr.markForCheck();
     }
 
     timeAgo(iso: string): string {
