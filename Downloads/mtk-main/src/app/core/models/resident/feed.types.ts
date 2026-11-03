@@ -1,0 +1,25 @@
+export interface FeedPost {
+    id:            number;
+    author:        string;
+    initials:      string;
+    official:      boolean;
+    mine:          boolean;
+    pinned:        boolean;
+    createdAt:     string;      // ISO date string
+    audience:      string;
+    text:          string;
+    imageCaption?: string;
+    likes:         number;
+    comments:      number;
+    liked:         boolean;
+}
+
+export interface FeedPostFormData {
+    text:     string;
+    audience: string;
+}
+
+export interface FeedPinData {
+    id:     number;
+    pinned: boolean;
+}

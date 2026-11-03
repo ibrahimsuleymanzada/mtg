@@ -45,7 +45,7 @@
                     <button
                         type="button"
                         class="feed-publish"
-                        [disabled]="!draft.trim()"
+                        [disabled]="!draft.trim() || publishing"
                         (click)="publish()">
                         <mat-icon class="icon-size-4 -rotate-45" [svgIcon]="'heroicons_outline:paper-airplane'"></mat-icon>
                         Paylaş
@@ -89,7 +89,7 @@
                                       [svgIcon]="'heroicons_solid:check-badge'"></mat-icon>
                         </div>
                         <div class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-                            <span>{{ post.time }}</span>
+                            <span>{{ timeAgo(post.createdAt) }}</span>
                             <span>·</span>
                             <mat-icon class="icon-size-3.5" [svgIcon]="'heroicons_outline:globe-alt'"></mat-icon>
                             <span class="truncate">{{ post.audience }}</span>
@@ -144,7 +144,7 @@
                 </footer>
             </article>
 
-            <div *ngIf="!filteredPosts.length" class="feed-card py-12 text-center text-gray-500 dark:text-gray-400">
+            <div *ngIf="!loading && !filteredPosts.length" class="feed-card py-12 text-center text-gray-500 dark:text-gray-400">
                 Hələ heç bir paylaşım yoxdur
             </div>
         </div>

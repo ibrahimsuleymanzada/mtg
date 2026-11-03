@@ -1,27 +1,16 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { DateTime } from 'luxon';
+import { Subject, finalize, takeUntil } from 'rxjs';
+import { FeedService, sortFeedPosts } from 'app/core/services/resident/feed.service';
+import { NotificationService } from 'app/core/services/notification.service';
+import { FeedPost } from 'app/core/models/resident/feed.types';
 
 type FeedFilter = 'all' | 'official' | 'mine';
-
-interface FeedPost {
-    id: number;
-    author: string;
-    initials: string;
-    official: boolean;
-    mine: boolean;
-    pinned: boolean;
-    time: string;
-    audience: string;
-    text: string;
-    imageCaption?: string;
-    likes: number;
-    comments: number;
-    liked: boolean;
-}
 
 @Component({
     selector        : 'resident-feed',
@@ -32,7 +21,7 @@ interface FeedPost {
     standalone      : true,
     imports         : [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatMenuModule],
 })
-export class ResidentFeedComponent {
+export class ResidentFeedComponent implements OnInit, OnDestroy {
     readonly currentUser = { name: 'İbrahim Süleymanzadə', initials: 'is' };
 
     // Mock flag: admin actions (pin / delete) are visible only when true.
@@ -56,51 +45,39 @@ export class ResidentFeedComponent {
     ];
     activeFilter: FeedFilter = 'all';
 
-    posts: FeedPost[] = [
-        {
-            id: 1,
-            author: 'MTK İdarəsi — Şirkət 4',
-            initials: 'MT',
-            official: true,
-            mine: false,
-            pinned: true,
-            time: '2 saat əvvəl',
-            audience: 'Bütün sakinlər',
-            text: 'Hörmətli sakinlər! 15 oktyabr, çərşənbə axşamı 10:00–14:00 arası B blokunda lift profilaktikası aparılacaq. Narahatlığa görə üzr istəyirik. Suallar üçün Müraciətlər bölməsindən yazın.',
-            imageCaption: 'B bloku · lift şaxtası',
-            likes: 24,
-            comments: 6,
-            liked: false,
-        },
-        {
-            id: 2,
-            author: 'Aygün Həsənova',
-            initials: 'AH',
-            official: false,
-            mine: false,
-            pinned: false,
-            time: 'dünən',
-            audience: 'Mənim blokum',
-            text: 'Salam, qonşular! Həyətdə tapılmış qırmızı velosipedin sahibini axtarırıq. Mühafizə postunda saxlanılır.',
-            likes: 8,
-            comments: 2,
-            liked: true,
-        },
-        {
-            id: 3,
-            author: 'İbrahim Süleymanzadə',
-            initials: 'is',
-            official: false,
-            mine: true,
-            pinned: false,
-            time: '3 gün əvvəl',
-            audience: 'Bütün sakinlər',
-            text: 'Şənbə günü saat 11:00-da uşaq meydançasında təmizlik aksiyası keçiriləcək. Hamını gözləyirik!',
-            likes: 15,
-            comments: 4,
-            liked: false,
-        },
-    ];
+    posts: FeedPost[] = [];
+    loading = true;
+    publishing = false;
+
+    private _unsubscribeAll = new Subject<void>();
+
+    constructor(
+        private _feedService:         FeedService,
+        private _notificationService: NotificationService,
+        private _cdr:                 ChangeDetectorRef,
+    ) {}
+
+    ngOnInit(): void {
+        this._feedService.getPosts()
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe({
+                next: (res) => {
+                    this.posts = sortFeedPosts(res.data?.result ?? []);
+                    this.loading = false;
+                    this._cdr.markForCheck();
+                },
+                error: () => {
+                    this.loading = false;
+                    this._notificationService.error('Lenta yüklənmədi');
+                    this._cdr.markForCheck();
+                },
+            });
+    }
+
+    ngOnDestroy(): void {
+        this._unsubscribeAll.next();
+        this._unsubscribeAll.complete();
+    }
 
     get filteredPosts(): FeedPost[] {
         switch (this.activeFilter) {
@@ -115,18 +92,41 @@ export class ResidentFeedComponent {
     }
 
     deletePost(post: FeedPost): void {
-        this.posts = this.posts.filter(p => p.id !== post.id);
+        this._feedService.deletePost(post.id)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe({
+                next: (res) => {
+                    if (res.status) {
+                        this.posts = this.posts.filter(p => p.id !== post.id);
+                        this._cdr.markForCheck();
+                    } else {
+                        this._notificationService.info(res.message);
+                    }
+                },
+                error: () => this._notificationService.error('Silinmə zamanı xəta baş verdi'),
+            });
     }
 
     togglePin(post: FeedPost): void {
-        const pinned = !post.pinned;
-        const updated = { ...post, pinned };
-        const rest = this.posts.filter(p => p.id !== post.id);
-
-        // A newly pinned post moves to the top of the feed; unpinning keeps its place.
-        this.posts = pinned
-            ? [updated, ...rest]
-            : this.posts.map(p => (p.id === post.id ? updated : p));
+        this._feedService.setPinned(post.id, !post.pinned)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe({
+                next: (res) => {
+                    if (!res.status) {
+                        this._notificationService.info(res.message);
+                        return;
+                    }
+                    const updated = res.data;
+                    // A newly pinned post goes first among the pinned; an unpinned one keeps its place.
+                    this.posts = sortFeedPosts(
+                        updated.pinned
+                            ? [updated, ...this.posts.filter(p => p.id !== updated.id)]
+                            : this.posts.map(p => (p.id === updated.id ? updated : p)),
+                    );
+                    this._cdr.markForCheck();
+                },
+                error: () => this._notificationService.error('Əməliyyat zamanı xəta baş verdi'),
+            });
     }
 
     toggleLike(post: FeedPost): void {
@@ -136,21 +136,35 @@ export class ResidentFeedComponent {
 
     publish(): void {
         const text = this.draft.trim();
-        if (!text) return;
-        this.posts = [{
-            id: Date.now(),
-            author: this.currentUser.name,
-            initials: this.currentUser.initials,
-            official: false,
-            mine: true,
-            pinned: false,
-            time: 'indicə',
-            audience: this.audience,
-            text,
-            likes: 0,
-            comments: 0,
-            liked: false,
-        }, ...this.posts];
-        this.draft = '';
+        if (!text || this.publishing) return;
+
+        this.publishing = true;
+        this._feedService.createPost({ text, audience: this.audience })
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                finalize(() => {
+                    this.publishing = false;
+                    this._cdr.markForCheck();
+                }),
+            )
+            .subscribe({
+                next: (res) => {
+                    if (res.status) {
+                        // Sorting keeps pinned posts on top, so the new post lands right below them.
+                        this.posts = sortFeedPosts([res.data, ...this.posts]);
+                        this.draft = '';
+                    } else {
+                        this._notificationService.info(res.message);
+                    }
+                },
+                error: () => this._notificationService.error('Paylaşım göndərilmədi'),
+            });
+    }
+
+    timeAgo(iso: string): string {
+        const date = DateTime.fromISO(iso);
+        if (!date.isValid) return '';
+        if (Math.abs(date.diffNow('seconds').seconds) < 60) return 'indicə';
+        return date.setLocale('az').toRelative() ?? '';
     }
 }
