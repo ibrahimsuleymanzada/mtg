@@ -135,6 +135,24 @@ export class FeedService extends BaseApiService {
         return this.save<FeedComment>('Resident/AddFeedPostComment', data);
     }
 
+    /** Only the author may delete a comment; the backend must enforce this too. */
+    deleteComment(postId: number, commentId: number): Observable<ApiResponse<any>> {
+        if (this.useMock) {
+            const post = this.mockPosts.find(p => p.id === postId);
+            const comment = post?.comments.find(c => c.id === commentId);
+            if (!post || !comment || !comment.mine) {
+                return of<ApiResponse<any>>({
+                    data: null, message: 'Şərhi silmək mümkün deyil', statusCode: 403, status: false,
+                }).pipe(delay(250));
+            }
+            this.mockPosts = this.mockPosts.map(p =>
+                p.id === postId ? { ...p, comments: p.comments.filter(c => c.id !== commentId) } : p);
+            return this.mockResponse(null);
+        }
+
+        return this.delete<any>('Resident/DeleteFeedPostComment', commentId);
+    }
+
     // ── Mock helpers ────────────────────────────────────────────────────
 
     private mockResponse<T>(data: T): Observable<ApiResponse<T>> {

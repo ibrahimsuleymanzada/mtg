@@ -163,6 +163,13 @@
                                 <div class="flex flex-wrap items-baseline gap-x-2">
                                     <span class="font-semibold text-md text-gray-900 dark:text-white">{{ c.author }}</span>
                                     <span class="text-sm text-gray-500 dark:text-gray-400">{{ timeAgo(c.createdAt) }}</span>
+                                    <button *ngIf="c.mine" type="button"
+                                            class="feed-comment-delete ml-auto"
+                                            aria-label="Şərhi sil"
+                                            title="Sil"
+                                            (click)="deleteComment(post, c)">
+                                        <mat-icon class="icon-size-4" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                                    </button>
                                 </div>
                                 <p class="text-md leading-snug text-gray-800 dark:text-gray-200 break-words">{{ c.text }}</p>
                             </div>

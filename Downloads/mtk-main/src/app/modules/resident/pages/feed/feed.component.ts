@@ -56,6 +56,7 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
     expandedPostIds = new Set<number>();
     commentDrafts: Record<number, string> = {};
     commentingIds = new Set<number>();
+    private _deletingCommentIds = new Set<number>();
 
     constructor(
         private _feedService:         FeedService,
@@ -230,6 +231,30 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                     }
                 },
                 error: () => this._notificationService.error('Şərh göndərilmədi'),
+            });
+    }
+
+    deleteComment(post: FeedPost, comment: FeedComment): void {
+        if (!comment.mine || this._deletingCommentIds.has(comment.id)) return;
+
+        this._deletingCommentIds.add(comment.id);
+        this._feedService.deleteComment(post.id, comment.id)
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                finalize(() => this._deletingCommentIds.delete(comment.id)),
+            )
+            .subscribe({
+                next: (res) => {
+                    if (res.status) {
+                        const current = this.posts.find(p => p.id === post.id);
+                        if (current) {
+                            this._patchPost(post.id, { comments: current.comments.filter(c => c.id !== comment.id) });
+                        }
+                    } else {
+                        this._notificationService.info(res.message);
+                    }
+                },
+                error: () => this._notificationService.error('Şərh silinmədi'),
             });
     }
 

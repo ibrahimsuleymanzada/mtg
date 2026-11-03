@@ -210,6 +210,19 @@ $border-dark:  rgba(255, 255, 255, 0.1);
         .dark & { background-color: rgba(255, 255, 255, 0.05); }
     }
 
+    .feed-comment-delete {
+        display: inline-flex;
+        padding: 0.125rem;
+        color: $slate-400;
+        background: transparent;
+        border: 0;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: color 0.15s ease, background-color 0.15s ease;
+
+        &:hover { color: #e11d48; background-color: rgba(225, 29, 72, 0.1); }
+    }
+
     .feed-comment-input {
         flex: 1 1 auto;
         min-width: 0;
