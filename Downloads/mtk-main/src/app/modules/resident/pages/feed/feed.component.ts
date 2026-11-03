@@ -8,7 +8,7 @@ import { DateTime } from 'luxon';
 import { Subject, finalize, takeUntil } from 'rxjs';
 import { FeedService, insertAfterPinned, sortFeedPosts } from 'app/core/services/resident/feed.service';
 import { NotificationService } from 'app/core/services/notification.service';
-import { FeedPost } from 'app/core/models/resident/feed.types';
+import { FeedComment, FeedPost } from 'app/core/models/resident/feed.types';
 
 type FeedFilter = 'all' | 'official' | 'mine';
 
@@ -51,6 +51,11 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
 
     private _unsubscribeAll = new Subject<void>();
     private _likingIds = new Set<number>();
+
+    // Comments UI state
+    expandedPostIds = new Set<number>();
+    commentDrafts: Record<number, string> = {};
+    commentingIds = new Set<number>();
 
     constructor(
         private _feedService:         FeedService,
@@ -184,6 +189,52 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                 },
                 error: () => this._notificationService.error('Paylaşım göndərilmədi'),
             });
+    }
+
+    toggleComments(post: FeedPost): void {
+        if (this.expandedPostIds.has(post.id)) {
+            this.expandedPostIds.delete(post.id);
+        } else {
+            this.expandedPostIds.add(post.id);
+        }
+    }
+
+    canSendComment(post: FeedPost): boolean {
+        return !!(this.commentDrafts[post.id] ?? '').trim() && !this.commentingIds.has(post.id);
+    }
+
+    sendComment(post: FeedPost): void {
+        const text = (this.commentDrafts[post.id] ?? '').trim();
+        if (!text || this.commentingIds.has(post.id)) return;
+
+        this.commentingIds.add(post.id);
+        this._feedService.addComment({ postId: post.id, text })
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                finalize(() => {
+                    this.commentingIds.delete(post.id);
+                    this._cdr.markForCheck();
+                }),
+            )
+            .subscribe({
+                next: (res) => {
+                    if (res.status) {
+                        // Read the post from the current list: it may have changed (like, pin) meanwhile.
+                        const current = this.posts.find(p => p.id === post.id);
+                        if (current) {
+                            this._patchPost(post.id, { comments: [...current.comments, res.data] });
+                        }
+                        this.commentDrafts[post.id] = '';
+                    } else {
+                        this._notificationService.info(res.message);
+                    }
+                },
+                error: () => this._notificationService.error('Şərh göndərilmədi'),
+            });
+    }
+
+    trackByCommentId(_: number, comment: FeedComment): number {
+        return comment.id;
     }
 
     private _patchPost(id: number, patch: Partial<FeedPost>): void {

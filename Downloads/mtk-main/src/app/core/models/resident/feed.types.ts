@@ -1,3 +1,17 @@
+export interface FeedComment {
+    id:        number;
+    author:    string;
+    initials:  string;
+    text:      string;
+    createdAt: string;      // ISO date string
+    mine:      boolean;
+}
+
+export interface FeedCommentFormData {
+    postId: number;
+    text:   string;
+}
+
 export interface FeedPost {
     id:            number;
     author:        string;
@@ -10,7 +24,7 @@ export interface FeedPost {
     text:          string;
     imageCaption?: string;
     likes:         number;
-    comments:      number;
+    comments:      FeedComment[];
     liked:         boolean;
 }
 

@@ -199,4 +199,39 @@ $border-dark:  rgba(255, 255, 255, 0.1);
             background-image: linear-gradient(to bottom right, rgba($indigo-950, 0.6), rgba($slate-900, 0.6));
         }
     }
+
+    // ── Comments ─────────────────────────────────────────────────────
+    .feed-comment-bubble {
+        flex: 1 1 auto;
+        padding: 0.5rem 0.75rem;
+        background-color: $slate-100;
+        border-radius: 0.75rem;
+
+        .dark & { background-color: rgba(255, 255, 255, 0.05); }
+    }
+
+    .feed-comment-input {
+        flex: 1 1 auto;
+        min-width: 0;
+        height: 2.5rem;
+        padding: 0 1rem;
+        font-size: 0.8125rem;
+        color: $slate-900;
+        background-color: $slate-50;
+        border: 1px solid $border-light;
+        border-radius: 9999px;
+        outline: none;
+        transition: border-color 0.15s ease;
+
+        &::placeholder { color: $slate-400; }
+        &:focus        { border-color: $indigo-500; }
+
+        .dark & {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: $border-dark;
+
+            &::placeholder { color: $slate-500; }
+        }
+    }
 }

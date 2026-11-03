@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, delay, of } from 'rxjs';
 import { BaseApiService } from '../base-api.service';
 import { ApiResponse, PaginatedResponse } from '../../models/api-response.model';
-import { FeedLikeResult, FeedPinData, FeedPost, FeedPostFormData } from '../../models/resident/feed.types';
+import { FeedComment, FeedCommentFormData, FeedLikeResult, FeedPinData, FeedPost, FeedPostFormData } from '../../models/resident/feed.types';
 
 /**
  * Pinned posts always stay on top; the original order is preserved inside each group
@@ -64,7 +64,7 @@ export class FeedService extends BaseApiService {
                 audience:  data.audience,
                 text:      data.text,
                 likes:     0,
-                comments:  0,
+                comments:  [],
                 liked:     false,
             };
             this.mockPosts = [post, ...this.mockPosts];
@@ -111,6 +111,30 @@ export class FeedService extends BaseApiService {
         return this.save<FeedLikeResult>('Resident/ToggleFeedPostLike', { id });
     }
 
+    addComment(data: FeedCommentFormData): Observable<ApiResponse<FeedComment>> {
+        if (this.useMock) {
+            const post = this.mockPosts.find(p => p.id === data.postId);
+            if (!post) {
+                return of<ApiResponse<FeedComment>>({
+                    data: null as any, message: 'Paylaşım tapılmadı', statusCode: 404, status: false,
+                }).pipe(delay(250));
+            }
+            const comment: FeedComment = {
+                id:        Date.now(),
+                author:    this.mockUser.name,
+                initials:  this.mockUser.initials,
+                text:      data.text,
+                createdAt: new Date().toISOString(),
+                mine:      true,
+            };
+            this.mockPosts = this.mockPosts.map(p =>
+                p.id === data.postId ? { ...p, comments: [...p.comments, comment] } : p);
+            return this.mockResponse({ ...comment });
+        }
+
+        return this.save<FeedComment>('Resident/AddFeedPostComment', data);
+    }
+
     // ── Mock helpers ────────────────────────────────────────────────────
 
     private mockResponse<T>(data: T): Observable<ApiResponse<T>> {
@@ -133,7 +157,11 @@ export class FeedService extends BaseApiService {
                 text: 'Hörmətli sakinlər! 15 oktyabr, çərşənbə axşamı 10:00–14:00 arası B blokunda lift profilaktikası aparılacaq. Narahatlığa görə üzr istəyirik. Suallar üçün Müraciətlər bölməsindən yazın.',
                 imageCaption: 'B bloku · lift şaxtası',
                 likes: 24,
-                comments: 6,
+                comments: [
+                    { id: 101, author: 'Aygün Həsənova', initials: 'AH', text: 'Təşəkkürlər, xəbərdarlıq üçün!', createdAt: ago(1.5), mine: false },
+                    { id: 102, author: 'Rəşad Quliyev', initials: 'RQ', text: 'Lift neçə saat işləməyəcək? Uşaq arabası ilə çətin olacaq.', createdAt: ago(1), mine: false },
+                    { id: 103, author: 'MTK İdarəsi — Şirkət 4', initials: 'MT', text: 'Rəşad bəy, işlər 14:00-dək başa çatacaq, A blokunun lifti işləyəcək.', createdAt: ago(0.5), mine: false },
+                ],
                 liked: false,
             },
             {
@@ -147,7 +175,9 @@ export class FeedService extends BaseApiService {
                 audience: 'Mənim blokum',
                 text: 'Salam, qonşular! Həyətdə tapılmış qırmızı velosipedin sahibini axtarırıq. Mühafizə postunda saxlanılır.',
                 likes: 8,
-                comments: 2,
+                comments: [
+                    { id: 104, author: 'Nigar Əliyeva', initials: 'NƏ', text: 'Bizim uşaq tapıb gətirmişdi, sahibi tapıldımı?', createdAt: ago(20), mine: false },
+                ],
                 liked: true,
             },
             {
@@ -161,7 +191,7 @@ export class FeedService extends BaseApiService {
                 audience: 'Bütün sakinlər',
                 text: 'Şənbə günü saat 11:00-da uşaq meydançasında təmizlik aksiyası keçiriləcək. Hamını gözləyirik!',
                 likes: 15,
-                comments: 4,
+                comments: [],
                 liked: false,
             },
         ];

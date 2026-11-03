@@ -133,15 +133,60 @@
                                   [svgIcon]="post.liked ? 'heroicons_solid:heart' : 'heroicons_outline:heart'"></mat-icon>
                         {{ post.likes }}
                     </button>
-                    <button type="button" class="feed-tool">
-                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:chat-bubble-left'"></mat-icon>
-                        {{ post.comments }}
+                    <button type="button" class="feed-tool"
+                            [class.text-indigo-500]="expandedPostIds.has(post.id)"
+                            [attr.aria-expanded]="expandedPostIds.has(post.id)"
+                            (click)="toggleComments(post)">
+                        <mat-icon class="icon-size-5"
+                                  [svgIcon]="expandedPostIds.has(post.id) ? 'heroicons_solid:chat-bubble-left' : 'heroicons_outline:chat-bubble-left'"></mat-icon>
+                        {{ post.comments.length }}
                     </button>
                     <button type="button" class="feed-tool ml-auto">
                         <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:share'"></mat-icon>
                         <span class="hidden sm:inline">Paylaş</span>
                     </button>
                 </footer>
+
+                <!-- Comments -->
+                <section *ngIf="expandedPostIds.has(post.id)" class="feed-comments mt-3 pt-3 border-t border-gray-200 dark:border-white/10">
+                    <p *ngIf="!post.comments.length" class="py-2 text-md text-gray-500 dark:text-gray-400">
+                        Hələ şərh yoxdur. İlk şərhi siz yazın!
+                    </p>
+
+                    <ul class="flex flex-col gap-3 mb-4">
+                        <li *ngFor="let c of post.comments; trackBy: trackByCommentId" class="flex gap-2.5">
+                            <div class="feed-avatar flex-none w-8 h-8 text-sm"
+                                 [ngClass]="c.mine ? 'bg-indigo-500 text-white' : 'bg-slate-500/20 text-gray-700 dark:text-gray-200'">
+                                {{ c.initials }}
+                            </div>
+                            <div class="feed-comment-bubble min-w-0">
+                                <div class="flex flex-wrap items-baseline gap-x-2">
+                                    <span class="font-semibold text-md text-gray-900 dark:text-white">{{ c.author }}</span>
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ timeAgo(c.createdAt) }}</span>
+                                </div>
+                                <p class="text-md leading-snug text-gray-800 dark:text-gray-200 break-words">{{ c.text }}</p>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="flex items-center gap-2">
+                        <div class="feed-avatar flex-none w-8 h-8 text-sm bg-indigo-500 text-white">{{ currentUser.initials }}</div>
+                        <input
+                            type="text"
+                            class="feed-comment-input"
+                            placeholder="Şərh yazın..."
+                            maxlength="500"
+                            [(ngModel)]="commentDrafts[post.id]"
+                            (keydown.enter)="sendComment(post)">
+                        <button type="button"
+                                class="feed-publish !px-3"
+                                aria-label="Şərh göndər"
+                                [disabled]="!canSendComment(post)"
+                                (click)="sendComment(post)">
+                            <mat-icon class="icon-size-4 -rotate-45" [svgIcon]="'heroicons_outline:paper-airplane'"></mat-icon>
+                        </button>
+                    </div>
+                </section>
             </article>
 
             <div *ngIf="!loading && !filteredPosts.length" class="feed-card py-12 text-center text-gray-500 dark:text-gray-400">
