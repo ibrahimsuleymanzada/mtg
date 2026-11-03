@@ -12,6 +12,15 @@ export function sortFeedPosts(posts: FeedPost[]): FeedPost[] {
     return [...posts].sort((a, b) => Number(b.pinned) - Number(a.pinned));
 }
 
+/**
+ * Inserts a new post right after the last pinned one (or at the very top if nothing is pinned).
+ */
+export function insertAfterPinned(posts: FeedPost[], post: FeedPost): FeedPost[] {
+    const firstUnpinned = posts.findIndex(p => !p.pinned);
+    const index = firstUnpinned === -1 ? posts.length : firstUnpinned;
+    return [...posts.slice(0, index), post, ...posts.slice(index)];
+}
+
 @Injectable({ providedIn: 'root' })
 export class FeedService extends BaseApiService {
 

@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { DateTime } from 'luxon';
 import { Subject, finalize, takeUntil } from 'rxjs';
-import { FeedService, sortFeedPosts } from 'app/core/services/resident/feed.service';
+import { FeedService, insertAfterPinned, sortFeedPosts } from 'app/core/services/resident/feed.service';
 import { NotificationService } from 'app/core/services/notification.service';
 import { FeedPost } from 'app/core/models/resident/feed.types';
 
@@ -150,8 +150,8 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (res) => {
                     if (res.status) {
-                        // Sorting keeps pinned posts on top, so the new post lands right below them.
-                        this.posts = sortFeedPosts([res.data, ...this.posts]);
+                        // Never prepend: pinned posts stay first, the new post goes right after them.
+                        this.posts = insertAfterPinned(this.posts, res.data);
                         this.draft = '';
                     } else {
                         this._notificationService.info(res.message);
