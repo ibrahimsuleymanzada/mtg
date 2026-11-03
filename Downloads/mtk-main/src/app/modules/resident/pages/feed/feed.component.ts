@@ -30,7 +30,6 @@ const MAX_IMAGE_MB     = 10;
 const MAX_VIDEO_MB     = 50;
 /** Must match the collapse transition duration in feed.component.scss */
 const REMOVE_ANIMATION_MS = 320;
-const LIKE_POP_MS         = 450;
 
 @Component({
     selector        : 'resident-feed',
@@ -93,13 +92,14 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
     // Animation state
     removingPostIds = new Set<number>();
     removingCommentIds = new Set<number>();
-    likePopIds = new Set<number>();
 
     private _page = 0;
     /** Local changes (publish / delete / pin) shift server pages, so the next "load more" refetches from page 1. */
     private _needsResync = false;
     private _likingIds = new Set<number>();
     private _deletingPostIds = new Set<number>();
+    private _pinningIds = new Set<number>();
+    private _closingPreviews = false;
     private _deletingCommentIds = new Set<number>();
     private _safeUrls = new Map<string, SafeUrl>();
     private _unsubscribeAll = new Subject<void>();
@@ -148,6 +148,11 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
 
     get hasMore(): boolean {
         return this.posts.length < this.totalCount;
+    }
+
+    /** Previews stay rendered while the panel is collapsing, so nothing jumps. */
+    get previewsOpen(): boolean {
+        return this.attachments.length > 0 && !this._closingPreviews;
     }
 
     get canPublish(): boolean {
@@ -207,6 +212,7 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
         const files = Array.from(input.files ?? []);
         input.value = '';   // allow picking the same file again
 
+        this._closingPreviews = false;
         const maxMb = type === 'image' ? MAX_IMAGE_MB : MAX_VIDEO_MB;
         for (const file of files) {
             if (this.attachments.length >= MAX_ATTACHMENTS) {
@@ -226,8 +232,12 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
     }
 
     removeAttachment(attachment: Attachment): void {
-        URL.revokeObjectURL(attachment.previewUrl);
-        this.attachments = this.attachments.filter(a => a !== attachment);
+        if (this.publishing) return;
+        if (this.attachments.length > 1) {
+            this._dropAttachments([attachment]);
+        } else {
+            this._closePreviews(() => this._dropAttachments([attachment]));
+        }
     }
 
     /** Media of a published post. Blob URLs (mock mode) need to be trusted; the result is cached to keep bindings stable. */
@@ -264,7 +274,8 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                         this.totalCount++;
                         this._needsResync = true;
                         this.draft = '';
-                        this._revokeAttachments();
+                        const sent = [...this.attachments];
+                        this._closePreviews(() => this._dropAttachments(sent));
                     } else {
                         this._notificationService.info(res.message);
                     }
@@ -300,8 +311,14 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
     }
 
     togglePin(post: FeedPost): void {
+        if (this._pinningIds.has(post.id)) return;
+        this._pinningIds.add(post.id);
+
         this._feedService.setPinned(post.id, !post.pinned)
-            .pipe(takeUntil(this._unsubscribeAll))
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                finalize(() => this._pinningIds.delete(post.id)),
+            )
             .subscribe({
                 next: (res) => {
                     if (!res.status) {
@@ -329,7 +346,6 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
         // Optimistic update: the heart reacts instantly, the server response is the source of truth.
         const liked = !post.liked;
         this._patchPost(post.id, { liked, likes: Math.max(0, post.likes + (liked ? 1 : -1)) });
-        if (liked) this._flag(this.likePopIds, post.id, LIKE_POP_MS);
 
         this._feedService.toggleLike(post.id)
             .pipe(
@@ -511,11 +527,23 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
 
     // ── Utils ───────────────────────────────────────────────────────────
 
+    /** Relative time in Azerbaijani (Intl relative formats are not reliable for `az` across browsers). */
     timeAgo(iso: string): string {
         const date = DateTime.fromISO(iso);
         if (!date.isValid) return '';
-        if (Math.abs(date.diffNow('seconds').seconds) < 60) return 'indicə';
-        return date.setLocale('az').toRelative() ?? '';
+
+        const minutes = Math.floor((Date.now() - date.toMillis()) / 60_000);
+        if (minutes < 1)  return 'indicə';
+        if (minutes < 60) return `${minutes} dəqiqə əvvəl`;
+
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours} saat əvvəl`;
+
+        const days = Math.floor(hours / 24);
+        if (days === 1) return 'dünən';
+        if (days < 7)   return `${days} gün əvvəl`;
+
+        return date.toFormat('dd.MM.yyyy');
     }
 
     private _patchPost(id: number, patch: Partial<FeedPost>): void {
@@ -536,16 +564,23 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
             });
     }
 
-    /** Keeps `id` in a set for a limited time (drives short one-shot CSS animations). */
-    private _flag(ids: Set<number>, id: number, ms: number): void {
-        ids.add(id);
+    /** Collapses the previews panel first, then runs `then` (which actually removes the files). */
+    private _closePreviews(then: () => void): void {
+        this._closingPreviews = true;
         this._cdr.markForCheck();
-        timer(ms)
+        timer(REMOVE_ANIMATION_MS)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(() => {
-                ids.delete(id);
+                then();
+                this._closingPreviews = false;
                 this._cdr.markForCheck();
             });
+    }
+
+    private _dropAttachments(items: Attachment[]): void {
+        items.forEach(a => URL.revokeObjectURL(a.previewUrl));
+        this.attachments = this.attachments.filter(a => !items.includes(a));
+        this._cdr.markForCheck();
     }
 
     private _revokeAttachments(): void {

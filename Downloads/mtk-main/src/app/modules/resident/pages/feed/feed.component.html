@@ -21,19 +21,26 @@
                     class="feed-textarea"
                     rows="3"
                     placeholder="Qonşularla nə paylaşmaq istəyirsiniz?"
+                    maxlength="2000"
+                    [readonly]="publishing"
                     [(ngModel)]="draft"></textarea>
             </div>
 
             <!-- Selected media previews -->
-            <div *ngIf="attachments.length" class="flex flex-wrap gap-3 mt-4">
-                <div *ngFor="let a of attachments" class="feed-preview">
-                    <img *ngIf="a.type === 'image'" [src]="a.safeUrl" [alt]="a.file.name">
-                    <video *ngIf="a.type === 'video'" [src]="a.safeUrl" muted preload="metadata"></video>
-                    <mat-icon *ngIf="a.type === 'video'" class="feed-preview__badge icon-size-5"
-                              [svgIcon]="'heroicons_solid:video-camera'"></mat-icon>
-                    <button type="button" class="feed-preview__remove" aria-label="Faylı sil" (click)="removeAttachment(a)">
-                        <mat-icon class="icon-size-4" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
-                    </button>
+            <div class="feed-collapse" [class.is-open]="previewsOpen">
+                <div class="feed-collapse__inner">
+                    <div class="flex flex-wrap gap-3 pt-4">
+                        <div *ngFor="let a of attachments" class="feed-preview">
+                            <img *ngIf="a.type === 'image'" [src]="a.safeUrl" [alt]="a.file.name">
+                            <video *ngIf="a.type === 'video'" [src]="a.safeUrl" muted playsinline preload="metadata"></video>
+                            <mat-icon *ngIf="a.type === 'video'" class="feed-preview__badge icon-size-5"
+                                      [svgIcon]="'heroicons_solid:video-camera'"></mat-icon>
+                            <button type="button" class="feed-preview__remove" aria-label="Faylı sil"
+                                    [disabled]="publishing" (click)="removeAttachment(a)">
+                                <mat-icon class="icon-size-4" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -45,7 +52,8 @@
                     *ngFor="let tool of tools"
                     type="button"
                     class="feed-tool"
-                    [attr.aria-label]="tool.label"
+                    [attr.aria-label]="tool.label || tool.action"
+                    [disabled]="publishing"
                     (click)="onToolClick(tool.action)">
                     <mat-icon class="icon-size-5" [ngClass]="tool.color" [svgIcon]="tool.icon"></mat-icon>
                     <span *ngIf="tool.label" class="hidden sm:inline">{{ tool.label }}</span>
@@ -55,7 +63,7 @@
                     <div class="relative">
                         <mat-icon class="icon-size-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none"
                                   [svgIcon]="'heroicons_outline:globe-alt'"></mat-icon>
-                        <select class="feed-select" [(ngModel)]="audience">
+                        <select class="feed-select" [disabled]="publishing" [(ngModel)]="audience">
                             <option *ngFor="let a of audiences" [value]="a">{{ a }}</option>
                         </select>
                     </div>
@@ -85,8 +93,25 @@
 
         <!-- Posts -->
         <div>
-            <div *ngFor="let post of filteredPosts; trackBy: trackById"
+            <!-- Initial loading placeholders -->
+            <ng-container *ngIf="loading">
+                <div *ngFor="let n of [1, 2]" class="feed-card feed-skeleton" aria-hidden="true">
+                    <div class="flex items-center gap-3">
+                        <div class="feed-skeleton__avatar"></div>
+                        <div class="flex-auto">
+                            <div class="feed-skeleton__line w-1/3 mb-2"></div>
+                            <div class="feed-skeleton__line w-1/5"></div>
+                        </div>
+                    </div>
+                    <div class="feed-skeleton__line w-full mt-5 mb-2"></div>
+                    <div class="feed-skeleton__line w-4/5 mb-2"></div>
+                    <div class="feed-skeleton__line w-2/3"></div>
+                </div>
+            </ng-container>
+
+            <div *ngFor="let post of filteredPosts; let i = index; trackBy: trackById"
                  class="feed-item"
+                 [style.--i]="i % 5"
                  [class.is-removing]="removingPostIds.has(post.id)">
             <div class="feed-item__inner">
             <article class="feed-card p-4 sm:p-5">
@@ -134,26 +159,28 @@
                                 <span class="text-rose-500">Sil</span>
                             </button>
                         </ng-container>
-                        <button mat-menu-item>Şikayət et</button>
+                        <button mat-menu-item>
+                            <mat-icon [svgIcon]="'heroicons_outline:flag'"></mat-icon>
+                            <span>Şikayət et</span>
+                        </button>
                     </mat-menu>
                 </header>
 
                 <!-- Body -->
                 <ng-container *ngIf="editingPostId !== post.id; else postEditor">
-                    <p *ngIf="post.text" class="mt-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
-                        {{ post.text }}
-                        <span *ngIf="post.edited" class="ml-1 text-sm text-gray-500 dark:text-gray-400">(redaktə olunub)</span>
-                    </p>
+                    <p *ngIf="post.text" class="feed-text mt-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">{{ post.text }}<span *ngIf="post.edited" class="ml-1 text-sm text-gray-500 dark:text-gray-400">(redaktə olunub)</span></p>
                 </ng-container>
                 <ng-template #postEditor>
                     <div class="mt-4">
                         <textarea
                             class="feed-textarea w-full"
                             rows="3"
+                            maxlength="2000"
+                            [readonly]="savingPostEdit"
                             [(ngModel)]="postEditDraft"
                             (keydown.escape)="cancelEditPost()"></textarea>
                         <div class="flex justify-end gap-2 mt-2">
-                            <button type="button" class="feed-chip" (click)="cancelEditPost()">Ləğv et</button>
+                            <button type="button" class="feed-chip feed-chip--btn" [disabled]="savingPostEdit" (click)="cancelEditPost()">Ləğv et</button>
                             <button type="button" class="feed-publish"
                                     [disabled]="!postEditDraft.trim() || savingPostEdit"
                                     (click)="savePostEdit(post)">
@@ -183,11 +210,16 @@
 
                 <!-- Actions -->
                 <footer class="mt-4 pt-3 border-t border-gray-200 dark:border-white/10 flex items-center gap-1 text-gray-500 dark:text-gray-400">
-                    <button type="button" class="feed-tool" [class.text-rose-500]="post.liked" (click)="toggleLike(post)">
-                        <mat-icon class="feed-heart icon-size-5"
-                                  [class.feed-heart--pop]="likePopIds.has(post.id)"
-                                  [svgIcon]="post.liked ? 'heroicons_solid:heart' : 'heroicons_outline:heart'"></mat-icon>
-                        {{ post.likes }}
+                    <button type="button" class="feed-tool feed-like"
+                            [class.feed-like--active]="post.liked"
+                            [attr.aria-pressed]="post.liked"
+                            aria-label="Bəyən"
+                            (click)="toggleLike(post)">
+                        <span class="feed-like__icon">
+                            <mat-icon class="feed-like__outline icon-size-5" [svgIcon]="'heroicons_outline:heart'"></mat-icon>
+                            <mat-icon class="feed-like__solid icon-size-5" [svgIcon]="'heroicons_solid:heart'"></mat-icon>
+                        </span>
+                        <span>{{ post.likes }}</span>
                     </button>
                     <button type="button" class="feed-tool"
                             [class.text-indigo-500]="expandedPostIds.has(post.id)"
@@ -204,10 +236,16 @@
                 </footer>
 
                 <!-- Comments -->
-                <section *ngIf="expandedPostIds.has(post.id)" class="feed-comments mt-3 pt-3 border-t border-gray-200 dark:border-white/10">
-                    <p *ngIf="!post.comments.length" class="py-2 text-md text-gray-500 dark:text-gray-400">
-                        Hələ şərh yoxdur. İlk şərhi siz yazın!
-                    </p>
+                <div class="feed-collapse" [class.is-open]="expandedPostIds.has(post.id)">
+                <div class="feed-collapse__inner">
+                <section class="mt-3 pt-3 border-t border-gray-200 dark:border-white/10">
+                    <div class="feed-collapse" [class.is-open]="!post.comments.length">
+                        <div class="feed-collapse__inner">
+                            <p class="pb-3 text-md text-gray-500 dark:text-gray-400">
+                                Hələ şərh yoxdur. İlk şərhi siz yazın!
+                            </p>
+                        </div>
+                    </div>
 
                     <ul class="mb-1">
                         <li *ngFor="let c of post.comments; trackBy: trackById"
@@ -219,10 +257,10 @@
                                     {{ c.initials }}
                                 </div>
                                 <div class="feed-comment-bubble min-w-0">
-                                    <div class="flex flex-wrap items-center gap-x-2">
-                                        <span class="font-semibold text-md text-gray-900 dark:text-white">{{ c.author }}</span>
-                                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ timeAgo(c.createdAt) }}</span>
-                                        <span class="ml-auto flex items-center gap-0.5">
+                                    <div class="flex items-center gap-x-2">
+                                        <span class="min-w-0 truncate font-semibold text-md text-gray-900 dark:text-white">{{ c.author }}</span>
+                                        <span class="flex-none whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ timeAgo(c.createdAt) }}</span>
+                                        <span class="ml-auto flex flex-none items-center gap-0.5">
                                             <button *ngIf="c.mine" type="button"
                                                     class="feed-comment-action"
                                                     aria-label="Düzəliş et"
@@ -241,23 +279,22 @@
                                     </div>
 
                                     <p *ngIf="editingCommentId !== c.id; else commentEditor"
-                                       class="text-md leading-snug text-gray-800 dark:text-gray-200 break-words">
-                                        {{ c.text }}
-                                        <span *ngIf="c.edited" class="ml-1 text-sm text-gray-500 dark:text-gray-400">(redaktə olunub)</span>
-                                    </p>
+                                       class="feed-text text-md leading-snug text-gray-800 dark:text-gray-200">{{ c.text }}<span *ngIf="c.edited" class="ml-1 text-sm text-gray-500 dark:text-gray-400">(redaktə olunub)</span></p>
                                     <ng-template #commentEditor>
                                         <div class="flex items-center gap-2 mt-1">
                                             <input
                                                 type="text"
                                                 class="feed-comment-input"
                                                 maxlength="500"
+                                                [readonly]="savingCommentEdit"
                                                 [(ngModel)]="commentEditDraft"
                                                 (keydown.enter)="saveCommentEdit(post, c)"
                                                 (keydown.escape)="cancelEditComment()">
-                                            <button type="button" class="feed-chip !px-3 !py-2" aria-label="Ləğv et" (click)="cancelEditComment()">
+                                            <button type="button" class="feed-chip feed-chip--icon" aria-label="Ləğv et"
+                                                    [disabled]="savingCommentEdit" (click)="cancelEditComment()">
                                                 <mat-icon class="icon-size-4" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
                                             </button>
-                                            <button type="button" class="feed-publish !px-3" aria-label="Saxla"
+                                            <button type="button" class="feed-publish feed-publish--icon" aria-label="Saxla"
                                                     [disabled]="!commentEditDraft.trim() || savingCommentEdit"
                                                     (click)="saveCommentEdit(post, c)">
                                                 <mat-icon class="icon-size-4" [svgIcon]="'heroicons_outline:check'"></mat-icon>
@@ -276,10 +313,11 @@
                             class="feed-comment-input"
                             placeholder="Şərh yazın..."
                             maxlength="500"
+                            [readonly]="commentingIds.has(post.id)"
                             [(ngModel)]="commentDrafts[post.id]"
                             (keydown.enter)="sendComment(post)">
                         <button type="button"
-                                class="feed-publish !px-3"
+                                class="feed-publish feed-publish--icon"
                                 aria-label="Şərh göndər"
                                 [disabled]="!canSendComment(post)"
                                 (click)="sendComment(post)">
@@ -287,6 +325,8 @@
                         </button>
                     </div>
                 </section>
+                </div>
+                </div>
             </article>
             </div>
             </div>
