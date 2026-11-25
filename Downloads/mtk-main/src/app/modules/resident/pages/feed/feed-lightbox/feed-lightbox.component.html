@@ -1,0 +1,35 @@
+<div class="feed-lightbox" role="dialog" aria-modal="true" [attr.aria-label]="'resident.feed.lightbox.label' | transloco">
+
+    <!-- Top bar -->
+    <div class="feed-lightbox__bar">
+        <span *ngIf="hasMany" class="feed-lightbox__counter">{{ index + 1 }} / {{ items.length }}</span>
+        <button type="button" class="feed-lightbox__btn" cdkFocusInitial
+                [attr.aria-label]="'resident.feed.lightbox.close' | transloco" (click)="close()">
+            <mat-icon [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- Stage -->
+    <div class="feed-lightbox__stage"
+         (click)="onStageClick($event)"
+         (touchstart)="onTouchStart($event)"
+         (touchend)="onTouchEnd($event)">
+        <ng-container *ngFor="let item of current">
+            <ng-container [ngSwitch]="item.type">
+                <img *ngSwitchCase="'image'" class="feed-lightbox__media" [src]="item.src" [alt]="item.name">
+                <video *ngSwitchCase="'video'" class="feed-lightbox__media" [src]="item.src" controls autoplay playsinline></video>
+            </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="hasMany">
+            <button type="button" class="feed-lightbox__btn feed-lightbox__nav feed-lightbox__nav--prev"
+                    [attr.aria-label]="'resident.feed.lightbox.prev' | transloco" (click)="prev()">
+                <mat-icon [svgIcon]="'heroicons_outline:chevron-left'"></mat-icon>
+            </button>
+            <button type="button" class="feed-lightbox__btn feed-lightbox__nav feed-lightbox__nav--next"
+                    [attr.aria-label]="'resident.feed.lightbox.next' | transloco" (click)="next()">
+                <mat-icon [svgIcon]="'heroicons_outline:chevron-right'"></mat-icon>
+            </button>
+        </ng-container>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Dismiss button -->
+    <div class="absolute top-0 right-0 pt-4 pr-4">
+        <button mat-icon-button [matDialogClose]="undefined" [attr.aria-label]="'resident.feed.lightbox.close' | transloco">
+            <mat-icon class="text-secondary" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- Content -->
+    <div class="flex flex-col sm:flex-row flex-auto items-center sm:items-start p-8 pb-6">
+        <div class="flex flex-0 items-center justify-center w-10 h-10 sm:mr-4 rounded-full text-warn-600 bg-warn-100 dark:text-warn-50 dark:bg-warn-600">
+            <mat-icon class="text-current" [svgIcon]="'heroicons_outline:exclamation-triangle'"></mat-icon>
+        </div>
+
+        <div class="flex flex-col items-center sm:items-start mt-4 sm:mt-0 sm:pr-8 space-y-1 text-center sm:text-left">
+            <div class="text-xl leading-6 font-medium">{{ 'resident.feed.confirmation.delete.title' | transloco }}</div>
+            <div class="text-secondary">{{ 'resident.feed.confirmation.delete.message' | transloco }}</div>
+        </div>
+    </div>
+
+    <!-- "Don't show again" -->
+    <div class="px-8 pb-5 sm:pl-[4.5rem]">
+        <mat-checkbox color="primary" [(ngModel)]="dontAskAgain">
+            {{ 'resident.feed.confirmation.delete.dontAskAgain' | transloco }}
+        </mat-checkbox>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-center sm:justify-end px-6 py-4 space-x-3 bg-gray-50 dark:bg-black dark:bg-opacity-10">
+        <button mat-stroked-button (click)="close(false)">
+            {{ 'common.actions.cancel' | transloco }}
+        </button>
+        <button mat-flat-button color="warn" (click)="close(true)">
+            {{ 'common.actions.delete' | transloco }}
+        </button>
+    </div>
+</div>

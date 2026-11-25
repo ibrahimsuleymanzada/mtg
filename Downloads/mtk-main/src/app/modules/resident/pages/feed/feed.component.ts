@@ -7,16 +7,19 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { DateTime } from 'luxon';
 import { TranslocoModule, TranslocoService } from '@ngneat/transloco';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { Observable, Subject, finalize, takeUntil, timer } from 'rxjs';
-import { FeedService, insertAfterPinned, sortFeedPosts } from 'app/core/services/resident/feed.service';
+import { Observable, Subject, Subscription, finalize, takeUntil, timer } from 'rxjs';
+import { FeedService, FeedUploadEvent, insertAfterPinned, sortFeedPosts } from 'app/core/services/resident/feed.service';
 import { NotificationService } from 'app/core/services/notification.service';
+import { FeedPreferencesService } from 'app/core/services/resident/feed-preferences.service';
 import { ComplaintPrefillService } from 'app/core/services/resident/complaint-prefill.service';
 import { FeedComment, FeedMedia, FeedPost } from 'app/core/models/resident/feed.types';
 import { ApiResponse, PaginatedResponse } from 'app/core/models/api-response.model';
+import { FeedDeleteDialogComponent, FeedDeleteDialogResult } from './feed-delete-dialog/feed-delete-dialog.component';
+import { FeedLightboxComponent, LightboxItem } from './feed-lightbox/feed-lightbox.component';
 
 type FeedFilter = 'all' | 'official' | 'mine';
 type ToolAction = 'photo' | 'video' | 'emoji' | 'location';
@@ -32,6 +35,7 @@ const PAGE_SIZE        = 5;
 const MAX_ATTACHMENTS  = 4;
 const MAX_IMAGE_MB     = 10;
 const MAX_VIDEO_MB     = 50;
+const MAX_TEXT_LENGTH  = 2000;
 /** Must match the collapse transition duration in feed.component.scss */
 const REMOVE_ANIMATION_MS = 320;
 
@@ -54,25 +58,24 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
     isAdmin = true;
 
     // ── Composer ────────────────────────────────────────────────────────
+    readonly maxTextLength = MAX_TEXT_LENGTH;
     draft = '';
-    audience = 'Bütün sakinlər';
-    audiences = ['Bütün sakinlər', 'Mənim blokum', 'Mənim mərtəbəm'];
+    audience = 'all';
+    audiences = ['all', 'block', 'floor'];     // codes; labels come from `resident.feed.audience.*`
     attachments: Attachment[] = [];
     publishing = false;
+    /** 0-100 while files are uploading, otherwise null. */
+    uploadPercent: number | null = null;
 
-    tools: { action: ToolAction; label: string; icon: string; color: string }[] = [
-        { action: 'photo',    label: 'Foto',  icon: 'heroicons_outline:photo',        color: 'text-green-500' },
-        { action: 'video',    label: 'Video', icon: 'heroicons_outline:video-camera', color: 'text-rose-500' },
-        { action: 'emoji',    label: '',      icon: 'heroicons_outline:face-smile',   color: 'text-amber-500' },
-        { action: 'location', label: '',      icon: 'heroicons_outline:map-pin',      color: 'text-indigo-500' },
+    tools: { action: ToolAction; key: string; icon: string; color: string; showLabel: boolean }[] = [
+        { action: 'photo',    key: 'photo',    icon: 'heroicons_outline:photo',        color: 'text-green-500',  showLabel: true },
+        { action: 'video',    key: 'video',    icon: 'heroicons_outline:video-camera', color: 'text-rose-500',   showLabel: true },
+        { action: 'emoji',    key: 'emoji',    icon: 'heroicons_outline:face-smile',   color: 'text-amber-500',  showLabel: false },
+        { action: 'location', key: 'location', icon: 'heroicons_outline:map-pin',      color: 'text-indigo-500', showLabel: false },
     ];
 
     // ── Feed ────────────────────────────────────────────────────────────
-    filters: { key: FeedFilter; label: string }[] = [
-        { key: 'all',      label: 'Hamısı' },
-        { key: 'official', label: 'Rəsmi' },
-        { key: 'mine',     label: 'Mənim' },
-    ];
+    filters: FeedFilter[] = ['all', 'official', 'mine'];     // labels: `resident.feed.filters.*`
     activeFilter: FeedFilter = 'all';
 
     posts: FeedPost[] = [];
@@ -96,6 +99,9 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
     commentEditDraft = '';
     savingCommentEdit = false;
 
+    // Mirrors the "don't ask again" preference so the menu can offer to restore it.
+    skipDeleteConfirm = false;
+
     // Animation state
     removingPostIds = new Set<number>();
     removingCommentIds = new Set<number>();
@@ -108,6 +114,7 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
     private _deletingPostIds = new Set<number>();
     private _pinningIds = new Set<number>();
     private _closingPreviews = false;
+    private _publishSub: Subscription | null = null;
     private _deletingCommentIds = new Set<number>();
     private _safeUrls = new Map<string, SafeUrl>();
     private _unsubscribeAll = new Subject<void>();
@@ -116,8 +123,9 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
         private _feedService:         FeedService,
         private _notificationService: NotificationService,
         private _sanitizer:           DomSanitizer,
-        private _confirmationService: FuseConfirmationService,
         private _translocoService:    TranslocoService,
+        private _prefs:               FeedPreferencesService,
+        private _matDialog:           MatDialog,
         private _complaintPrefill:    ComplaintPrefillService,
         private _router:              Router,
         private _route:               ActivatedRoute,
@@ -127,6 +135,14 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
+        this.draft = this._prefs.draft;
+        this.skipDeleteConfirm = this._prefs.skipDeleteConfirm;
+
+        // OnPush: text produced by methods (timeAgo, ...) must be re-evaluated when the language changes.
+        this._translocoService.langChanges$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe(() => this._cdr.markForCheck());
+
         // The same component serves `feed` and `feed/:id`; the id may change while it stays alive.
         this._route.paramMap
             .pipe(takeUntil(this._unsubscribeAll))
@@ -305,7 +321,7 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                     this._page = nextPage;
                     this._needsResync = false;
                 },
-                error: () => this._notificationService.error('Yeni paylaşımlar yüklənmədi'),
+                error: () => this._notificationService.error(this._t('errors.loadMore')),
             });
     }
 
@@ -325,11 +341,11 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
         const maxMb = type === 'image' ? MAX_IMAGE_MB : MAX_VIDEO_MB;
         for (const file of files) {
             if (this.attachments.length >= MAX_ATTACHMENTS) {
-                this._notificationService.warning(`Maksimum ${MAX_ATTACHMENTS} fayl əlavə etmək olar`);
+                this._notificationService.warning(this._t('files.tooMany', { max: MAX_ATTACHMENTS }));
                 break;
             }
             if (file.size > maxMb * 1024 * 1024) {
-                this._notificationService.warning(`"${file.name}" çox böyükdür (maks. ${maxMb} MB)`);
+                this._notificationService.warning(this._t('files.tooLarge', { name: file.name, max: maxMb }));
                 continue;
             }
             const previewUrl = URL.createObjectURL(file);
@@ -349,6 +365,34 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
         }
     }
 
+    /** Opens the viewer on a published post's media (images and videos), starting at `start`. */
+    openLightbox(media: FeedMedia[], start: FeedMedia): void {
+        this._openViewer(
+            media.map(m => ({ type: m.type, src: this.mediaSrc(m), name: m.name })),
+            media.indexOf(start),
+        );
+    }
+
+    /** Opens the viewer on the files selected in the composer (before they are uploaded). */
+    openAttachment(attachment: Attachment): void {
+        this._openViewer(
+            this.attachments.map(a => ({ type: a.type, src: a.safeUrl, name: a.file.name })),
+            this.attachments.indexOf(attachment),
+        );
+    }
+
+    private _openViewer(items: LightboxItem[], index: number): void {
+        this._matDialog.open(FeedLightboxComponent, {
+            data: { items, index },
+            width: '100vw',
+            maxWidth: '100vw',
+            height: '100vh',
+            panelClass: 'feed-lightbox-panel',
+            backdropClass: 'feed-lightbox-backdrop',
+            autoFocus: 'dialog',
+        });
+    }
+
     /** Media of a published post. Blob URLs (mock mode) need to be trusted; the result is cached to keep bindings stable. */
     mediaSrc(media: FeedMedia): string | SafeUrl {
         if (!media.url.startsWith('blob:')) return media.url;
@@ -362,53 +406,93 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
 
     // ── Posts ───────────────────────────────────────────────────────────
 
+    onDraftChange(value: string): void {
+        this.draft = value;
+        this._prefs.draft = value;
+    }
+
     publish(): void {
         if (!this.canPublish) return;
         const text = this.draft.trim();
+        const files = this.attachments.map(a => a.file);
 
         this.publishing = true;
-        this._feedService.createPost({ text, audience: this.audience, files: this.attachments.map(a => a.file) })
+        this.uploadPercent = files.length ? 0 : null;
+        this._publishSub = this._feedService.createPost({ text, audience: this.audience, files })
             .pipe(
                 takeUntil(this._unsubscribeAll),
                 finalize(() => {
                     this.publishing = false;
+                    this.uploadPercent = null;
+                    this._publishSub = null;
                     this._cdr.markForCheck();
                 }),
             )
             .subscribe({
-                next: (res) => {
+                next: (event: FeedUploadEvent) => {
+                    if (event.kind === 'progress') {
+                        this.uploadPercent = event.percent;
+                        this._cdr.markForCheck();
+                        return;
+                    }
+                    const res = event.response;
                     if (res.status) {
                         // Never prepend: pinned posts stay first, the new post goes right after them.
                         this.posts = insertAfterPinned(this.posts, res.data);
                         this.totalCount++;
                         this._needsResync = true;
                         this.draft = '';
+                        this._prefs.draft = '';
                         const sent = [...this.attachments];
                         this._closePreviews(() => this._dropAttachments(sent));
                     } else {
                         this._notificationService.info(res.message);
                     }
                 },
-                error: () => this._notificationService.error('Paylaşım göndərilmədi'),
+                error: () => this._notificationService.error(this._t('errors.publish')),
             });
     }
 
-    /** Menu action: asks first, the actual deletion happens in `deletePost`. */
+    /** Aborts an upload in progress; the draft and the selected files stay in the composer. */
+    cancelPublish(): void {
+        this._publishSub?.unsubscribe();   // `finalize` resets the state
+    }
+
+    /**
+     * Menu action. Asks first, unless the user ticked "Bir daha göstərmə" earlier;
+     * the actual deletion happens in `deletePost`.
+     */
     confirmDeletePost(post: FeedPost): void {
-        this._confirmationService.open({
-            title:   this._t('confirmation.delete.title'),
-            message: this._t('confirmation.delete.message'),
-            icon:    { show: true, name: 'heroicons_outline:exclamation-triangle', color: 'warn' },
-            actions: {
-                confirm: { show: true, label: 'common.actions.delete', color: 'warn' },
-                cancel:  { show: true, label: 'common.actions.cancel' },
-            },
-            dismissible: true,
-        }).afterClosed().subscribe((result) => {
-            if (result === 'confirmed') {
+        if (this._prefs.skipDeleteConfirm) {
+            this.deletePost(post);
+            return;
+        }
+
+        this._matDialog
+            .open<FeedDeleteDialogComponent, void, FeedDeleteDialogResult>(FeedDeleteDialogComponent, {
+                width: '100%',
+                maxWidth: '32rem',
+                autoFocus: false,
+                panelClass: 'feed-delete-dialog-panel',
+            })
+            .afterClosed()
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((result) => {
+                if (!result?.confirmed) return;
+                if (result.dontAskAgain) {
+                    this._prefs.skipDeleteConfirm = true;
+                    this.skipDeleteConfirm = true;
+                }
                 this.deletePost(post);
-            }
-        });
+            });
+    }
+
+    /** Brings the delete confirmation back after "Bir daha göstərmə". */
+    resetDeleteConfirm(): void {
+        this._prefs.skipDeleteConfirm = false;
+        this.skipDeleteConfirm = false;
+        this._notificationService.success(this._t('confirmation.delete.restored'));
+        this._cdr.markForCheck();
     }
 
     deletePost(post: FeedPost): void {
@@ -433,7 +517,7 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                         this._needsResync = true;
                     });
                 },
-                error: () => this._notificationService.error('Silinmə zamanı xəta baş verdi'),
+                error: () => this._notificationService.error(this._t('errors.delete')),
             });
     }
 
@@ -462,7 +546,7 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                     this._needsResync = true;
                     this._cdr.markForCheck();
                 },
-                error: () => this._notificationService.error('Əməliyyat zamanı xəta baş verdi'),
+                error: () => this._notificationService.error(this._t('errors.action')),
             });
     }
 
@@ -490,7 +574,7 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                 },
                 error: () => {
                     this._patchPost(post.id, { liked: post.liked, likes: post.likes });
-                    this._notificationService.error('Əməliyyat zamanı xəta baş verdi');
+                    this._notificationService.error(this._t('errors.action'));
                 },
             });
     }
@@ -554,7 +638,7 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                         this._notificationService.info(res.message);
                     }
                 },
-                error: () => this._notificationService.error('Dəyişiklik saxlanılmadı'),
+                error: () => this._notificationService.error(this._t('errors.save')),
             });
     }
 
@@ -598,7 +682,7 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                         this._notificationService.info(res.message);
                     }
                 },
-                error: () => this._notificationService.error('Şərh göndərilmədi'),
+                error: () => this._notificationService.error(this._t('errors.commentSend')),
             });
     }
 
@@ -643,7 +727,7 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                         this._notificationService.info(res.message);
                     }
                 },
-                error: () => this._notificationService.error('Dəyişiklik saxlanılmadı'),
+                error: () => this._notificationService.error(this._t('errors.save')),
             });
     }
 
@@ -669,27 +753,27 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                         }
                     });
                 },
-                error: () => this._notificationService.error('Şərh silinmədi'),
+                error: () => this._notificationService.error(this._t('errors.commentDelete')),
             });
     }
 
     // ── Utils ───────────────────────────────────────────────────────────
 
-    /** Relative time in Azerbaijani (Intl relative formats are not reliable for `az` across browsers). */
+    /** Relative time ("2 saat əvvəl" / "2 h ago"); older than a week shows the date. */
     timeAgo(iso: string): string {
         const date = DateTime.fromISO(iso);
         if (!date.isValid) return '';
 
         const minutes = Math.floor((Date.now() - date.toMillis()) / 60_000);
-        if (minutes < 1)  return 'indicə';
-        if (minutes < 60) return `${minutes} dəqiqə əvvəl`;
+        if (minutes < 1)  return this._t('time.now');
+        if (minutes < 60) return this._t('time.minutes', { n: minutes });
 
         const hours = Math.floor(minutes / 60);
-        if (hours < 24) return `${hours} saat əvvəl`;
+        if (hours < 24) return this._t('time.hours', { n: hours });
 
         const days = Math.floor(hours / 24);
-        if (days === 1) return 'dünən';
-        if (days < 7)   return `${days} gün əvvəl`;
+        if (days === 1) return this._t('time.yesterday');
+        if (days < 7)   return this._t('time.days', { n: days });
 
         return date.toFormat('dd.MM.yyyy');
     }

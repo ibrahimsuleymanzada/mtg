@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, delay, of } from 'rxjs';
+import { HttpEventType } from '@angular/common/http';
+import { Observable, concat, defer, delay, filter, map, of, take, timer } from 'rxjs';
 import { BaseApiService } from '../base-api.service';
 import { ApiResponse, PaginatedResponse } from '../../models/api-response.model';
 import {
@@ -23,6 +24,11 @@ export function insertAfterPinned(posts: FeedPost[], post: FeedPost): FeedPost[]
     const index = firstUnpinned === -1 ? posts.length : firstUnpinned;
     return [...posts.slice(0, index), post, ...posts.slice(index)];
 }
+
+/** Upload progress (0-100) while files are being sent, then the final API response. */
+export type FeedUploadEvent =
+    | { kind: 'progress'; percent: number }
+    | { kind: 'done'; response: ApiResponse<FeedPost> };
 
 @Injectable({ providedIn: 'root' })
 export class FeedService extends BaseApiService {
@@ -66,38 +72,41 @@ export class FeedService extends BaseApiService {
         return this.getById<FeedPost>('Resident/GetFeedPostById', id);
     }
 
-    createPost(data: FeedPostFormData): Observable<ApiResponse<FeedPost>> {
+    /**
+     * Creates a post. Emits `progress` events while files are uploading and finishes with one `done` event.
+     * Unsubscribing cancels the request (real mode) or the simulated upload (mock mode, nothing is created).
+     */
+    createPost(data: FeedPostFormData): Observable<FeedUploadEvent> {
         const files = data.files ?? [];
 
         if (this.useMock) {
-            const media: FeedMedia[] = files.map(file => ({
-                type: file.type.startsWith('video/') ? 'video' : 'image',
-                url:  URL.createObjectURL(file),
-                name: file.name,
-            }));
-            const post: FeedPost = {
-                id:        Date.now(),
-                author:    this.mockUser.name,
-                initials:  this.mockUser.initials,
-                official:  false,
-                mine:      true,
-                pinned:    false,
-                createdAt: new Date().toISOString(),
-                audience:  data.audience,
-                text:      data.text,
-                media,
-                likes:     0,
-                comments:  [],
-                liked:     false,
-            };
-            this.mockPosts = [post, ...this.mockPosts];
-            return this.mockResponse({ ...post });
+            return this.mockCreatePost(data, files);
         }
 
         const body = { text: data.text, audience: data.audience };
-        return files.length
-            ? this.saveMultipart<FeedPost>('Resident/SaveFeedPost', body, files)
-            : this.save<FeedPost>('Resident/SaveFeedPost', body);
+        if (!files.length) {
+            return this.save<FeedPost>('Resident/SaveFeedPost', body)
+                .pipe(map((response): FeedUploadEvent => ({ kind: 'done', response })));
+        }
+
+        const form = new FormData();
+        Object.entries(body).forEach(([key, value]) => form.append(key, String(value)));
+        files.forEach(file => form.append('Files', file));
+
+        return this.http
+            .post<ApiResponse<FeedPost>>(`${this.apiUrl}/Resident/SaveFeedPost`, form, { reportProgress: true, observe: 'events' })
+            .pipe(
+                map((event): FeedUploadEvent | null => {
+                    if (event.type === HttpEventType.UploadProgress) {
+                        return { kind: 'progress', percent: event.total ? Math.round((event.loaded * 100) / event.total) : 0 };
+                    }
+                    if (event.type === HttpEventType.Response) {
+                        return { kind: 'done', response: event.body as ApiResponse<FeedPost> };
+                    }
+                    return null;
+                }),
+                filter((event): event is FeedUploadEvent => event !== null),
+            );
     }
 
     /** Only the author may edit a post; the backend must enforce this too. */
@@ -207,6 +216,47 @@ export class FeedService extends BaseApiService {
 
     // ── Mock helpers ────────────────────────────────────────────────────
 
+    /** Simulates an upload: ~2 MB/s (0.8-4 s), progress every 100 ms; the post is created only when it completes. */
+    private mockCreatePost(data: FeedPostFormData, files: File[]): Observable<FeedUploadEvent> {
+        const create = defer((): Observable<FeedUploadEvent> => {
+            const media: FeedMedia[] = files.map(file => ({
+                type: file.type.startsWith('video/') ? 'video' : 'image',
+                url:  URL.createObjectURL(file),
+                name: file.name,
+            }));
+            const post: FeedPost = {
+                id:        Date.now(),
+                author:    this.mockUser.name,
+                initials:  this.mockUser.initials,
+                official:  false,
+                mine:      true,
+                pinned:    false,
+                createdAt: new Date().toISOString(),
+                audience:  data.audience,
+                text:      data.text,
+                media,
+                likes:     0,
+                comments:  [],
+                liked:     false,
+            };
+            this.mockPosts = [post, ...this.mockPosts];
+            return of({ kind: 'done', response: { data: { ...post }, message: '', statusCode: 200, status: true } });
+        });
+
+        if (!files.length) {
+            return create.pipe(delay(250));
+        }
+
+        const totalBytes = files.reduce((sum, f) => sum + f.size, 0);
+        const durationMs = Math.min(4000, Math.max(800, (totalBytes / (2 * 1024 * 1024)) * 1000));
+        const steps = Math.ceil(durationMs / 100);
+        const progress = timer(0, 100).pipe(
+            take(steps),
+            map((i): FeedUploadEvent => ({ kind: 'progress', percent: Math.min(99, Math.round(((i + 1) / steps) * 100)) })),
+        );
+        return concat(progress, create);
+    }
+
     private mockResponse<T>(data: T): Observable<ApiResponse<T>> {
         return of<ApiResponse<T>>({ data, message: '', statusCode: 200, status: true }).pipe(delay(250));
     }
@@ -242,7 +292,7 @@ export class FeedService extends BaseApiService {
                 mine: false,
                 pinned: true,
                 createdAt: ago(2),
-                audience: 'Bütün sakinlər',
+                audience: 'all',
                 text: 'Hörmətli sakinlər! 15 oktyabr, çərşənbə axşamı 10:00–14:00 arası B blokunda lift profilaktikası aparılacaq. Narahatlığa görə üzr istəyirik. Suallar üçün Müraciətlər bölməsindən yazın.',
                 imageCaption: 'B bloku · lift şaxtası',
                 likes: 24,
@@ -261,7 +311,7 @@ export class FeedService extends BaseApiService {
                 mine: false,
                 pinned: false,
                 createdAt: ago(26),
-                audience: 'Mənim blokum',
+                audience: 'block',
                 text: 'Salam, qonşular! Həyətdə tapılmış qırmızı velosipedin sahibini axtarırıq. Mühafizə postunda saxlanılır.',
                 likes: 8,
                 comments: [
@@ -278,7 +328,7 @@ export class FeedService extends BaseApiService {
                 mine: true,
                 pinned: false,
                 createdAt: ago(72),
-                audience: 'Bütün sakinlər',
+                audience: 'all',
                 text: 'Şənbə günü saat 11:00-da uşaq meydançasında təmizlik aksiyası keçiriləcək. Hamını gözləyirik!',
                 likes: 15,
                 comments: [],
@@ -292,7 +342,7 @@ export class FeedService extends BaseApiService {
                 mine,
                 pinned: false,
                 createdAt: ago(hours),
-                audience: 'Bütün sakinlər',
+                audience: 'all',
                 text,
                 likes: (i * 3) % 11,
                 comments: [],

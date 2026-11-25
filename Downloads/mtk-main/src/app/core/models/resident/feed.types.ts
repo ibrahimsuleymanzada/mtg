@@ -33,7 +33,7 @@ export interface FeedPost {
     mine:          boolean;
     pinned:        boolean;
     createdAt:     string;      // ISO date string
-    audience:      string;
+    audience:      string;      // audience code: 'all' | 'block' | 'floor'
     text:          string;
     edited?:       boolean;
     imageCaption?: string;

@@ -1981,11 +1981,98 @@
       }
     },
     "feed": {
+      "breadcrumb": {
+        "modules": "Modules",
+        "feed": "Feed"
+      },
+      "title": "Residents' feed",
+      "composer": {
+        "placeholder": "What would you like to share with your neighbours?",
+        "photo": "Photo",
+        "video": "Video",
+        "emoji": "Emoji",
+        "location": "Location",
+        "publish": "Post",
+        "cancelUpload": "Cancel",
+        "uploading": "Uploading… {{percent}}%",
+        "removeFile": "Remove file",
+        "preview": "Preview"
+      },
+      "audience": {
+        "all": "All residents",
+        "block": "My block",
+        "floor": "My floor"
+      },
+      "filters": {
+        "all": "All",
+        "official": "Official",
+        "mine": "Mine"
+      },
+      "post": {
+        "pinned": "Pinned announcement",
+        "edited": "(edited)",
+        "moreActions": "More actions",
+        "like": "Like",
+        "share": "Share",
+        "comments": "Comments"
+      },
+      "menu": {
+        "edit": "Edit",
+        "pin": "Pin",
+        "unpin": "Unpin",
+        "delete": "Delete",
+        "report": "Report",
+        "resetDeleteConfirm": "Restore delete confirmation"
+      },
+      "editor": {
+        "save": "Save",
+        "cancel": "Cancel"
+      },
+      "comments": {
+        "empty": "No comments yet. Be the first to comment!",
+        "placeholder": "Write a comment...",
+        "send": "Send comment",
+        "edit": "Edit",
+        "delete": "Delete comment"
+      },
+      "empty": "There are no posts yet",
+      "loadMore": {
+        "label": "Load more",
+        "loading": "Loading..."
+      },
+      "time": {
+        "now": "just now",
+        "minutes": "{{n}} min ago",
+        "hours": "{{n}} h ago",
+        "yesterday": "yesterday",
+        "days": "{{n}} d ago"
+      },
+      "errors": {
+        "loadMore": "Could not load more posts",
+        "publish": "The post was not sent",
+        "delete": "Could not delete the post",
+        "action": "The action failed",
+        "save": "The changes were not saved",
+        "commentSend": "The comment was not sent",
+        "commentDelete": "The comment was not deleted"
+      },
+      "files": {
+        "tooMany": "You can attach up to {{max}} files",
+        "tooLarge": "\"{{name}}\" is too large (max. {{max}} MB)"
+      },
       "confirmation": {
         "delete": {
           "title": "Delete post",
-          "message": "Are you sure you want to delete this post? This action cannot be undone."
+          "message": "Are you sure you want to delete this post? This action cannot be undone.",
+          "dontAskAgain": "Don't show this again",
+          "restored": "Delete confirmation restored"
         }
+      },
+      "lightbox": {
+        "close": "Close",
+        "prev": "Previous",
+        "next": "Next",
+        "label": "Media preview"
       },
       "share": {
         "copied": "Link copied",

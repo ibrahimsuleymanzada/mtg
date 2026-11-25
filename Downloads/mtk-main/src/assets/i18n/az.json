@@ -2094,11 +2094,98 @@
       }
     },
     "feed": {
+      "breadcrumb": {
+        "modules": "Modullar",
+        "feed": "Lenta"
+      },
+      "title": "Sakinlər lentası",
+      "composer": {
+        "placeholder": "Qonşularla nə paylaşmaq istəyirsiniz?",
+        "photo": "Foto",
+        "video": "Video",
+        "emoji": "Emoji",
+        "location": "Məkan",
+        "publish": "Paylaş",
+        "cancelUpload": "Ləğv et",
+        "uploading": "Yüklənir… {{percent}}%",
+        "removeFile": "Faylı sil",
+        "preview": "Önizləmə"
+      },
+      "audience": {
+        "all": "Bütün sakinlər",
+        "block": "Mənim blokum",
+        "floor": "Mənim mərtəbəm"
+      },
+      "filters": {
+        "all": "Hamısı",
+        "official": "Rəsmi",
+        "mine": "Mənim"
+      },
+      "post": {
+        "pinned": "Bərkidilmiş elan",
+        "edited": "(redaktə olunub)",
+        "moreActions": "Əlavə əməliyyatlar",
+        "like": "Bəyən",
+        "share": "Paylaş",
+        "comments": "Şərhlər"
+      },
+      "menu": {
+        "edit": "Düzəliş et",
+        "pin": "Bərkid",
+        "unpin": "Bərkidilməni ləğv et",
+        "delete": "Sil",
+        "report": "Şikayət et",
+        "resetDeleteConfirm": "Silmə təsdiqini bərpa et"
+      },
+      "editor": {
+        "save": "Saxla",
+        "cancel": "Ləğv et"
+      },
+      "comments": {
+        "empty": "Hələ şərh yoxdur. İlk şərhi siz yazın!",
+        "placeholder": "Şərh yazın...",
+        "send": "Şərh göndər",
+        "edit": "Düzəliş et",
+        "delete": "Şərhi sil"
+      },
+      "empty": "Hələ heç bir paylaşım yoxdur",
+      "loadMore": {
+        "label": "Daha çox yüklə",
+        "loading": "Yüklənir..."
+      },
+      "time": {
+        "now": "indicə",
+        "minutes": "{{n}} dəqiqə əvvəl",
+        "hours": "{{n}} saat əvvəl",
+        "yesterday": "dünən",
+        "days": "{{n}} gün əvvəl"
+      },
+      "errors": {
+        "loadMore": "Yeni paylaşımlar yüklənmədi",
+        "publish": "Paylaşım göndərilmədi",
+        "delete": "Silinmə zamanı xəta baş verdi",
+        "action": "Əməliyyat zamanı xəta baş verdi",
+        "save": "Dəyişiklik saxlanılmadı",
+        "commentSend": "Şərh göndərilmədi",
+        "commentDelete": "Şərh silinmədi"
+      },
+      "files": {
+        "tooMany": "Maksimum {{max}} fayl əlavə etmək olar",
+        "tooLarge": "\"{{name}}\" çox böyükdür (maks. {{max}} MB)"
+      },
       "confirmation": {
         "delete": {
           "title": "Paylaşımı sil",
-          "message": "Bu paylaşımı silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+          "message": "Bu paylaşımı silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq.",
+          "dontAskAgain": "Bir daha göstərmə",
+          "restored": "Silmə təsdiqi bərpa olundu"
         }
+      },
+      "lightbox": {
+        "close": "Bağla",
+        "prev": "Əvvəlki",
+        "next": "Növbəti",
+        "label": "Media önizləməsi"
       },
       "share": {
         "copied": "Keçid kopyalandı",
