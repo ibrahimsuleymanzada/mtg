@@ -93,6 +93,27 @@
 
         <!-- Posts -->
         <div>
+            <!-- Initial load failed -->
+            <div *ngIf="loadError" class="feed-card feed-state" role="alert">
+                <div class="feed-state__icon">
+                    <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:exclamation-triangle'"></mat-icon>
+                </div>
+                <h2 class="feed-fs-body font-semibold text-gray-900 dark:text-white">{{ 'resident.feed.error.title' | transloco }}</h2>
+                <p class="feed-fs-ui text-gray-500 dark:text-gray-400">{{ 'resident.feed.error.message' | transloco }}</p>
+                <button type="button" class="feed-publish" (click)="retryLoad()">
+                    <mat-icon class="icon-size-4" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>
+                    {{ 'resident.feed.error.retry' | transloco }}
+                </button>
+            </div>
+
+            <!-- Opened through a shared link -->
+            <div *ngIf="focusedPostId !== null && !loadError" class="feed-focus-bar">
+                <button type="button" class="feed-link" (click)="backToFeed()">
+                    <mat-icon class="icon-size-4" [svgIcon]="'heroicons_outline:arrow-uturn-left'"></mat-icon>
+                    {{ 'resident.feed.focused.back' | transloco }}
+                </button>
+            </div>
+
             <!-- Initial loading placeholders -->
             <ng-container *ngIf="loading">
                 <div *ngFor="let n of [1, 2]" class="feed-card feed-skeleton" aria-hidden="true">
@@ -111,6 +132,8 @@
 
             <div *ngFor="let post of filteredPosts; let i = index; trackBy: trackById"
                  class="feed-item"
+                 [attr.id]="'feed-post-' + post.id"
+                 [class.is-focused]="post.id === focusedPostId"
                  [style.--i]="i % 5"
                  [class.is-removing]="removingPostIds.has(post.id)">
             <div class="feed-item__inner">
@@ -154,11 +177,15 @@
                                 <mat-icon [svgIcon]="'heroicons_outline:bookmark'"></mat-icon>
                                 <span>{{ post.pinned ? 'Bərkidilməni ləğv et' : 'Bərkid' }}</span>
                             </button>
-                            <button mat-menu-item (click)="deletePost(post)">
+                            <button mat-menu-item (click)="confirmDeletePost(post)">
                                 <mat-icon class="text-rose-500" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
                                 <span class="text-rose-500">Sil</span>
                             </button>
                         </ng-container>
+                        <button mat-menu-item (click)="createComplaint(post)">
+                            <mat-icon [svgIcon]="'heroicons_outline:clipboard-document-list'"></mat-icon>
+                            <span>{{ 'resident.feed.complaint.menu' | transloco }}</span>
+                        </button>
                         <button mat-menu-item>
                             <mat-icon [svgIcon]="'heroicons_outline:flag'"></mat-icon>
                             <span>Şikayət et</span>
@@ -229,7 +256,7 @@
                                   [svgIcon]="expandedPostIds.has(post.id) ? 'heroicons_solid:chat-bubble-left' : 'heroicons_outline:chat-bubble-left'"></mat-icon>
                         {{ post.comments.length }}
                     </button>
-                    <button type="button" class="feed-tool ml-auto">
+                    <button type="button" class="feed-tool ml-auto" aria-label="Paylaş" (click)="sharePost(post)">
                         <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:share'"></mat-icon>
                         <span class="hidden sm:inline">Paylaş</span>
                     </button>
@@ -331,7 +358,7 @@
             </div>
             </div>
 
-            <div *ngIf="!loading && !filteredPosts.length" class="feed-card py-12 text-center text-gray-500 dark:text-gray-400">
+            <div *ngIf="!loading && !loadError && !filteredPosts.length" class="feed-card py-12 text-center text-gray-500 dark:text-gray-400">
                 Hələ heç bir paylaşım yoxdur
             </div>
 

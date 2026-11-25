@@ -17,6 +17,7 @@ import { NotificationService } from 'app/core/services/notification.service';
 import { DropdownService } from 'app/core/services/dropdown.service';
 import { DropdownItem } from 'app/core/models/dropdown.model';
 import { ResidentComplaintFormData } from 'app/core/models/resident/resident.types';
+import { ComplaintPrefill } from 'app/core/services/resident/complaint-prefill.service';
 
 @Component({
     selector        : 'resident-complaint-form-dialog',
@@ -63,7 +64,7 @@ export class ResidentComplaintFormDialogComponent implements OnInit, OnDestroy {
 
     constructor(
         public  dialogRef:           MatDialogRef<ResidentComplaintFormDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { complaintId?: number },
+        @Inject(MAT_DIALOG_DATA) public data: { complaintId?: number; prefill?: ComplaintPrefill },
         private _fb:                 FormBuilder,
         private _residentService:    ResidentService,
         private _notificationService: NotificationService,
@@ -100,6 +101,11 @@ export class ResidentComplaintFormDialogComponent implements OnInit, OnDestroy {
             isAnonymous:     [false],
             attachmentsUrl:  [null],
         });
+
+        // New complaint started from another page (e.g. the feed): pre-fill the text fields.
+        if (!this.isEdit && this.data?.prefill) {
+            this.form.patchValue(this.data.prefill);
+        }
     }
 
     private _setupApartmentAutocomplete(): void {

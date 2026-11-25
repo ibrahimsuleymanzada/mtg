@@ -1980,6 +1980,32 @@
         "placeholder": "Type your message..."
       }
     },
+    "feed": {
+      "confirmation": {
+        "delete": {
+          "title": "Delete post",
+          "message": "Are you sure you want to delete this post? This action cannot be undone."
+        }
+      },
+      "share": {
+        "copied": "Link copied",
+        "failed": "Could not copy the link"
+      },
+      "error": {
+        "title": "Could not load the feed",
+        "message": "Check your connection and try again.",
+        "retry": "Try again"
+      },
+      "notFound": "Post not found or already deleted",
+      "focused": {
+        "back": "Back to the whole feed"
+      },
+      "complaint": {
+        "menu": "Create a request",
+        "title": "About a post in the feed",
+        "body": "Post: «{{text}}»\nLink: {{link}}\n\nMy request:"
+      }
+    },
     "announcements": {
       "title": "Announcements",
       "tabs": {

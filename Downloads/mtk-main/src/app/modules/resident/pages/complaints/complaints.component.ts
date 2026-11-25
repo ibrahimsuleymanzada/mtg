@@ -9,6 +9,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { TranslocoModule, TranslocoService } from '@ngneat/transloco';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { ResidentService } from 'app/core/services/resident/resident.service';
+import { ComplaintPrefill, ComplaintPrefillService } from 'app/core/services/resident/complaint-prefill.service';
 import { NotificationService } from 'app/core/services/notification.service';
 import { ResidentComplaintListItem } from 'app/core/models/resident/resident.types';
 import { ResidentComplaintFormDialogComponent } from './complaint-form-dialog/complaint-form-dialog.component';
@@ -43,11 +44,18 @@ export class ResidentComplaintsComponent implements OnInit, OnDestroy {
         private _confirmationService: FuseConfirmationService,
         private _translocoService:    TranslocoService,
         private _notificationService: NotificationService,
+        private _prefillService:      ComplaintPrefillService,
         private _cdr:                 ChangeDetectorRef,
     ) {}
 
     ngOnInit(): void {
         this._loadComplaints();
+
+        // A draft left by another page (e.g. "Müraciət yarat" in the feed) opens the create dialog right away.
+        const prefill = this._prefillService.take();
+        if (prefill) {
+            this.openCreateDialog(prefill);
+        }
     }
 
     ngOnDestroy(): void {
@@ -119,12 +127,12 @@ export class ResidentComplaintsComponent implements OnInit, OnDestroy {
         }
     }
 
-    openCreateDialog(): void {
+    openCreateDialog(prefill?: ComplaintPrefill): void {
         this._matDialog.open(ResidentComplaintFormDialogComponent, {
             width: '100%',
             maxWidth: '560px',
                 maxHeight: '98vh',
-            data: {},
+            data: { prefill },
         }).afterClosed().subscribe(result => {
             if (result) this._loadComplaints();
         });

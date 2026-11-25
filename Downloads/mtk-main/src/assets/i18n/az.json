@@ -2093,6 +2093,32 @@
         "placeholder": "Mesajınızı yazın..."
       }
     },
+    "feed": {
+      "confirmation": {
+        "delete": {
+          "title": "Paylaşımı sil",
+          "message": "Bu paylaşımı silmək istədiyinizdən əminsiniz? Bu əməliyyatı geri qaytarmaq mümkün olmayacaq."
+        }
+      },
+      "share": {
+        "copied": "Keçid kopyalandı",
+        "failed": "Keçidi kopyalamaq mümkün olmadı"
+      },
+      "error": {
+        "title": "Lenta yüklənmədi",
+        "message": "İnternet bağlantısını yoxlayın və yenidən cəhd edin.",
+        "retry": "Yenidən cəhd et"
+      },
+      "notFound": "Paylaşım tapılmadı və ya silinib",
+      "focused": {
+        "back": "Bütün lentaya qayıt"
+      },
+      "complaint": {
+        "menu": "Müraciət yarat",
+        "title": "Lentadakı paylaşım barədə",
+        "body": "Paylaşım: «{{text}}»\nKeçid: {{link}}\n\nMüraciətim:"
+      }
+    },
     "announcements": {
       "title": "Elanlar",
       "tabs": {

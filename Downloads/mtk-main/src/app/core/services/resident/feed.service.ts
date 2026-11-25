@@ -56,6 +56,16 @@ export class FeedService extends BaseApiService {
         return this.getList<FeedPost>('Resident/GetFeedPosts', request);
     }
 
+    /** Used by permalinks (`/resident/feed/:id`) when the post is not on the first page. */
+    getPostById(id: number): Observable<ApiResponse<FeedPost>> {
+        if (this.useMock) {
+            const post = this.mockPosts.find(p => p.id === id);
+            return post ? this.mockResponse({ ...post }) : this.mockError<FeedPost>('Paylaşım tapılmadı', 404);
+        }
+
+        return this.getById<FeedPost>('Resident/GetFeedPostById', id);
+    }
+
     createPost(data: FeedPostFormData): Observable<ApiResponse<FeedPost>> {
         const files = data.files ?? [];
 

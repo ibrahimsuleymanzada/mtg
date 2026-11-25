@@ -1,16 +1,20 @@
 import {
     ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { DateTime } from 'luxon';
+import { TranslocoModule, TranslocoService } from '@ngneat/transloco';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { Observable, Subject, finalize, takeUntil, timer } from 'rxjs';
 import { FeedService, insertAfterPinned, sortFeedPosts } from 'app/core/services/resident/feed.service';
 import { NotificationService } from 'app/core/services/notification.service';
+import { ComplaintPrefillService } from 'app/core/services/resident/complaint-prefill.service';
 import { FeedComment, FeedMedia, FeedPost } from 'app/core/models/resident/feed.types';
 import { ApiResponse, PaginatedResponse } from 'app/core/models/api-response.model';
 
@@ -38,7 +42,7 @@ const REMOVE_ANIMATION_MS = 320;
     encapsulation   : ViewEncapsulation.None,
     changeDetection : ChangeDetectionStrategy.OnPush,
     standalone      : true,
-    imports         : [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatMenuModule],
+    imports         : [CommonModule, FormsModule, TranslocoModule, MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class ResidentFeedComponent implements OnInit, OnDestroy {
     @ViewChild('photoInput') photoInput?: ElementRef<HTMLInputElement>;
@@ -73,7 +77,10 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
 
     posts: FeedPost[] = [];
     loading = true;
+    loadError = false;
     loadingMore = false;
+    /** Post opened through a shared link (`/resident/feed/:id`): highlighted and scrolled into view. */
+    focusedPostId: number | null = null;
     totalCount = 0;
 
     // Comments UI state
@@ -94,6 +101,7 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
     removingCommentIds = new Set<number>();
 
     private _page = 0;
+    private _routePostId: number | null = null;
     /** Local changes (publish / delete / pin) shift server pages, so the next "load more" refetches from page 1. */
     private _needsResync = false;
     private _likingIds = new Set<number>();
@@ -108,26 +116,34 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
         private _feedService:         FeedService,
         private _notificationService: NotificationService,
         private _sanitizer:           DomSanitizer,
+        private _confirmationService: FuseConfirmationService,
+        private _translocoService:    TranslocoService,
+        private _complaintPrefill:    ComplaintPrefillService,
+        private _router:              Router,
+        private _route:               ActivatedRoute,
+        private _location:            Location,
+        private _host:                ElementRef<HTMLElement>,
         private _cdr:                 ChangeDetectorRef,
     ) {}
 
     ngOnInit(): void {
-        this._feedService.getPosts(1, PAGE_SIZE)
+        // The same component serves `feed` and `feed/:id`; the id may change while it stays alive.
+        this._route.paramMap
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe({
-                next: (res) => {
-                    this.posts = sortFeedPosts(res.data?.result ?? []);
-                    this.totalCount = res.data?.count ?? this.posts.length;
-                    this._page = 1;
-                    this.loading = false;
-                    this._cdr.markForCheck();
-                },
-                error: () => {
-                    this.loading = false;
-                    this._notificationService.error('Lenta yüklənmədi');
-                    this._cdr.markForCheck();
-                },
+            .subscribe((params) => {
+                const id = Number(params.get('id'));
+                this._routePostId = Number.isInteger(id) && id > 0 ? id : null;
+                if (!this.loading && !this.loadError) {
+                    this._focusRoutePost();
+                }
             });
+
+        this._loadFirstPage();
+    }
+
+    retryLoad(): void {
+        if (this.loading) return;
+        this._loadFirstPage();
     }
 
     ngOnDestroy(): void {
@@ -167,6 +183,96 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
         return item.id;
     }
 
+    private _loadFirstPage(): void {
+        this.loading = true;
+        this.loadError = false;
+        this._cdr.markForCheck();
+
+        this._feedService.getPosts(1, PAGE_SIZE)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe({
+                next: (res) => {
+                    if (!res.status) {
+                        this._failFirstLoad();
+                        return;
+                    }
+                    this.posts = sortFeedPosts(res.data?.result ?? []);
+                    this.totalCount = res.data?.count ?? this.posts.length;
+                    this._page = 1;
+                    this._needsResync = false;
+                    this.loading = false;
+                    this._cdr.markForCheck();
+                    this._focusRoutePost();
+                },
+                error: () => this._failFirstLoad(),
+            });
+    }
+
+    private _failFirstLoad(): void {
+        this.loading = false;
+        this.loadError = true;
+        this._cdr.markForCheck();
+    }
+
+    // ── Permalink (/resident/feed/:id) ──────────────────────────────────
+
+    private _focusRoutePost(): void {
+        const id = this._routePostId;
+        if (id === null) {
+            this.focusedPostId = null;
+            this._cdr.markForCheck();
+            return;
+        }
+
+        this.activeFilter = 'all';   // the target must not be hidden by a filter
+        if (this.posts.some(p => p.id === id)) {
+            this._revealPost(id);
+            return;
+        }
+
+        // Not on the loaded pages: fetch it separately and show it at the top, below the pinned posts.
+        this._feedService.getPostById(id)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe({
+                next: (res) => {
+                    if (this._routePostId !== id) return;   // the route changed meanwhile
+                    if (!res.status || !res.data) {
+                        this._postNotFound();
+                        return;
+                    }
+                    if (!this.posts.some(p => p.id === id)) {
+                        this.posts = insertAfterPinned(this.posts, res.data);
+                    }
+                    this._revealPost(id);
+                },
+                error: () => this._postNotFound(),
+            });
+    }
+
+    private _revealPost(id: number): void {
+        this.focusedPostId = id;
+        this._cdr.markForCheck();
+
+        // Wait until the entry animations have settled, otherwise the scroll target is still moving.
+        timer(450)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe(() => {
+                const el = this._host.nativeElement.querySelector<HTMLElement>(`#feed-post-${id}`);
+                const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+                el?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+            });
+    }
+
+    private _postNotFound(): void {
+        this.focusedPostId = null;
+        this._notificationService.info(this._t('notFound'));
+        this._router.navigate(['/resident/feed'], { replaceUrl: true });
+    }
+
+    backToFeed(): void {
+        this._router.navigate(['/resident/feed']);
+    }
+
     // ── Pagination ──────────────────────────────────────────────────────
 
     loadMore(): void {
@@ -191,7 +297,10 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                 next: (res) => {
                     const items = res.data?.result ?? [];
                     const known = new Set(this.posts.map(p => p.id));
-                    this.posts = sortFeedPosts(resync ? items : [...this.posts, ...items.filter(p => !known.has(p.id))]);
+                    // A resync replaces the list; the post opened via a shared link must not vanish from under the user.
+                    const focused = this.posts.find(p => p.id === this.focusedPostId);
+                    const fresh = focused && !items.some(p => p.id === focused.id) ? insertAfterPinned(items, focused) : items;
+                    this.posts = sortFeedPosts(resync ? fresh : [...this.posts, ...items.filter(p => !known.has(p.id))]);
                     this.totalCount = items.length ? (res.data?.count ?? this.posts.length) : this.posts.length;
                     this._page = nextPage;
                     this._needsResync = false;
@@ -284,6 +393,24 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
             });
     }
 
+    /** Menu action: asks first, the actual deletion happens in `deletePost`. */
+    confirmDeletePost(post: FeedPost): void {
+        this._confirmationService.open({
+            title:   this._t('confirmation.delete.title'),
+            message: this._t('confirmation.delete.message'),
+            icon:    { show: true, name: 'heroicons_outline:exclamation-triangle', color: 'warn' },
+            actions: {
+                confirm: { show: true, label: 'common.actions.delete', color: 'warn' },
+                cancel:  { show: true, label: 'common.actions.cancel' },
+            },
+            dismissible: true,
+        }).afterClosed().subscribe((result) => {
+            if (result === 'confirmed') {
+                this.deletePost(post);
+            }
+        });
+    }
+
     deletePost(post: FeedPost): void {
         if (this._deletingPostIds.has(post.id)) return;
         this._deletingPostIds.add(post.id);
@@ -366,6 +493,27 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
                     this._notificationService.error('Əməliyyat zamanı xəta baş verdi');
                 },
             });
+    }
+
+    // ── Posts: share / complaint ────────────────────────────────────────
+
+    async sharePost(post: FeedPost): Promise<void> {
+        const copied = await this._copyToClipboard(this._postUrl(post.id));
+        if (copied) {
+            this._notificationService.success(this._t('share.copied'));
+        } else {
+            this._notificationService.error(this._t('share.failed'));
+        }
+    }
+
+    /** Opens "Müraciətlər" with the create dialog pre-filled from the post. */
+    createComplaint(post: FeedPost): void {
+        const quote = post.text.length > 280 ? `${post.text.slice(0, 280)}…` : post.text;
+        this._complaintPrefill.set({
+            title:       this._t('complaint.title'),
+            description: this._t('complaint.body', { text: quote || post.author, link: this._postUrl(post.id) }),
+        });
+        this._router.navigate(['/resident/request']);
     }
 
     // ── Posts: editing ──────────────────────────────────────────────────
@@ -544,6 +692,40 @@ export class ResidentFeedComponent implements OnInit, OnDestroy {
         if (days < 7)   return `${days} gün əvvəl`;
 
         return date.toFormat('dd.MM.yyyy');
+    }
+
+    private _t(key: string, params?: Record<string, unknown>): string {
+        return this._translocoService.translate(`resident.feed.${key}`, params);
+    }
+
+    /** Absolute link to a post; respects the app's base href / location strategy. */
+    private _postUrl(id: number): string {
+        const path = this._router.serializeUrl(this._router.createUrlTree(['/resident/feed', id]));
+        return window.location.origin + this._location.prepareExternalUrl(path);
+    }
+
+    private async _copyToClipboard(text: string): Promise<boolean> {
+        try {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(text);
+                return true;
+            }
+        } catch {
+            // permission denied or insecure context: use the fallback below
+        }
+        try {
+            const area = document.createElement('textarea');
+            area.value = text;
+            area.setAttribute('readonly', '');
+            area.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+            document.body.appendChild(area);
+            area.select();
+            const ok = document.execCommand('copy');
+            document.body.removeChild(area);
+            return ok;
+        } catch {
+            return false;
+        }
     }
 
     private _patchPost(id: number, patch: Partial<FeedPost>): void {
